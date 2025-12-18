@@ -100,6 +100,10 @@
             text-align: left;
             transition: 0.2s;
             font-size: 1.1rem;
+            
+            /* FIX: Explicitly set text color to dark to override global button white text */
+            color: var(--dark); 
+            font-weight: bold;
         }
         .option-btn:hover { border-color: var(--primary); background: #fff5f5; }
 
