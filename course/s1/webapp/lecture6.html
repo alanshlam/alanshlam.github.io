@@ -259,9 +259,10 @@
 
             <div style="text-align:center; margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
                 <p>Add to your strategy:</p>
-                <button class="icon-btn" onclick="fillSlot('💾', 'External Drive', 'slot2')">💾 Hard Drive</button>
-                <button class="icon-btn" onclick="fillSlot('☁️', 'Cloud Storage', 'slot3')">☁️ The Cloud</button>
-                <button class="icon-btn" onclick="fillSlot('📄', 'Paper Printout', 'slot2')">📄 Paper</button>
+                <!-- UPDATED ICON AND LOGIC HERE -->
+                <button class="icon-btn" onclick="fillSlot('💽', 'Local Copy (Drive)', 'slot2')">💽 External Drive</button>
+                <button class="icon-btn" onclick="fillSlot('☁️', 'Off-Site (Cloud)', 'slot3')">☁️ The Cloud</button>
+                <button class="icon-btn" onclick="fillSlot('📄', 'Local Copy (Paper)', 'slot2')">📄 Paper</button>
             </div>
             <div id="builder-msg" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--secondary);"></div>
         </div>
@@ -433,13 +434,16 @@
     }
 
     function checkBuilder() {
-        const s2 = document.getElementById('slot2').innerText.includes('Local');
-        const s3 = document.getElementById('slot3').innerText.includes('Off-Site');
+        // Logic updated to check for "Local" or "Off-Site" in the text
+        const s2Text = document.getElementById('slot2').innerText;
+        const s3Text = document.getElementById('slot3').innerText;
         const msg = document.getElementById('builder-msg');
 
-        if(!s2 && !s3) {
+        if(s2Text.includes('Local') && s3Text.includes('Off-Site')) {
             msg.innerText = "Perfect! 3 Copies. 2 Media Types. 1 Off-site.";
             msg.style.color = "#27ae60";
+        } else {
+            msg.innerText = "";
         }
     }
 
