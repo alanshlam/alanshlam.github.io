@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Phishing Awareness Training 2025</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { background-color: #0f172a; color: white; font-family: sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        /* Error box style */
+        #error-box { display: none; padding: 20px; background: #ef4444; color: white; margin: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <!-- Error container to show if something breaks -->
+    <div id="error-box"></div>
+
+    <!-- Main App Container with Loading State -->
+    <div id="root" class="flex h-screen items-center justify-center">
+        <div class="text-center animate-pulse">
+            <div class="text-2xl font-bold text-blue-400 mb-2">Loading App...</div>
+            <div class="text-slate-500 text-sm">Please ensure you have an internet connection to load the libraries.</div>
+        </div>
+    </div>
+
+    <!-- Error Handler Script -->
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorBox = document.getElementById('error-box');
+            const root = document.getElementById('root');
+            root.style.display = 'none'; // Hide loading
+            errorBox.style.display = 'block';
+            errorBox.innerHTML = `
+                <h3 class="font-bold text-lg mb-2">Application Error</h3>
+                <p><strong>Message:</strong> ${message}</p>
+                <p><strong>Line:</strong> ${lineno}</p>
+                <p class="mt-4 text-sm bg-red-800 p-2 rounded">If you are opening this file locally, ensure you are connected to the internet so React can load.</p>
+            `;
+        };
+    </script>
+
+    <!-- Main React Logic -->
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- Icons ---
+        // Changed Fragments <> to Groups <g> for better SVG compatibility in standalone babel
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const icons = {
+                Shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+                AlertTriangle: <g><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></g>,
+                Mail: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeLinecap="round" strokeLinejoin="round"><polyline points="22,6 12,13 2,6" /></path>,
+                Cpu: <g><rect x="4" y="4" width="16" height="16" rx="2" ry="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" /></g>,
+                Lock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></g>,
+                CheckCircle: <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 4 12 14.01 9 11.01" /></path>,
+                BarChart2: <g><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></g>,
+                ChevronRight: <polyline points="9 18 15 12 9 6" />,
+                RotateCcw: <g><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></g>,
+                Award: <g><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></g>,
+                Search: <g><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></g>
+            };
+
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {icons[name] || <circle cx="12" cy="12" r="10" />}
+                </svg>
+            );
+        };
+
+        const Card = ({ children, className = "" }) => (
+            <div className={`bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg ${className}`}>
+                {children}
+            </div>
+        );
+
+        // --- Dashboard View ---
+        const DashboardView = () => (
+            <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="bg-gradient-to-br from-red-900/50 to-slate-800">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-slate-400 text-sm font-medium">AI Phishing Rate</p>
+                                <h3 className="text-3xl font-bold text-white mt-2">67.4%</h3>
+                            </div>
+                            <Icon name="Cpu" className="text-red-400" size={24} />
+                        </div>
+                        <p className="text-xs text-slate-400 mt-4">of all attacks in 2024 used AI</p>
+                    </Card>
+                    <Card>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-slate-400 text-sm font-medium">Click Rate Increase</p>
+                                <h3 className="text-3xl font-bold text-blue-400 mt-2">+54%</h3>
+                            </div>
+                            <Icon name="BarChart2" className="text-blue-400" size={24} />
+                        </div>
+                        <p className="text-xs text-slate-400 mt-4">vs. traditional phishing methods</p>
+                    </Card>
+                    <Card>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-slate-400 text-sm font-medium">Spam Saturation</p>
+                                <h3 className="text-3xl font-bold text-yellow-400 mt-2">82.6%</h3>
+                            </div>
+                            <Icon name="Mail" className="text-yellow-400" size={24} />
+                        </div>
+                        <p className="text-xs text-slate-400 mt-4">of 2025 spam is AI-generated</p>
+                    </Card>
+                    <Card>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-slate-400 text-sm font-medium">Success Rate</p>
+                                <h3 className="text-3xl font-bold text-emerald-400 mt-2">60%</h3>
+                            </div>
+                            <Icon name="AlertTriangle" className="text-emerald-400" size={24} />
+                        </div>
+                        <p className="text-xs text-slate-400 mt-4">of recipients are fooled by AI</p>
+                    </Card>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Icon name="Shield" className="text-blue-400" /> How AI Powers Attacks
+                        </h3>
+                        <div className="space-y-4">
+                            {[
+                                { title: "Hyper-Personalization", desc: "Scrapes LinkedIn/Socials to mimic boss's style or mention real colleagues." },
+                                { title: "Perfect Grammar", desc: "LLMs create error-free emails that bypass 'bad English' filters." },
+                                { title: "Deepfakes", desc: "Clones voices of CEOs or family members for vishing (voice phishing)." },
+                                { title: "Polymorphism", desc: "Generates 1,000s of unique variants in minutes to dodge spam filters." }
+                            ].map((item, idx) => (
+                                <div key={idx} className="flex gap-3 p-3 bg-slate-900/50 rounded-lg">
+                                    <div className="mt-1 min-w-[4px] h-full bg-blue-500 rounded-full"></div>
+                                    <div>
+                                        <h4 className="font-semibold text-slate-200">{item.title}</h4>
+                                        <p className="text-sm text-slate-400">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Icon name="Lock" className="text-green-400" /> 2025 Defense Strategies
+                        </h3>
+                        <ul className="space-y-3">
+                            {[
+                                { bold: "Use Secret Phrases:", text: "Establish a safe word with family/colleagues to verify identity against voice clones." },
+                                { bold: "AI Filters:", text: "Enable behavioral analysis tools (e.g., StrongestLayer) that spot AI patterns." },
+                                { bold: "Verify Out-of-Band:", text: "If you get an urgent text from a boss, call them on a known number." },
+                                { bold: "Watch for 'Perfect':", text: "Be suspicious of generic yet grammatically perfect urgent requests." }
+                            ].map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-3">
+                                    <div className="shrink-0 mt-0.5"><Icon name="CheckCircle" className="text-green-500" size={18} /></div>
+                                    <span className="text-slate-300"><strong>{item.bold}</strong> {item.text}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+                </div>
+            </div>
+        );
+
+        // --- Simulator View ---
+        const SimulatorView = () => {
+            const [step, setStep] = useState(0);
+            const [feedback, setFeedback] = useState(null);
+            const [score, setScore] = useState(0);
+            const [finished, setFinished] = useState(false);
+
+            const scenarios = [
+                {
+                    id: 1,
+                    sender: "Elon Musk <elon.musk@x-corp-update.com>",
+                    subject: "Urgent: Account Verification Required",
+                    body: "Dear User, We have detected unusual activity. Please verify your wallet immediately to avoid suspension. Click here.",
+                    isPhishing: true,
+                    reason: "Look at the sender domain (@x-corp-update.com) and the generic urgency. AI often generates these 'perfect' but generic threats.",
+                    indicators: ["Suspicious Domain", "Urgency", "Generic Greeting"]
+                },
+                {
+                    id: 2,
+                    sender: "Sarah Jenkins <sarah.jenkins@yourcompany.com>",
+                    subject: "Q4 Budget Review Meeting",
+                    body: "Hi Team, purely a reminder that the Q4 budget review is tomorrow at 2 PM in Room 3B. See you there.",
+                    isPhishing: false,
+                    reason: "This is a standard internal email. No urgency, no links asking for credentials, and a known internal domain.",
+                    indicators: []
+                },
+                {
+                    id: 3,
+                    sender: "CEO <ceo@company-internal-support.net>",
+                    subject: "Confidential: Vendor Payment",
+                    body: "I'm in a meeting and can't talk. Please process this vendor payment immediately to the attached account. It's crucial for the new partnership. Don't call me, just handle it.",
+                    isPhishing: true,
+                    reason: "Classic CEO Fraud. AI drafts the perfect tone of authority but creates isolation ('Don't call me') to prevent verification.",
+                    indicators: ["Authority Pressure", "Isolation Tactic", "Financial Request"]
+                }
+            ];
+
+            const handleChoice = (choice) => {
+                const isCorrect = choice === scenarios[step].isPhishing;
+                
+                // Track score if correct
+                if (isCorrect) {
+                    setScore(prev => prev + 1);
+                }
+
+                setFeedback({
+                    correct: isCorrect,
+                    text: isCorrect ? "Correct! Good catch." : "Incorrect.",
+                    details: scenarios[step].reason
+                });
+            };
+
+            const nextScenario = () => {
+                setFeedback(null);
+                if (step < scenarios.length - 1) {
+                    setStep(step + 1);
+                } else {
+                    setFinished(true);
+                }
+            };
+
+            const restartSimulation = () => {
+                setStep(0);
+                setScore(0);
+                setFinished(false);
+                setFeedback(null);
+            };
+
+            // --- Summary Screen ---
+            if (finished) {
+                const percentage = Math.round((score / scenarios.length) * 100);
+                let gradeColor = "text-red-500";
+                let gradeTitle = "Critical Risk";
+                let gradeMsg = "You are highly vulnerable to AI phishing. Review the defense strategies.";
+
+                if (percentage === 100) {
+                    gradeColor = "text-green-500";
+                    gradeTitle = "Cyber Security Champion";
+                    gradeMsg = "Excellent work! You can spot AI tactics effectively.";
+                } else if (percentage >= 60) {
+                    gradeColor = "text-yellow-500";
+                    gradeTitle = "Cautiously Optimistic";
+                    gradeMsg = "Good job, but some AI lures still tricked you. Stay vigilant.";
+                }
+
+                return (
+                    <div className="max-w-2xl mx-auto animate-in zoom-in duration-300">
+                        <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 text-center shadow-2xl">
+                            <div className="mx-auto w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center mb-6">
+                                <Icon name="Award" size={48} className={gradeColor} />
+                            </div>
+                            
+                            <h2 className="text-3xl font-bold text-white mb-2">Training Complete</h2>
+                            <p className="text-slate-400 mb-6">Here is your readiness report</p>
+
+                            <div className="bg-slate-900 rounded-lg p-6 mb-8 inline-block w-full max-w-md">
+                                <div className="text-5xl font-black text-white mb-2">{score} / {scenarios.length}</div>
+                                <div className={`text-xl font-bold ${gradeColor}`}>{gradeTitle}</div>
+                            </div>
+
+                            <p className="text-slate-300 text-lg mb-8 max-w-md mx-auto">{gradeMsg}</p>
+
+                            <button 
+                                onClick={restartSimulation}
+                                className="flex items-center gap-2 mx-auto px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-all shadow-lg hover:shadow-blue-900/40"
+                            >
+                                <Icon name="RotateCcw" size={20} /> Restart Simulator
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // --- Game Screen ---
+            const current = scenarios[step];
+            const isLastStep = step === scenarios.length - 1;
+
+            return (
+                <div className="max-w-2xl mx-auto space-y-6">
+                    <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
+                        <div className="bg-slate-100 p-4 border-b border-slate-200 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span className="text-slate-500 text-sm">Inbox Simulator (2025)</span>
+                        </div>
+                        
+                        <div className="p-6">
+                            <div className="mb-4">
+                                <p className="text-sm text-slate-500">From: <span className="font-mono text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{current.sender}</span></p>
+                                <p className="text-sm text-slate-500 mt-1">Subject: <span className="font-bold text-slate-800">{current.subject}</span></p>
+                            </div>
+                            <div className="border-t border-slate-100 py-4 text-slate-700 min-h-[100px]">
+                                {current.body}
+                            </div>
+                        </div>
+
+                        {!feedback && (
+                            <div className="bg-slate-50 p-4 flex gap-4 justify-center border-t border-slate-200">
+                                <button 
+                                    onClick={() => handleChoice(false)}
+                                    className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                                >
+                                    Mark Safe
+                                </button>
+                                <button 
+                                    onClick={() => handleChoice(true)}
+                                    className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                                >
+                                    Report Phishing
+                                </button>
+                            </div>
+                        )}
+
+                        {feedback && (
+                            <div className={`p-6 border-t-4 ${feedback.correct ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"}`}>
+                                <h4 className={`font-bold text-lg mb-2 ${feedback.correct ? "text-green-800" : "text-red-800"}`}>
+                                    {feedback.text}
+                                </h4>
+                                <p className="text-slate-700 mb-4">{feedback.details}</p>
+                                
+                                {current.isPhishing && (
+                                   <div className="flex flex-wrap gap-2 mb-4">
+                                     {current.indicators.map(ind => (
+                                       <span key={ind} className="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full font-bold">
+                                         {ind}
+                                       </span>
+                                     ))}
+                                   </div>
+                                )}
+
+                                <button 
+                                    onClick={nextScenario}
+                                    className="flex items-center gap-2 text-blue-600 font-bold hover:underline"
+                                >
+                                    {isLastStep ? "View Results" : "Next Email"} <Icon name="ChevronRight" size={16} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <p className="text-center text-slate-400 text-sm">
+                        Scenario {step + 1} of {scenarios.length}
+                    </p>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [view, setView] = useState('dashboard');
+
+            return (
+                <div className="min-h-screen text-slate-200 font-sans selection:bg-blue-500/30 pb-12">
+                    <nav className="border-b border-slate-700 bg-slate-950/50 backdrop-blur sticky top-0 z-10">
+                        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                                    <Icon name="Shield" className="text-white" size={18} />
+                                </div>
+                                <span className="font-bold text-white text-lg tracking-tight">AI Defense <span className="text-blue-500">2025</span></span>
+                            </div>
+                            <div className="flex gap-1">
+                                {['dashboard', 'simulator'].map((v) => (
+                                    <button
+                                        key={v}
+                                        onClick={() => setView(v)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                            view === v 
+                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-900/20" 
+                                                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                                        }`}
+                                    >
+                                        {v.charAt(0).toUpperCase() + v.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-6xl mx-auto px-4 py-8">
+                        <div className="mb-8">
+                            <h1 className="text-4xl font-bold text-white mb-2">
+                                {view === 'dashboard' ? 'State of AI Phishing' : 'Training Simulator'}
+                            </h1>
+                            <p className="text-slate-400 text-lg">
+                                {view === 'dashboard' 
+                                    ? 'Understanding how artificial intelligence is weaponized in 2025 cyber attacks.' 
+                                    : 'Test your ability to spot AI-generated attacks in a safe environment.'}
+                            </p>
+                        </div>
+
+                        {view === 'dashboard' ? <DashboardView /> : <SimulatorView />}
+                    </main>
+
+                    <footer className="border-t border-slate-800 mt-12 py-8 bg-slate-950">
+                        <div className="max-w-6xl mx-auto px-4 text-center text-slate-500 text-sm">
+                            <p>© 2025 AI Defense Initiative. Data sourced from latest 2025 Threat Reports.</p>
+                            <p className="mt-2">Verify everything. Trust no one implicitly.</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

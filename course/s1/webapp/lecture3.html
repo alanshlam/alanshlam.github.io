@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 3: Passwords & MFA</title>
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --accent: #f39c12;
+            --bg: #fdfefe;
+            --text: #2c3e50;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f3f4;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #6c3483;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #d7bde2;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        /* --- Module 1: Password Battle --- */
+        .battle-arena {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        @media(max-width: 600px) { .battle-arena { flex-direction: column; } }
+
+        .fighter {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background: #fafafa;
+        }
+        .fighter.winner { border-color: var(--success); background: #eafaf1; }
+        .fighter h3 { margin: 0; font-size: 1rem; color: #777; }
+        .pwd-display { 
+            font-family: monospace; font-size: 1.2rem; margin: 10px 0; background: #eee; padding: 5px; border-radius: 4px; 
+            word-break: break-all;
+        }
+        .stat-bar { height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .stat-fill { height: 100%; width: 0%; transition: width 1.5s ease-out; }
+        .crack-time { font-weight: bold; margin-top: 5px; font-size: 0.9rem; }
+
+        /* --- Module 2: MFA Simulator --- */
+        .mfa-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        @media(max-width: 600px) { .mfa-container { flex-direction: column; align-items: center; } }
+
+        .login-screen {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .phone-screen {
+            width: 180px;
+            height: 320px;
+            background: #333;
+            border-radius: 20px;
+            border: 8px solid #111;
+            padding: 10px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .authenticator-app {
+            text-align: center;
+            display: none; /* Hidden until triggered */
+        }
+        .auth-code { font-size: 2rem; color: var(--accent); letter-spacing: 5px; font-family: monospace; margin: 10px 0; }
+        .timer-circle { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto; }
+        
+        input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* --- Module 3: Stuffer Animation --- */
+        .network-map {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eee;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .node-label { position: absolute; bottom: -25px; font-size: 0.8rem; width: 100px; text-align: center; font-weight: bold; }
+        
+        .hacker-node { border-color: var(--danger); background: #fadbd8; }
+        .target-node { border-color: var(--success); background: #d5f5e3; }
+        .breached { background: var(--danger) !important; color: white; animation: shake 0.5s; }
+        
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(0, 0); } }
+
+        .packet {
+            width: 10px; height: 10px; background: var(--danger); border-radius: 50%;
+            position: absolute; top: 25px; left: 30px; z-index: 1; display: none;
+        }
+
+        /* --- Module 4: Generator --- */
+        .gen-box {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .gen-result { font-size: 1.5rem; font-weight: bold; margin: 20px 0; font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 3: Passwords & MFA</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('battle')">1. The Battle</button>
+    <button class="tab-btn" onclick="showSection('mfa')">2. MFA Simulator</button>
+    <button class="tab-btn" onclick="showSection('stuffer')">3. Credential Stuffing</button>
+    <button class="tab-btn" onclick="showSection('generator')">4. Passphrase Gen</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: PASSWORD BATTLE -->
+    <div id="battle" class="section active">
+        <div class="card">
+            <h2>Length vs. Complexity</h2>
+            <p>Which is stronger? A short "complex" password or a long "simple" phrase?</p>
+            <div style="text-align:center;">
+                <button class="btn-primary" style="width:auto; padding: 10px 30px;" onclick="runBattle()">FIGHT!</button>
+            </div>
+
+            <div class="battle-arena">
+                <!-- Fighter 1 -->
+                <div class="fighter" id="f1">
+                    <h3>The Old Way</h3>
+                    <div class="pwd-display">Tr0ub4dor&3</div>
+                    <small>11 Characters. Weird symbols.</small>
+                    <div class="stat-bar"><div class="stat-fill" id="bar1" style="background: #e74c3c;"></div></div>
+                    <div class="crack-time" id="time1">Waiting...</div>
+                </div>
+
+                <!-- Fighter 2 -->
+                <div class="fighter" id="f2">
+                    <h3>The New Way</h3>
+                    <div class="pwd-display">CorrectHorseBatteryStaple</div>
+                    <small>25 Characters. Simple words.</small>
+                    <div class="stat-bar"><div class="stat-fill" id="bar2" style="background: #27ae60;"></div></div>
+                    <div class="crack-time" id="time2">Waiting...</div>
+                </div>
+            </div>
+            <p id="battle-result" style="text-align:center; margin-top:20px; font-weight:bold;"></p>
+        </div>
+    </div>
+
+    <!-- SECTION 2: MFA SIMULATOR -->
+    <div id="mfa" class="section">
+        <div class="card">
+            <h2>MFA Simulator</h2>
+            <p>Experience how 2-Step Verification works. Try to log in!</p>
+            
+            <div class="mfa-container">
+                <!-- Login Screen -->
+                <div class="login-screen" id="login-box">
+                    <h3>Sign In</h3>
+                    <input type="text" value="user@example.com" disabled>
+                    <input type="password" value="CorrectHorseBatteryStaple" disabled>
+                    <button class="btn-primary" onclick="startMFA()">Log In</button>
+                    <p id="login-msg" style="font-size:0.9rem; color:#666; margin-top:10px;"></p>
+                </div>
+
+                <!-- MFA Input Screen (Hidden initially) -->
+                <div class="login-screen" id="mfa-input-box" style="display:none;">
+                    <h3>Security Check</h3>
+                    <p>Enter the code from your phone:</p>
+                    <input type="text" id="code-input" placeholder="000 000" maxlength="6" style="text-align:center; letter-spacing:3px; font-size:1.2rem;">
+                    <button class="btn-primary" onclick="verifyMFA()">Verify</button>
+                    <button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="resetMFA()">Cancel</button>
+                </div>
+
+                <!-- Phone Screen -->
+                <div class="phone-screen">
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:20px;">My Phone</div>
+                    <div id="auth-app" class="authenticator-app">
+                        <div>🔒 Authenticator</div>
+                        <div style="font-size:0.7rem; color:#ccc;">NetSec Bank</div>
+                        <div class="auth-code" id="generated-code">--- ---</div>
+                        <div class="timer-circle"></div>
+                    </div>
+                    <div id="phone-idle" style="color:#666;">(Phone Idle)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: CREDENTIAL STUFFING -->
+    <div id="stuffer" class="section">
+        <div class="card">
+            <h2>The "Credential Stuffing" Attack</h2>
+            <p>Why password reuse is dangerous. Click "Start Hack" to see a bot use stolen data.</p>
+            
+            <div class="network-map">
+                <div class="node hacker-node">
+                    🤖
+                    <div class="node-label">Hacker Bot</div>
+                </div>
+                
+                <!-- The Packet -->
+                <div class="packet" id="packet"></div>
+
+                <div style="flex:1; display:flex; justify-content:space-around;">
+                    <div class="node" id="site1">
+                        🛒
+                        <div class="node-label">Shopping Site</div>
+                    </div>
+                    <div class="node" id="site2">
+                        🏦
+                        <div class="node-label">Your Bank</div>
+                    </div>
+                    <div class="node" id="site3">
+                        📧
+                        <div class="node-label">Your Email</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center;">
+                <button class="btn-primary" style="width:auto;" onclick="runStuffer()">Start Hack</button>
+            </div>
+            <div id="hack-log" style="margin-top:20px; background:#333; color:#0f0; padding:10px; font-family:monospace; height:100px; overflow-y:auto; border-radius:5px;">
+                > System Ready...<br>
+                > Awaiting target...
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: PASSPHRASE GENERATOR -->
+    <div id="generator" class="section">
+        <div class="card">
+            <h2>Passphrase Generator</h2>
+            <p>Create a strong password you can actually remember.</p>
+            
+            <div class="gen-box">
+                <div>Your Secure Passphrase:</div>
+                <div class="gen-result" id="phrase-output">Click Generate</div>
+                <button style="background:white; color:var(--primary); border:none; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="generatePhrase()">Generate New</button>
+            </div>
+            
+            <ul style="margin-top:20px; color:#555;">
+                <li><strong>Length:</strong> 4 random words is mathematically stronger than 8 random characters.</li>
+                <li><strong>Memory:</strong> Create a mental image. (e.g., A "Purple Tiger" driving a "Loud Truck").</li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 3 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['battle', 'mfa', 'stuffer', 'generator'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Battle ---
+    function runBattle() {
+        // Reset
+        document.getElementById('bar1').style.width = '0%';
+        document.getElementById('bar2').style.width = '0%';
+        document.getElementById('f1').classList.remove('winner');
+        document.getElementById('f2').classList.remove('winner');
+        document.getElementById('battle-result').innerText = "Calculating entropy...";
+
+        // Animate
+        setTimeout(() => {
+            // Fighter 1 (Short Complex)
+            document.getElementById('bar1').style.width = '10%';
+            document.getElementById('time1').innerText = "Cracked in 3 Days";
+            document.getElementById('time1').style.color = "#e74c3c";
+            
+            // Fighter 2 (Long Simple)
+            document.getElementById('bar2').style.width = '100%';
+            document.getElementById('time2').innerText = "Cracked in 500 Centuries";
+            document.getElementById('time2').style.color = "#27ae60";
+
+            // Result
+            setTimeout(() => {
+                document.getElementById('f2').classList.add('winner');
+                document.getElementById('battle-result').innerText = "Winner: LENGTH! Length beats complexity every time.";
+            }, 1000);
+        }, 500);
+    }
+
+    // --- Module 2: MFA Logic ---
+    let currentCode = "";
+    
+    function startMFA() {
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('mfa-input-box').style.display = 'block';
+        
+        // Wake up phone
+        document.getElementById('phone-idle').style.display = 'none';
+        document.getElementById('auth-app').style.display = 'block';
+        
+        // Generate Code
+        generateMFACode();
+    }
+
+    function generateMFACode() {
+        // Random 6 digit
+        const num = Math.floor(100000 + Math.random() * 900000);
+        currentCode = num.toString();
+        document.getElementById('generated-code').innerText = currentCode.substring(0,3) + " " + currentCode.substring(3,6);
+    }
+
+    function verifyMFA() {
+        const input = document.getElementById('code-input').value.replace(/\s/g, '');
+        if(input === currentCode) {
+            alert("SUCCESS! You are logged in.");
+            resetMFA();
+        } else {
+            alert("Wrong Code. Try again.");
+        }
+    }
+
+    function resetMFA() {
+        document.getElementById('login-box').style.display = 'block';
+        document.getElementById('mfa-input-box').style.display = 'none';
+        document.getElementById('auth-app').style.display = 'none';
+        document.getElementById('phone-idle').style.display = 'block';
+        document.getElementById('code-input').value = "";
+    }
+
+    // --- Module 3: Stuffer Logic ---
+    function runStuffer() {
+        const log = document.getElementById('hack-log');
+        const packet = document.getElementById('packet');
+        const targets = ['site1', 'site2', 'site3'];
+        
+        // Reset
+        targets.forEach(t => document.getElementById(t).classList.remove('breached'));
+        log.innerHTML = "> Loading stolen password list...<br>> Found: user@example.com : 'Fluffy123'<br>";
+        
+        let delay = 1000;
+
+        targets.forEach((siteId, index) => {
+            setTimeout(() => {
+                // Animate Packet
+                packet.style.display = 'block';
+                packet.style.left = '30px';
+                packet.style.transition = 'none';
+                
+                // Trigger reflow
+                void packet.offsetWidth;
+
+                // Move packet
+                const targetEl = document.getElementById(siteId);
+                // Simple approximation of position
+                let moveDist = 150 + (index * 150); 
+                
+                packet.style.transition = 'left 0.5s linear';
+                packet.style.left = moveDist + 'px';
+
+                // On Arrival
+                setTimeout(() => {
+                    packet.style.display = 'none';
+                    document.getElementById(siteId).classList.add('breached');
+                    
+                    let name = "";
+                    if(index==0) name="Shopping Site";
+                    if(index==1) name="Bank";
+                    if(index==2) name="Email";
+                    
+                    log.innerHTML += `> Trying 'Fluffy123' on ${name}... <strong>ACCESS GRANTED</strong><br>`;
+                    log.scrollTop = log.scrollHeight;
+                }, 500);
+
+            }, delay);
+            delay += 1500;
+        });
+    }
+
+    // --- Module 4: Generator Logic ---
+    const words = ["Horse", "Battery", "Staple", "Correct", "Blue", "Sky", "Coffee", "Jump", "Panda", "Guitar", "Pizza", "Rocket", "Sleep", "Green", "Phone", "Tiger", "Loud", "Happy", "Ocean", "Book"];
+    
+    function generatePhrase() {
+        let phrase = "";
+        // Pick 4 unique words
+        let used = [];
+        while(used.length < 4) {
+            const r = Math.floor(Math.random() * words.length);
+            if(!used.includes(r)) used.push(r);
+        }
+        
+        phrase = words[used[0]] + "-" + words[used[1]] + "-" + words[used[2]] + "-" + words[used[3]];
+        document.getElementById('phrase-output').innerText = phrase;
+    }
+</script>
+
+</body>
+</html>

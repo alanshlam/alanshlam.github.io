@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 1: Interactive Companion</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f6f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav h1 { margin: 0; font-size: 1.5rem; }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #34495e;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 3px solid var(--accent); font-weight: bold; }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 { border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--primary); }
+
+        /* --- Module 1: Digital House --- */
+        .house-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 600px) { .house-grid { grid-template-columns: 1fr; } }
+
+        .house-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .house-item:hover { border-color: var(--accent); background: white; }
+        .house-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .house-desc { display: none; margin-top: 10px; font-size: 0.9rem; color: var(--dark); }
+
+        /* --- Module 2: CIA Game --- */
+        .cia-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .cia-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-c { background-color: #e67e22; } /* Orange */
+        .btn-i { background-color: #9b59b6; } /* Purple */
+        .btn-a { background-color: #3498db; } /* Blue */
+        
+        .scenario-box {
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 30px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 1px solid #ffeeba;
+            margin-bottom: 20px;
+        }
+        .feedback { text-align: center; font-weight: bold; margin-top: 15px; min-height: 1.5em; }
+
+        /* --- Module 3: Phishing Dojo --- */
+        .email-viewer {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .email-header {
+            background: #f1f1f1;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            font-size: 0.9rem;
+        }
+        .email-body {
+            padding: 20px;
+            background: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .phish-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .btn-legit { background-color: var(--success); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-phish { background-color: var(--danger); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        
+        /* --- Module 4: Password Lab --- */
+        .pwd-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .strength-meter {
+            height: 10px;
+            background: #ddd;
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: 0.3s;
+        }
+        .crack-time {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #bdc3c7;
+            color: var(--dark);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 1: Network Security Basics</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('intro')">1. The Digital House</button>
+    <button class="tab-btn" onclick="showSection('cia')">2. CIA Triad Game</button>
+    <button class="tab-btn" onclick="showSection('phishing')">3. Spot the Phish</button>
+    <button class="tab-btn" onclick="showSection('password')">4. Password Lab</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: DIGITAL HOUSE -->
+    <div id="intro" class="section active">
+        <div class="card">
+            <h2>The Analogy</h2>
+            <p>Click the items on the left to see their digital counterpart.</p>
+            <div class="house-grid">
+                <!-- House Item 1 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🔑 House Keys</span>
+                    <strong>Passwords</strong>
+                    <div class="house-desc">Just like you don't give keys to strangers, don't share passwords. If you lose them, intruders get in.</div>
+                </div>
+                <!-- House Item 2 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🚪 Doors & Windows</span>
+                    <strong>Operating System</strong>
+                    <div class="house-desc">You lock doors at night. Similarly, you must "patch" (update) your OS to seal cracks thieves could slip through.</div>
+                </div>
+                <!-- House Item 3 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🚧 Fence/Gate</span>
+                    <strong>Firewall</strong>
+                    <div class="house-desc">A fence stops people from walking onto your lawn. A firewall stops random internet traffic from entering your device.</div>
+                </div>
+                <!-- House Item 4 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">💎 Jewelry Box</span>
+                    <strong>Your Data</strong>
+                    <div class="house-desc">Photos, documents, bank details. This is what the thieves are actually looking for.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: CIA TRIAD -->
+    <div id="cia" class="section">
+        <div class="card">
+            <h2>The CIA Triad Game</h2>
+            <p>Read the scenario. Which pillar of security is broken?</p>
+            
+            <div class="scenario-box" id="cia-scenario">
+                Loading Scenario...
+            </div>
+
+            <div class="cia-btn-group">
+                <button class="cia-btn btn-c" onclick="checkCIA('C')">Confidentiality<br><small>(Privacy)</small></button>
+                <button class="cia-btn btn-i" onclick="checkCIA('I')">Integrity<br><small>(Truth/Accuracy)</small></button>
+                <button class="cia-btn btn-a" onclick="checkCIA('A')">Availability<br><small>(Access)</small></button>
+            </div>
+            <div id="cia-feedback" class="feedback"></div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="nextCIA()" style="padding:5px 10px; cursor:pointer;">Next Scenario</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: PHISHING -->
+    <div id="phishing" class="section">
+        <div class="card">
+            <h2>Phishing Dojo</h2>
+            <p>Is this email Real or Fake?</p>
+            
+            <div class="email-viewer" id="email-display">
+                <!-- Email content injected by JS -->
+            </div>
+
+            <div class="phish-controls">
+                <button class="btn-legit" onclick="checkPhish(true)">It's Real ✅</button>
+                <button class="btn-phish" onclick="checkPhish(false)">It's a SCAM! 🎣</button>
+            </div>
+            <div id="phish-feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: PASSWORD LAB -->
+    <div id="password" class="section">
+        <div class="card">
+            <h2>Password Strength Lab</h2>
+            <p>Type a password to see how long it would take a computer to crack it.</p>
+            <p><em><small>Note: This runs entirely on your browser. Nothing is sent to the internet.</small></em></p>
+            
+            <input type="text" id="pwdInput" class="pwd-input" placeholder="Type here..." onkeyup="checkStrength()">
+            
+            <div class="strength-meter">
+                <div id="strengthBar" class="strength-fill"></div>
+            </div>
+            
+            <div id="crackTime" class="crack-time">Time to crack: 0 seconds</div>
+            <ul id="pwd-tips" style="color: #7f8c8d; font-size: 0.9rem; margin-top: 20px;">
+                <li>Try adding numbers</li>
+                <li>Try adding symbols (!@#$)</li>
+                <li>Make it longer than 12 characters</li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 1 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // Find button that matches and set active
+        const index = ['intro', 'cia', 'phishing', 'password'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Digital House ---
+    function toggleHouse(element) {
+        const desc = element.querySelector('.house-desc');
+        const allDescs = document.querySelectorAll('.house-desc');
+        
+        // If currently hidden, show it and hide others
+        if (desc.style.display !== 'block') {
+            allDescs.forEach(d => d.style.display = 'none');
+            desc.style.display = 'block';
+        } else {
+            desc.style.display = 'none';
+        }
+    }
+
+    // --- Module 2: CIA Game Data & Logic ---
+    const ciaScenarios = [
+        { text: "Ransomware locks all the hospital's computers. Doctors can't access patient files.", type: 'A', explanation: "Correct! The data exists, but no one can get to it. Availability is lost." },
+        { text: "A student hacks the database and changes their grade from F to A.", type: 'I', explanation: "Correct! The data was tampered with. It is no longer trustworthy (Integrity)." },
+        { text: "A USB stick with unencrypted client names is found on the bus.", type: 'C', explanation: "Correct! Unauthorized people can now read the secrets. Confidentiality is lost." },
+        { text: "The power goes out at the server data center.", type: 'A', explanation: "Correct! If the servers are off, the service is not available." },
+        { text: "An employee reads the salary spreadsheet of their coworkers without permission.", type: 'C', explanation: "Correct! They were not authorized to see that info." }
+    ];
+    let ciaIndex = 0;
+
+    function loadCIA() {
+        document.getElementById('cia-scenario').innerText = ciaScenarios[ciaIndex].text;
+        document.getElementById('cia-feedback').innerText = "";
+        document.getElementById('cia-feedback').style.color = "#333";
+    }
+
+    function checkCIA(guess) {
+        const current = ciaScenarios[ciaIndex];
+        const feedback = document.getElementById('cia-feedback');
+        
+        if (guess === current.type) {
+            feedback.innerText = current.explanation;
+            feedback.style.color = "green";
+        } else {
+            feedback.innerText = "Not quite. Think again: Is it about Privacy (C), Truth (I), or Uptime (A)?";
+            feedback.style.color = "red";
+        }
+    }
+
+    function nextCIA() {
+        ciaIndex = (ciaIndex + 1) % ciaScenarios.length;
+        loadCIA();
+    }
+    loadCIA(); // Init
+
+    // --- Module 3: Phishing Data & Logic ---
+    const phishEmails = [
+        {
+            subject: "Urgent: Account Suspended",
+            sender: "support@netf1ix-verify.com",
+            body: "Dear Customer,<br><br>We could not verify your payment. Please <a href='#'>click here</a> to update details or your account will be locked.<br><br>NetFlix Support",
+            isReal: false,
+            reason: "SCAM! Look at the sender: 'netf1ix' with a number 1. Also, the generic greeting 'Dear Customer'."
+        },
+        {
+            subject: "Your Order Confirmation",
+            sender: "auto-confirm@amazon.com",
+            body: "Hi Jane,<br><br>Thanks for your order #402-221. It will arrive on Tuesday. Track your package in the app.<br><br>Amazon.com",
+            isReal: true,
+            reason: "REAL. The sender is amazon.com. It addresses you by name. It doesn't ask you to click a link urgently."
+        },
+        {
+            subject: "HR: Policy Update",
+            sender: "hr-department@company-internal.net",
+            body: "All employees,<br><br>Please review the attached PDF for the new leave policy.<br><br>Regards, HR",
+            isReal: true,
+            reason: "Likely REAL. Internal domain, expected context, standard attachment. (Though always be careful with attachments!)."
+        },
+        {
+            subject: "WINNER!!!",
+            sender: "prize@lottery-winner-global.xyz",
+            body: "YOU HAVE WON $5,000,000! Send us your bank details to claim the prize now!!!",
+            isReal: false,
+            reason: "SCAM! Too good to be true. Urgent. Weird domain (.xyz). Asking for bank details."
+        }
+    ];
+    let phishIndex = 0;
+
+    function loadPhish() {
+        const email = phishEmails[phishIndex];
+        const html = `
+            <div class="email-header">
+                <strong>From:</strong> ${email.sender}<br>
+                <strong>Subject:</strong> ${email.subject}
+            </div>
+            <div class="email-body">${email.body}</div>
+        `;
+        document.getElementById('email-display').innerHTML = html;
+        document.getElementById('phish-feedback').innerText = "";
+    }
+
+    function checkPhish(userGuessedReal) {
+        const current = phishEmails[phishIndex];
+        const feedback = document.getElementById('phish-feedback');
+        
+        if (userGuessedReal === current.isReal) {
+            feedback.innerText = "Correct! " + current.reason;
+            feedback.style.color = "green";
+            // Auto advance after 2s
+            setTimeout(() => {
+                phishIndex = (phishIndex + 1) % phishEmails.length;
+                loadPhish();
+            }, 3000);
+        } else {
+            feedback.innerText = "Wrong! " + current.reason;
+            feedback.style.color = "red";
+        }
+    }
+    loadPhish(); // Init
+
+    // --- Module 4: Password Logic ---
+    function checkStrength() {
+        const pwd = document.getElementById('pwdInput').value;
+        const bar = document.getElementById('strengthBar');
+        const text = document.getElementById('crackTime');
+        
+        let score = 0;
+        let time = "Instantly";
+        let color = "red";
+
+        // Very basic estimation logic for educational purposes
+        if (pwd.length > 0) score += 10;
+        if (pwd.length > 8) score += 20;
+        if (pwd.length > 12) score += 30;
+        if (/[A-Z]/.test(pwd)) score += 10;
+        if (/[0-9]/.test(pwd)) score += 10;
+        if (/[^A-Za-z0-9]/.test(pwd)) score += 20;
+
+        if (score < 30) {
+            time = "Instantly";
+            color = "#e74c3c"; // red
+        } else if (score < 60) {
+            time = "2 Days";
+            color = "#f39c12"; // orange
+        } else if (score < 80) {
+            time = "5 Years";
+            color = "#f1c40f"; // yellow
+        } else {
+            time = "4 Million Years";
+            color = "#27ae60"; // green
+        }
+
+        if (pwd.length === 0) {
+            bar.style.width = "0%";
+            text.innerText = "Time to crack: 0 seconds";
+        } else {
+            bar.style.width = score + "%";
+            bar.style.backgroundColor = color;
+            text.innerText = "Time to crack: ~" + time;
+            text.style.color = color;
+        }
+    }
+</script>
+
+</body>
+</html>
+
+

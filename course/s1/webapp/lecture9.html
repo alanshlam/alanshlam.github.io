@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 9: Case Studies</title>
+    <style>
+        :root {
+            --target-red: #cc0000;
+            --twitter-blue: #1da1f2;
+            --colonial-dark: #2c3e50;
+            --bg: #f4f6f7;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #34495e;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #2c3e50;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid #f1c40f; font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        /* --- Module 1: Target Sim --- */
+        .chain-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 30px;
+        }
+        .link {
+            width: 60px;
+            height: 60px;
+            background: #27ae60;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+            position: relative;
+        }
+        .link::after { content: '-'; position: absolute; right: -10px; color: #333; font-weight: bold; }
+        .link:last-child::after { content: ''; }
+        
+        .link.vendor { background: #f39c12; cursor: pointer; border: 2px dashed #d35400; animation: pulse 2s infinite; }
+        .link.breached { background: #c0392b !important; animation: none; }
+        
+        .fortress {
+            width: 100px;
+            height: 100px;
+            background: var(--target-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 10px;
+            border: 4px solid #900;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* --- Module 2: Colonial Sim --- */
+        .pipeline-box {
+            position: relative;
+            background: #333;
+            height: 150px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        .pipe {
+            height: 40px;
+            width: 100%;
+            background: #555;
+            position: relative;
+            z-index: 1;
+        }
+        .fuel {
+            height: 100%;
+            width: 100%;
+            background: #27ae60; /* Green = Gas Flowing */
+            transition: background 1s;
+        }
+        .valve {
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: #95a5a6;
+            border-radius: 50%;
+            border: 4px solid #7f8c8d;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .hacker-status { margin-top: 15px; font-weight: bold; text-align: center; }
+
+        /* --- Module 3: Twitter Chat --- */
+        .chat-window {
+            border: 1px solid #ddd;
+            background: #f5f8fa;
+            border-radius: 10px;
+            height: 300px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        .msg-them { background: #e1e8ed; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg-me { background: var(--twitter-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        
+        .chat-input-area {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .chat-btn {
+            flex: 1;
+            padding: 10px;
+            background: white;
+            border: 1px solid var(--twitter-blue);
+            color: var(--twitter-blue);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .chat-btn:hover { background: #e8f5fd; }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 9: Case Studies</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('target')">1. Target (Phishing)</button>
+    <button class="tab-btn" onclick="showSection('colonial')">2. Colonial (MFA)</button>
+    <button class="tab-btn" onclick="showSection('twitter')">3. Twitter (Vishing)</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: TARGET -->
+    <div id="target" class="section active">
+        <div class="card" style="border-top: 5px solid var(--target-red);">
+            <h2 style="color:var(--target-red);">Case 1: The Target Breach (2013)</h2>
+            <p><strong>Concept:</strong> Supply Chain Attack. The hackers didn't attack Target directly. They attacked a vendor.</p>
+            <p><strong>Goal:</strong> Click the "Weak Link" (The HVAC Vendor) to see how the breach travels.</p>
+
+            <div class="chain-container">
+                <div class="link vendor" onclick="breakChain(this)">
+                    HVAC<br>Vendor
+                </div>
+                <div class="link" id="link1">Network<br>Login</div>
+                <div class="link" id="link2">Internal<br>Server</div>
+                <div class="link" id="link3">POS<br>System</div>
+                <div class="fortress" id="fortress">
+                    TARGET<br>HQ
+                </div>
+            </div>
+            
+            <div id="target-msg" style="text-align:center; margin-top:20px; font-weight:bold; height:20px;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: COLONIAL -->
+    <div id="colonial" class="section">
+        <div class="card" style="border-top: 5px solid var(--colonial-dark);">
+            <h2 style="color:var(--colonial-dark);">Case 2: Colonial Pipeline (2021)</h2>
+            <p><strong>Concept:</strong> MFA Failure. A single old password shut down the East Coast fuel supply.</p>
+            
+            <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
+                <label><input type="radio" name="mfa" checked value="off"> MFA: OFF</label>
+                <label><input type="radio" name="mfa" value="on"> MFA: ON</label>
+            </div>
+            
+            <div class="pipeline-box">
+                <div class="pipe">
+                    <div class="fuel" id="fuel-stream"></div>
+                </div>
+                <div class="valve" onclick="hackPipeline()">
+                    <span style="font-size:2rem;">🔓</span>
+                </div>
+            </div>
+
+            <div class="hacker-status" id="pipe-status">
+                System Normal. Fuel Flowing.
+            </div>
+            <p style="text-align:center; font-size:0.8rem; color:#666;">Click the Lock (Valve) to simulate a Password Attack.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: TWITTER -->
+    <div id="twitter" class="section">
+        <div class="card" style="border-top: 5px solid var(--twitter-blue);">
+            <h2 style="color:var(--twitter-blue);">Case 3: Twitter (2020)</h2>
+            <p><strong>Concept:</strong> Social Engineering (Vishing). Can you spot the manipulation?</p>
+            
+            <div class="chat-window" id="chat">
+                <div class="msg msg-them">
+                    <strong>IT Support:</strong> Hey, this is Mike from IT. We're seeing sync issues with your VPN. Are you near your computer?
+                </div>
+            </div>
+
+            <div class="chat-input-area" id="chat-options">
+                <button class="chat-btn" onclick="reply(1)">"Yes, I'm here. What's wrong?"</button>
+                <button class="chat-btn" onclick="reply(2)">"Who is this? I'll call the helpdesk back."</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 9 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['target', 'colonial', 'twitter'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Target ---
+    function breakChain(vendor) {
+        if(vendor.classList.contains('breached')) return; // already done
+
+        vendor.classList.add('breached');
+        document.getElementById('target-msg').innerText = "Step 1: Vendor Phished. Password Stolen.";
+        document.getElementById('target-msg').style.color = "#d35400";
+
+        // Cascade effect
+        setTimeout(() => {
+            document.getElementById('link1').classList.add('breached');
+            document.getElementById('target-msg').innerText = "Step 2: Hackers enter Target Network.";
+        }, 1000);
+
+        setTimeout(() => {
+            document.getElementById('link2').classList.add('breached');
+            document.getElementById('target-msg').innerText = "Step 3: Moving sideways to Servers...";
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById('link3').classList.add('breached');
+            document.getElementById('fortress').style.background = "#333";
+            document.getElementById('fortress').innerText = "DATA\nSTOLEN";
+            document.getElementById('target-msg').innerText = "BREACH COMPLETE: 40 Million Cards Stolen.";
+            document.getElementById('target-msg').style.color = "red";
+        }, 3000);
+    }
+
+    // --- Module 2: Colonial ---
+    function hackPipeline() {
+        const mfa = document.querySelector('input[name="mfa"]:checked').value;
+        const status = document.getElementById('pipe-status');
+        const fuel = document.getElementById('fuel-stream');
+        
+        if(mfa === 'off') {
+            fuel.style.background = "#c0392b"; // Red
+            status.innerHTML = "❌ HACK SUCCESSFUL!<br>Ransomware Deployed. Pipeline Shut Down.<br>Cost: $4.4 Million.";
+            status.style.color = "#c0392b";
+        } else {
+            // MFA blocks it
+            status.innerHTML = "🛡️ ATTACK BLOCKED!<br>Password was stolen, but MFA stopped the hacker.";
+            status.style.color = "#27ae60";
+            
+            // Visual pulse of shield
+            fuel.style.opacity = 0.5;
+            setTimeout(() => { fuel.style.opacity = 1; }, 200);
+        }
+    }
+
+    // --- Module 3: Twitter ---
+    let chatStep = 0;
+
+    function reply(choice) {
+        const chat = document.getElementById('chat');
+        const opts = document.getElementById('chat-options');
+        
+        // Clear buttons
+        opts.innerHTML = "";
+
+        if(chatStep === 0) {
+            if(choice === 1) {
+                // Fell for initial hook
+                addMsg("me", "Yes, I'm here. What's wrong?");
+                setTimeout(() => {
+                    addMsg("them", "Great. We need to reset your token before the weekend or you'll be locked out. Go to twitter-vpn-support.com and log in.");
+                    showOpts([
+                        {txt: "Okay, doing it now.", val: 3},
+                        {txt: "That URL looks weird. I'm reporting this.", val: 4}
+                    ]);
+                }, 1000);
+            } else {
+                // Smart response
+                addMsg("me", "Who is this? I'll call the helpdesk back to verify.");
+                setTimeout(() => {
+                    addMsg("them", "(User disconnected)");
+                    addSystemMsg("SUCCESS: You spotted the Vishing attack! Always verify urgent requests.");
+                }, 1000);
+            }
+        } else if (chatStep === 1) {
+            // Second stage
+            if(choice === 3) {
+                addMsg("me", "Okay, doing it now.");
+                setTimeout(() => {
+                    addSystemMsg("FAIL: You just gave your password to a hacker on a fake site. The Twitter account takeover begins.");
+                }, 1000);
+            } else {
+                addMsg("me", "That URL looks weird. I'm reporting this.");
+                setTimeout(() => {
+                    addSystemMsg("SUCCESS: Good catch. Always check the URL.");
+                }, 1000);
+            }
+        }
+        
+        chatStep++;
+    }
+
+    function addMsg(who, text) {
+        const chat = document.getElementById('chat');
+        const div = document.createElement('div');
+        div.className = `msg msg-${who}`;
+        div.innerHTML = `<strong>${who==='me'?'Me':'IT Support'}:</strong> ${text}`;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addSystemMsg(text) {
+        const chat = document.getElementById('chat');
+        const div = document.createElement('div');
+        div.style.textAlign = 'center';
+        div.style.padding = '10px';
+        div.style.fontWeight = 'bold';
+        div.style.color = text.includes('SUCCESS') ? 'green' : 'red';
+        div.innerText = text;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function showOpts(options) {
+        const area = document.getElementById('chat-options');
+        options.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'chat-btn';
+            btn.innerText = o.txt;
+            btn.onclick = () => reply(o.val);
+            area.appendChild(btn);
+        });
+    }
+
+</script>
+
+</body>
+</html>

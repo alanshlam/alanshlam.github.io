@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 4: Secure Browsing</title>
+    <style>
+        :root {
+            --primary: #16a085;
+            --accent: #f39c12;
+            --danger: #c0392b;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #e8f6f3;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #0e6655;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #a3e4d7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        /* --- Module 1: URL Dissector --- */
+        .url-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .url-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        .url-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9f9;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        .domain-highlight {
+            background-color: var(--accent);
+            color: black;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+        .sub-highlight { color: #7f8c8d; }
+        .path-highlight { color: #95a5a6; font-size: 0.9em; }
+
+        /* --- Module 2: Hover Dojo --- */
+        .email-list {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+        }
+        .email-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: default;
+        }
+        .email-item:last-child { border-bottom: none; }
+        .email-link {
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* The Fake Browser Status Bar */
+        .status-bar {
+            background: #ffebb5;
+            border: 1px solid #f39c12;
+            color: #d35400;
+            padding: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+        }
+
+        /* --- Module 3: VPN Visualizer --- */
+        .vpn-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+        .laptop, .wifi, .internet {
+            font-size: 3rem;
+            z-index: 2;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        .connection-line {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 10px;
+            background: #bdc3c7; /* Default gray */
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .vpn-tunnel {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 25px;
+            background: var(--primary);
+            transform: translateY(-50%);
+            z-index: 0;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .data-packet {
+            position: absolute;
+            top: 50%;
+            left: 60px;
+            width: 15px;
+            height: 15px;
+            background: var(--danger);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            animation: moveData 2s infinite linear;
+        }
+        .data-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: white;
+            padding: 2px 5px;
+            border: 1px solid #ccc;
+        }
+
+        @keyframes moveData {
+            0% { left: 60px; }
+            100% { left: 90%; }
+        }
+
+        /* --- Module 4: HTTPS Encryptor --- */
+        .crypto-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .crypto-output {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            font-family: monospace;
+            border-radius: 5px;
+            word-break: break-all;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 4: Secure Browsing</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('urltool')">1. URL Dissector</button>
+    <button class="tab-btn" onclick="showSection('hover')">2. Hover Dojo</button>
+    <button class="tab-btn" onclick="showSection('vpn')">3. VPN Visualizer</button>
+    <button class="tab-btn" onclick="showSection('https')">4. HTTPS Lab</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: URL DISSECTOR -->
+    <div id="urltool" class="section active">
+        <div class="card">
+            <h2>The URL Dissector</h2>
+            <p>Paste or type a confusing web address. We will highlight the <strong>REAL</strong> domain.</p>
+            <p style="font-size:0.9rem; color:#666;">Try typing: <em>https://netflix.account-update.com/login</em></p>
+            
+            <div class="url-input-container">
+                <input type="text" id="urlInput" class="url-input" placeholder="Paste URL here..." value="https://www.paypal.com.security-check.net/login">
+                <button onclick="dissectURL()">Analyze</button>
+            </div>
+
+            <div class="url-display" id="urlResult">
+                Click Analyze...
+            </div>
+            <div id="url-feedback" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: HOVER DOJO (UPDATED WITH HTTPS) -->
+    <div id="hover" class="section">
+        <div class="card">
+            <h2>The Hover Dojo</h2>
+            <p><strong>Mission:</strong> Hover your mouse over the blue links (or long-press on mobile) to see the destination. Click only the SAFE one.</p>
+            <p style="font-size: 0.9rem; background: #fff3cd; padding: 10px; border-radius: 5px;">
+                ⚠️ <strong>Note:</strong> Notice that even the SCAMS use <code>https://</code>! A padlock does not mean a site is honest.
+            </p>
+            
+            <div class="email-list">
+                <!-- Email 1: Fake Amazon -->
+                <div class="email-item">
+                    <strong>From:</strong> Amazon Support<br>
+                    <p>Your order has shipped. <span class="email-link" onmouseover="showLink('https://www.amaz0n-support.net/login')" onmouseout="hideLink()" onclick="checkLink(false)">Track Package</span></p>
+                </div>
+                <!-- Email 2: Real Google Doc -->
+                <div class="email-item">
+                    <strong>From:</strong> Your Boss<br>
+                    <p>Please review the meeting notes: <span class="email-link" onmouseover="showLink('https://docs.google.com/document/d/123')" onmouseout="hideLink()" onclick="checkLink(true)">Meeting_Notes.doc</span></p>
+                </div>
+                <!-- Email 3: Fake Netflix -->
+                <div class="email-item">
+                    <strong>From:</strong> Netflix<br>
+                    <p>Payment failed. <span class="email-link" onmouseover="showLink('https://netflix.account-update.info/pay')" onmouseout="hideLink()" onclick="checkLink(false)">Update Payment</span></p>
+                </div>
+            </div>
+
+            <div id="hover-status" class="status-bar"></div>
+            <div id="click-result" style="text-align:center; font-weight:bold; margin-top:15px; min-height:1.5em;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: VPN VISUALIZER -->
+    <div id="vpn" class="section">
+        <div class="card">
+            <h2>VPN: The Tunnel</h2>
+            <p>See how a VPN protects your data on Public Wi-Fi.</p>
+            
+            <div style="text-align:center;">
+                <label style="font-size:1.2rem; cursor:pointer;">
+                    <input type="checkbox" id="vpnToggle" onchange="toggleVPN()"> 
+                    Enable VPN 🛡️
+                </label>
+            </div>
+
+            <div class="vpn-diagram">
+                <div class="laptop">💻</div>
+                
+                <div class="connection-line"></div>
+                <div class="vpn-tunnel" id="tunnel"></div>
+                
+                <div class="data-packet" id="packet">
+                    <div class="data-label" id="packetLabel">Password123</div>
+                </div>
+
+                <div class="wifi">☕<br><small>Cafe Wi-Fi</small></div>
+            </div>
+            
+            <div id="vpn-desc" style="text-align:center; font-weight:bold; color:var(--danger);">
+                Status: Unsecured. The cafe owner (or hacker) can read your data.
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: HTTPS LAB -->
+    <div id="https" class="section">
+        <div class="card">
+            <h2>HTTPS Encryption Lab</h2>
+            <p>Type a secret message. See how it looks to a hacker with and without HTTPS.</p>
+            
+            <input type="text" id="secretMsg" class="url-input" placeholder="Type a secret..." onkeyup="updateCrypto()">
+
+            <div class="crypto-box" style="margin-top:20px;">
+                <div>
+                    <strong>HTTP (Unsecured):</strong>
+                    <div class="crypto-output" style="background:#fce4ec; color:#c0392b;" id="http-out">...</div>
+                </div>
+                <div>
+                    <strong>HTTPS (Secured):</strong>
+                    <div class="crypto-output" id="https-out">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 4 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['urltool', 'hover', 'vpn', 'https'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: URL Dissector ---
+    function dissectURL() {
+        const input = document.getElementById('urlInput').value.trim();
+        const display = document.getElementById('urlResult');
+        const feedback = document.getElementById('url-feedback');
+
+        try {
+            // Add https if missing for parsing
+            let urlStr = input;
+            if(!urlStr.startsWith('http')) urlStr = 'https://' + urlStr;
+            
+            const url = new URL(urlStr);
+            const host = url.hostname;
+            
+            // Basic TLD extraction (simplified for demo)
+            const parts = host.split('.');
+            let domain = "";
+            let tld = "";
+            let sub = "";
+
+            if (parts.length >= 2) {
+                tld = parts[parts.length - 1];
+                domain = parts[parts.length - 2];
+                // Check for double TLDs like .co.uk (simplified logic)
+                if(parts.length > 2 && (tld === 'uk' || tld === 'au')) {
+                    tld = parts[parts.length - 2] + '.' + parts[parts.length - 1];
+                    domain = parts[parts.length - 3];
+                    sub = parts.slice(0, parts.length - 3).join('.');
+                } else {
+                    sub = parts.slice(0, parts.length - 2).join('.');
+                }
+            }
+
+            // Build HTML
+            let html = "";
+            if(sub) html += `<span class="sub-highlight">${sub}.</span>`;
+            html += `<span class="domain-highlight">${domain}</span>`;
+            html += `<span class="sub-highlight">.${tld}</span>`;
+            
+            display.innerHTML = html;
+            feedback.innerHTML = `You are visiting: <span style="color:var(--accent); font-size:1.2rem;">${domain.toUpperCase()}</span>`;
+
+        } catch (e) {
+            display.innerText = "Invalid URL";
+            feedback.innerText = "Please enter a valid web address.";
+        }
+    }
+
+    // --- Module 2: Hover Dojo ---
+    function showLink(url) {
+        const status = document.getElementById('hover-status');
+        status.style.display = 'block';
+        status.innerText = "Destination: " + url;
+    }
+
+    function hideLink() {
+        document.getElementById('hover-status').style.display = 'none';
+    }
+
+    function checkLink(isSafe) {
+        const res = document.getElementById('click-result');
+        if(isSafe) {
+            res.style.color = 'green';
+            res.innerText = "Correct! That link goes to a legitimate domain (google.com).";
+        } else {
+            res.style.color = 'red';
+            res.innerText = "BOOM! You clicked a phishing link. Look at the URL again!";
+        }
+    }
+
+    // --- Module 3: VPN Visualizer ---
+    function toggleVPN() {
+        const isOn = document.getElementById('vpnToggle').checked;
+        const tunnel = document.getElementById('tunnel');
+        const packetLabel = document.getElementById('packetLabel');
+        const desc = document.getElementById('vpn-desc');
+
+        if(isOn) {
+            tunnel.style.opacity = '1';
+            packetLabel.innerText = "X9#f@1"; // Encrypted
+            desc.innerText = "Status: SECURE. The cafe owner only sees a tunnel, not your data.";
+            desc.style.color = "var(--primary)";
+        } else {
+            tunnel.style.opacity = '0';
+            packetLabel.innerText = "Password123";
+            desc.innerText = "Status: Unsecured. The cafe owner (or hacker) can read your data.";
+            desc.style.color = "var(--danger)";
+        }
+    }
+
+    // --- Module 4: HTTPS Encryptor ---
+    function updateCrypto() {
+        const txt = document.getElementById('secretMsg').value;
+        const httpDiv = document.getElementById('http-out');
+        const httpsDiv = document.getElementById('https-out');
+
+        if(txt.length === 0) {
+            httpDiv.innerText = "...";
+            httpsDiv.innerText = "...";
+            return;
+        }
+
+        // HTTP shows plain text
+        httpDiv.innerText = txt;
+
+        // HTTPS shows fake hash
+        httpsDiv.innerText = pseudoHash(txt);
+    }
+
+    function pseudoHash(str) {
+        let hash = "";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        for(let i=0; i<str.length; i++) {
+            hash += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return hash + "=";
+    }
+
+</script>
+
+</body>
+</html>

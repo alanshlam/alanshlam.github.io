@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Domain Hunter v2.1</title>
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo */
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 { margin-bottom: 0.5rem; color: var(--primary); }
+        .subtitle { color: #6b7280; margin-bottom: 2rem; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 999px;
+            height: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Stats Bar */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f9fafb;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Game Area */
+        .question-area { margin-bottom: 2rem; }
+        .instruction { font-size: 1.2rem; margin-bottom: 1.5rem; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        button.domain-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Courier New', Courier, monospace; 
+            word-break: break-all;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        button.domain-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eef2ff;
+            transform: translateY(-2px);
+        }
+
+        button.domain-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        /* Result Styles */
+        .result-correct { border-color: var(--success) !important; background-color: #dcfce7 !important; color: var(--success) !important; }
+        .result-wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: var(--danger) !important; }
+
+        /* Context Box */
+        .info-box {
+            display: none; 
+            text-align: left;
+            margin-top: 2rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            animation: fadeIn 0.5s;
+            background: #f9fafb;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .info-header {
+            padding: 1rem;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        .header-correct { background-color: var(--success); }
+        .header-wrong { background-color: var(--danger); }
+
+        .info-content { padding: 1.5rem; }
+        .info-label { font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; margin-top: 12px; display: block;}
+        .info-text { margin: 4px 0 0 0; color: #1f2937; }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .action-btn:hover { background-color: #4338ca; }
+
+        /* Final Screen */
+        #finalScreen { display: none; }
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 auto 2rem auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Summary List Styles */
+        .summary-container {
+            text-align: left;
+            margin-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 2rem;
+        }
+        
+        .summary-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 6px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        .summary-card.summary-win { border-left-color: var(--success); }
+        .summary-card.summary-loss { border-left-color: var(--danger); }
+
+        .summary-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-fake-url {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .tag-correct { color: var(--success); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
+        .tag-wrong { color: var(--danger); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; background: #fee2e2; padding: 2px 8px; border-radius: 4px; }
+
+        .summary-details { color: #4b5563; font-size: 0.9rem; line-height: 1.4; }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎣 Phishing Domain Hunter</h1>
+        
+        <!-- Game Screen -->
+        <div id="gameScreen">
+            <p class="subtitle">Identify the fake domain from the updated dataset</p>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="stats">
+                <span id="scoreDisplay">Score: 0</span>
+                <span id="qCountDisplay">Question: 1 / 10</span>
+            </div>
+
+            <div class="question-area">
+                <p class="instruction">Select the <strong>FAKE</strong> domain:</p>
+                <div class="options-grid" id="optionsContainer">
+                    <button class="domain-btn" id="btn1" onclick="handleChoice(0)"></button>
+                    <button class="domain-btn" id="btn2" onclick="handleChoice(1)"></button>
+                </div>
+            </div>
+
+            <!-- Result / Context Area -->
+            <div id="resultArea" class="info-box">
+                <div id="resultHeader" class="info-header"></div>
+                <div class="info-content">
+                    <span class="info-label">Legitimate Domain</span>
+                    <p class="info-text" id="realDomainDisplay"></p>
+
+                    <span class="info-label">Variation Type</span>
+                    <p class="info-text" id="spoofTypeDisplay"></p>
+
+                    <span class="info-label">Context / Attack Details</span>
+                    <p class="info-text" id="contextDisplay"></p>
+                    
+                    <div style="text-align: center;">
+                        <button class="action-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Score Screen -->
+        <div id="finalScreen">
+            <div class="score-circle" id="finalScoreDisplay">0%</div>
+            <h2>Training Complete!</h2>
+            <p id="finalMessage">You identified X out of Y phishing domains correctly.</p>
+            
+            <button class="action-btn" onclick="initGame()">Restart Training 🔄</button>
+
+            <!-- Summary Table Area -->
+            <div class="summary-container">
+                <h3 style="color: #4b5563;">📋 Session Summary & Attack Intel</h3>
+                <div id="summaryList">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. DATA ---
+        const rawData = [
+            { fake: "goggle.com", real: "google.com", type: "Added 'g'", context: "Famous 2006 phishing site that downloaded malware; one of the earliest high-profile cases." },
+            { fake: "gooogle.com", real: "google.com", type: "Added 'o'", context: "Common variant used for phishing and ad revenue; targeted in multiple campaigns." },
+            { fake: "gogle.com", real: "google.com", type: "Omitted 'o'", context: "Character omission; redirected to malicious sites or ads." },
+            { fake: "paypa1.com", real: "paypal.com", type: "'1' for 'l'", context: "Credential theft phishing; classic substitution attack." },
+            { fake: "amazan.com", real: "amazon.com", type: "Omitted 'o'", context: "Redirected to ad-filled pages and installed PUPs (potentially unwanted programs)." },
+            { fake: "offlice365.com", real: "office365.com", type: "Added 'f'", context: "Hosted fake Microsoft login pages for credential harvesting (2024–2025)." },
+            { fake: "micrsoft.com", real: "microsoft.com", type: "Transposed 'o' and 's'", context: "Used in enterprise phishing for Office 365 credentials." },
+            { fake: "faacebook.com", real: "facebook.com", type: "Added 'a'", context: "Phishing and ad redirection; common on social media targets." },
+            { fake: "yuube.com", real: "youtube.com", type: "Omitted 't'", context: "Redirected to malware or fake extensions (reported active until 2025)." },
+            { fake: "jacqumus.com", real: "jacquemus.com", type: "Omitted 'e'", context: "2020 malware distribution targeting fashion brand users." },
+            { fake: "onedrivesync.com", real: "onedrive.com", type: "Added word ('sync')", context: "Combo-squatting variant; hosted malicious remote tools (2024)." }
+        ];
+
+        // --- 2. GAME CONFIG ---
+        const TOTAL_QUESTIONS = 10; 
+        
+        let quizPool = [];
+        let score = 0;
+        let questionIndex = 0;
+        let currentQuestion = null;
+        let currentOptions = []; 
+
+        // --- 3. DOM ELEMENTS ---
+        const gameScreen = document.getElementById('gameScreen');
+        const finalScreen = document.getElementById('finalScreen');
+        const btn1 = document.getElementById('btn1');
+        const btn2 = document.getElementById('btn2');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const qCountDisplay = document.getElementById('qCountDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const resultArea = document.getElementById('resultArea');
+        const resultHeader = document.getElementById('resultHeader');
+        const realDomainDisplay = document.getElementById('realDomainDisplay');
+        const spoofTypeDisplay = document.getElementById('spoofTypeDisplay');
+        const contextDisplay = document.getElementById('contextDisplay');
+        const nextBtn = document.getElementById('nextBtn');
+        const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+        const finalMessage = document.getElementById('finalMessage');
+        const summaryList = document.getElementById('summaryList');
+
+        // --- 4. GAME LOGIC ---
+
+        function initGame() {
+            // 1. Shuffle data deeply to ensure clean start
+            // We use JSON parse/stringify to break references so we can add 'userResult' safely
+            let deepCopy = JSON.parse(JSON.stringify(rawData));
+            let shuffled = deepCopy.sort(() => 0.5 - Math.random());
+            
+            // 2. Select top 10
+            quizPool = shuffled.slice(0, TOTAL_QUESTIONS);
+
+            // 3. Reset stats
+            score = 0;
+            questionIndex = 0;
+            
+            // 4. Show/Hide screens
+            gameScreen.style.display = 'block';
+            finalScreen.style.display = 'none';
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (questionIndex >= quizPool.length) {
+                endGame();
+                return;
+            }
+
+            // Reset UI
+            resultArea.style.display = 'none';
+            btn1.disabled = false;
+            btn2.disabled = false;
+            btn1.className = 'domain-btn';
+            btn2.className = 'domain-btn';
+
+            // Update Progress
+            qCountDisplay.textContent = `Question: ${questionIndex + 1} / ${TOTAL_QUESTIONS}`;
+            const progressPercent = ((questionIndex) / TOTAL_QUESTIONS) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            scoreDisplay.textContent = `Score: ${score}`;
+
+            // Load Data
+            currentQuestion = quizPool[questionIndex];
+
+            // Randomize Options
+            const opt1 = { text: currentQuestion.fake, isFake: true };
+            const opt2 = { text: currentQuestion.real, isFake: false };
+
+            if (Math.random() > 0.5) {
+                currentOptions = [opt1, opt2];
+            } else {
+                currentOptions = [opt2, opt1];
+            }
+
+            btn1.textContent = currentOptions[0].text;
+            btn2.textContent = currentOptions[1].text;
+        }
+
+        function handleChoice(btnIndex) {
+            const choice = currentOptions[btnIndex];
+            const isCorrect = choice.isFake;
+
+            // Save user result for the summary
+            currentQuestion.userWasCorrect = isCorrect;
+
+            btn1.disabled = true;
+            btn2.disabled = true;
+
+            if (isCorrect) score++;
+
+            // Visual Feedback
+            if (currentOptions[0].isFake) {
+                btn1.classList.add('result-correct'); 
+                btn2.classList.add('result-wrong');   
+            } else {
+                btn1.classList.add('result-wrong');
+                btn2.classList.add('result-correct');
+            }
+
+            scoreDisplay.textContent = `Score: ${score}`;
+            showResult(isCorrect, choice.text);
+        }
+
+        function showResult(isCorrect, selectedDomain) {
+            resultArea.style.display = 'block';
+
+            if (isCorrect) {
+                resultHeader.className = 'info-header header-correct';
+                resultHeader.textContent = `✅ Correct! ${selectedDomain} is the fake domain.`;
+            } else {
+                resultHeader.className = 'info-header header-wrong';
+                resultHeader.textContent = `❌ Wrong! You clicked the legitimate domain.`;
+            }
+
+            realDomainDisplay.textContent = currentQuestion.real;
+            spoofTypeDisplay.textContent = currentQuestion.type;
+            contextDisplay.textContent = currentQuestion.context;
+
+            if (questionIndex === quizPool.length - 1) {
+                nextBtn.textContent = "See Final Summary 🏁";
+            } else {
+                nextBtn.textContent = "Next Question ➡️";
+            }
+        }
+
+        function nextQuestion() {
+            questionIndex++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            gameScreen.style.display = 'none';
+            finalScreen.style.display = 'block';
+
+            const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
+            finalScoreDisplay.textContent = `${percentage}%`;
+            finalMessage.textContent = `You identified ${score} out of ${TOTAL_QUESTIONS} phishing domains correctly.`;
+
+            // --- GENERATE SUMMARY ---
+            summaryList.innerHTML = ""; // Clear old summary
+
+            quizPool.forEach(item => {
+                const card = document.createElement('div');
+                const isWin = item.userWasCorrect;
+                
+                card.className = isWin ? "summary-card summary-win" : "summary-card summary-loss";
+                
+                const statusTag = isWin 
+                    ? `<span class="tag-correct">Correct</span>` 
+                    : `<span class="tag-wrong">Missed</span>`;
+
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <span class="summary-fake-url">${item.fake}</span>
+                        ${statusTag}
+                    </div>
+                    <div class="summary-details">
+                        <strong>Type:</strong> ${item.type}<br>
+                        <strong>Intel:</strong> ${item.context}
+                    </div>
+                `;
+                summaryList.appendChild(card);
+            });
+        }
+
+        // Start
+        initGame();
+
+    </script>
+</body>
+</html>

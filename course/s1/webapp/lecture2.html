@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 2: Locking Down Devices</title>
+    <style>
+        :root {
+            --primary: #2980b9;
+            --accent: #f1c40f;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --bg: #ecf0f1;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav h1 { margin: 0; font-size: 1.4rem; }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #34495e;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* --- Module 1: Patch It Game --- */
+        .game-area {
+            height: 250px;
+            background: #2c3e50;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .bug {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        
+        .game-ui { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-start { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+        .btn-start:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* --- Module 2: PIN Logic --- */
+        .pin-visualizer {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pin-box {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 40%;
+            transition: 0.3s;
+        }
+        .pin-number { font-size: 2.5rem; color: var(--primary); font-weight: bold; display: block; }
+        .pin-label { color: #7f8c8d; font-size: 0.9rem; }
+        .pin-bar-container { height: 10px; background: #ddd; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .pin-bar { height: 100%; background: var(--accent); width: 0%; transition: 1s width ease-out; }
+
+        /* --- Module 3: Permission Judge --- */
+        .perm-scenario {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .perm-buttons { display: flex; gap: 10px; justify-content: center; }
+        .btn-allow { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+        .btn-deny { background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+
+        /* --- Module 4: Checklist --- */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .checklist-item:hover { background: #e0e6e8; }
+        .checklist-item.checked { background: #d5f5e3; text-decoration: line-through; color: #7f8c8d; }
+        .checkbox {
+            width: 20px; height: 20px; border: 2px solid var(--primary); border-radius: 4px; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .checklist-item.checked .checkbox { background: var(--success); border-color: var(--success); }
+        .checklist-item.checked .checkbox::after { content: '✓'; color: white; font-weight: bold; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #bdc3c7;
+            color: var(--text);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 2: Protecting Devices</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('game')">1. Patch It Game</button>
+    <button class="tab-btn" onclick="showSection('pin')">2. PIN Math</button>
+    <button class="tab-btn" onclick="showSection('perms')">3. App Judge</button>
+    <button class="tab-btn" onclick="showSection('audit')">4. Action Plan</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: PATCH IT GAME -->
+    <div id="game" class="section active">
+        <div class="card">
+            <h2>Why Updates Matter</h2>
+            <p>Software has holes (bugs). Hackers use them to get in. Updates "patch" these holes.</p>
+            <p><strong>Goal:</strong> Click the red bugs (🐛) to patch them before the timer runs out!</p>
+            
+            <div class="game-ui">
+                <span id="score">Patched: 0</span>
+                <button class="btn-start" onclick="startGame()">Start Game</button>
+                <span id="timer">Time: 10s</span>
+            </div>
+            
+            <div class="game-area" id="gameArea" onclick="clickArea(event)">
+                <div style="text-align:center; padding-top:100px; color:rgba(255,255,255,0.5); pointer-events:none;">
+                    Area Secure
+                </div>
+            </div>
+            <div id="game-msg" style="text-align:center; font-weight:bold; height:20px;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: PIN MATH -->
+    <div id="pin" class="section">
+        <div class="card">
+            <h2>The Power of 6 Digits</h2>
+            <p>Why do we recommend a 6-digit PIN over a 4-digit one? The math is shocking.</p>
+            
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="btn-start" onclick="animatePin()">Run Comparison</button>
+            </div>
+
+            <div class="pin-visualizer">
+                <div class="pin-box">
+                    <span class="pin-number">4</span>
+                    <span class="pin-label">Digits</span>
+                    <div style="margin:10px 0; font-weight:bold;">10,000</div>
+                    <span class="pin-label">Combinations</span>
+                    <div class="pin-bar-container"><div id="bar4" class="pin-bar"></div></div>
+                    <p style="font-size:0.8rem; color:#e74c3c;">Cracked in ~11 min</p>
+                </div>
+
+                <div class="pin-box">
+                    <span class="pin-number">6</span>
+                    <span class="pin-label">Digits</span>
+                    <div style="margin:10px 0; font-weight:bold;">1,000,000</div>
+                    <span class="pin-label">Combinations</span>
+                    <div class="pin-bar-container"><div id="bar6" class="pin-bar"></div></div>
+                    <p style="font-size:0.8rem; color:#27ae60;">Cracked in ~20 hours</p>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:20px; font-style:italic;">
+                Adding just 2 digits makes it <strong>100 times</strong> harder to guess!
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: APP JUDGE -->
+    <div id="perms" class="section">
+        <div class="card">
+            <h2>The Permission Judge</h2>
+            <p>Apps ask for access to your data. Should you allow it?</p>
+            
+            <div class="perm-scenario" id="permScenario">
+                Loading Scenario...
+            </div>
+
+            <div class="perm-buttons">
+                <button class="btn-allow" onclick="judge(true)">Allow ✅</button>
+                <button class="btn-deny" onclick="judge(false)">Deny ❌</button>
+            </div>
+            <div id="perm-feedback" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: AUDIT -->
+    <div id="audit" class="section">
+        <div class="card">
+            <h2>Your Security Checklist</h2>
+            <p>Pick one device right now. Can you check all these boxes?</p>
+            
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>Screen Lock is ON</strong><br>
+                    <small>FaceID, Fingerprint, or 6-digit PIN.</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>Auto-Updates are ON</strong><br>
+                    <small>Settings > General > Software Update > Automatic.</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>"Find My" is Enabled</strong><br>
+                    <small>Allows you to wipe data if lost.</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>Clean House</strong><br>
+                    <small>I've deleted apps I haven't used in 6 months.</small>
+                </div>
+            </div>
+            
+            <p style="text-align:center; color: var(--success); font-weight:bold; display:none;" id="audit-complete">
+                🎉 Great job! Your device is secure.
+            </p>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 2 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['game', 'pin', 'perms', 'audit'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Patch Game ---
+    let score = 0;
+    let gameActive = false;
+    let timer = 10;
+    let gameInterval;
+    let bugInterval;
+
+    function startGame() {
+        if(gameActive) return;
+        gameActive = true;
+        score = 0;
+        timer = 15;
+        document.getElementById('score').innerText = "Patched: 0";
+        document.getElementById('game-msg').innerText = "";
+        document.querySelector('.btn-start').disabled = true;
+
+        // Timer
+        gameInterval = setInterval(() => {
+            timer--;
+            document.getElementById('timer').innerText = "Time: " + timer + "s";
+            if(timer <= 0) endGame();
+        }, 1000);
+
+        // Spawn Bugs
+        bugInterval = setInterval(spawnBug, 800);
+    }
+
+    function spawnBug() {
+        if(!gameActive) return;
+        const bug = document.createElement('div');
+        bug.classList.add('bug');
+        bug.innerHTML = "🐛";
+        
+        // Random Position
+        const area = document.getElementById('gameArea');
+        const x = Math.random() * (area.clientWidth - 40);
+        const y = Math.random() * (area.clientHeight - 40);
+        bug.style.left = x + 'px';
+        bug.style.top = y + 'px';
+        
+        bug.onclick = (e) => {
+            e.stopPropagation();
+            score++;
+            document.getElementById('score').innerText = "Patched: " + score;
+            bug.remove();
+        };
+
+        area.appendChild(bug);
+        
+        // Remove bug if not clicked
+        setTimeout(() => { if(bug.parentNode) bug.remove(); }, 1500);
+    }
+
+    function endGame() {
+        gameActive = false;
+        clearInterval(gameInterval);
+        clearInterval(bugInterval);
+        document.querySelector('.btn-start').disabled = false;
+        
+        // Clear remaining bugs
+        document.querySelectorAll('.bug').forEach(b => b.remove());
+        
+        let msg = "";
+        if(score > 10) msg = "Great job! Your system is patched.";
+        else msg = "Too many bugs missed! Try to update faster.";
+        
+        document.getElementById('game-msg').innerText = msg;
+        document.getElementById('game-msg').style.color = score > 10 ? "green" : "red";
+    }
+
+    // --- Module 2: PIN Animation ---
+    function animatePin() {
+        // Reset
+        document.getElementById('bar4').style.width = '0%';
+        document.getElementById('bar6').style.width = '0%';
+        
+        setTimeout(() => {
+            document.getElementById('bar4').style.width = '5%'; // Tiny bar
+            document.getElementById('bar6').style.width = '100%'; // Full bar
+        }, 100);
+    }
+
+    // --- Module 3: Permissions Logic ---
+    const scenarios = [
+        { text: "A simple Calculator App asks for access to your 'Contacts'.", allow: false, reason: "Why does a calculator need to call your friends? Deny it." },
+        { text: "Google Maps asks for access to your 'Location'.", allow: true, reason: "Maps needs location to work. This is safe." },
+        { text: "A Flashlight App asks for access to your 'Microphone'.", allow: false, reason: "A flashlight doesn't need to listen to you. Spyware alert!" },
+        { text: "Instagram asks for access to your 'Photos'.", allow: true, reason: "If you want to post photos, it needs access. Safe." }
+    ];
+    let permIndex = 0;
+
+    function loadScenario() {
+        document.getElementById('permScenario').innerText = scenarios[permIndex].text;
+        document.getElementById('perm-feedback').innerText = "";
+    }
+
+    function judge(allowed) {
+        const current = scenarios[permIndex];
+        const feedback = document.getElementById('perm-feedback');
+        
+        if(allowed === current.allow) {
+            feedback.innerText = "Correct! " + current.reason;
+            feedback.style.color = "green";
+            setTimeout(() => {
+                permIndex = (permIndex + 1) % scenarios.length;
+                loadScenario();
+            }, 3000);
+        } else {
+            feedback.innerText = "Wrong decision. " + current.reason;
+            feedback.style.color = "red";
+        }
+    }
+    loadScenario();
+
+    // --- Module 4: Checklist ---
+    function toggleCheck(el) {
+        el.classList.toggle('checked');
+        
+        // Check if all are checked
+        const total = document.querySelectorAll('.checklist-item').length;
+        const checked = document.querySelectorAll('.checklist-item.checked').length;
+        const msg = document.getElementById('audit-complete');
+        
+        if(total === checked) msg.style.display = "block";
+        else msg.style.display = "none";
+    }
+
+</script>
+
+</body>
+</html>

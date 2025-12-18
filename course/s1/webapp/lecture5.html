@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSec Lecture 5: Email & Transactions</title>
+    <style>
+        :root {
+            --primary: #8e44ad; /* Purple for royalty/money/identity */
+            --accent: #2ecc71;
+            --danger: #c0392b;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f6f7;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #6c3483;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #d7bde2;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        /* --- Module 1: Spear Phishing --- */
+        .email-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 600px) { .email-comparison { grid-template-columns: 1fr; } }
+
+        .email-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .spear-highlight {
+            background-color: #f9e79f;
+            cursor: help;
+            border-bottom: 2px dotted #f39c12;
+            position: relative;
+        }
+        .spear-highlight:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* --- Module 2: Attachment Scanner --- */
+        .file-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .file-icon {
+            width: 80px;
+            height: 100px;
+            background: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+        .file-icon:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .ext { font-weight: bold; font-size: 1.2rem; color: #7f8c8d; }
+        .fname { font-size: 0.7rem; margin-top: 5px; }
+        
+        .scan-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+        .scan-danger { background: #fadbd8; color: var(--danger); border: 1px solid var(--danger); }
+        .scan-warn { background: #fcf3cf; color: #d35400; border: 1px solid #f39c12; }
+
+        /* --- Module 3: Wallet Lab (Credit vs Debit) --- */
+        .wallet-lab {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .card-type {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            background: white;
+        }
+        .card-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .money-bar { width: 100%; height: 20px; background: #2ecc71; border-radius: 10px; margin: 10px 0; transition: width 1s; }
+        .shield {
+            position: absolute; top: 10px; right: 10px; font-size: 1.5rem; opacity: 0; transition: 0.5s;
+        }
+        .hacker-hand {
+            position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); font-size: 2rem; opacity: 0; transition: 0.5s;
+        }
+
+        /* --- Module 4: Scam Store --- */
+        .product-display {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            width: 45%;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .product:hover { box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .price-tag { font-size: 1.5rem; color: var(--danger); font-weight: bold; margin: 10px 0; }
+        .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; }
+        .url-mock { background: #eee; padding: 2px; font-family: monospace; font-size: 0.7rem; border-radius: 4px; margin-bottom: 5px; display:block;}
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+        
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button.btn-danger { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Lecture 5: Email & Transactions</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('spear')">1. The Spear</button>
+    <button class="tab-btn" onclick="showSection('files')">2. File Scanner</button>
+    <button class="tab-btn" onclick="showSection('wallet')">3. Wallet Lab</button>
+    <button class="tab-btn" onclick="showSection('store')">4. Scam Store</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: SPEAR PHISHING -->
+    <div id="spear" class="section active">
+        <div class="card">
+            <h2>Generic vs. Spear Phishing</h2>
+            <p><strong>Generic Phishing</strong> is like a fishing net cast wide. <strong>Spear Phishing</strong> is a sniper shot aimed at YOU.</p>
+            <p style="font-size:0.9rem; color:#666;">Hover over the highlighted text in the Spear Phishing email to see how they tricked you.</p>
+
+            <div class="email-comparison">
+                <!-- Generic -->
+                <div class="email-box">
+                    <h3 style="color:#7f8c8d;">Generic Attempt</h3>
+                    <div style="font-size:0.8rem; border-bottom:1px solid #eee; margin-bottom:10px;">
+                        <strong>From:</strong> service@bank-alert-123.com<br>
+                        <strong>Subject:</strong> URGENT!!
+                    </div>
+                    <p>Dear Customer,</p>
+                    <p>Your account is locked. Click here now.</p>
+                    <button style="background:#999; cursor:not-allowed;">Fake Link</button>
+                </div>
+
+                <!-- Spear -->
+                <div class="email-box" style="border-color:var(--danger); background:#fff9f9;">
+                    <h3 style="color:var(--danger);">Spear Phishing</h3>
+                    <div style="font-size:0.8rem; border-bottom:1px solid #ccc; margin-bottom:10px;">
+                        <strong>From:</strong> it-support@<span class="spear-highlight" data-tooltip="Looks like your company!">compary-internal.net</span><br>
+                        <strong>Subject:</strong> Password Update
+                    </div>
+                    <p>Hi <span class="spear-highlight" data-tooltip="They know your real name from LinkedIn!">Jane</span>,</p>
+                    <p>Per the new <span class="spear-highlight" data-tooltip="They researched your employer!">Acme Corp</span> security policy, please validate your login.</p>
+                    <button style="background:var(--danger);">Malicious Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: FILE SCANNER -->
+    <div id="files" class="section">
+        <div class="card">
+            <h2>Attachment Hazard Scanner</h2>
+            <p>Click a file to scan it for danger.</p>
+            
+            <div class="file-grid">
+                <!-- Exe -->
+                <div class="file-icon" onclick="scanFile('exe')">
+                    <span class="ext" style="color:#e74c3c;">.EXE</span>
+                    <span class="fname">Game_Installer</span>
+                </div>
+                <!-- Zip -->
+                <div class="file-icon" onclick="scanFile('zip')">
+                    <span class="ext" style="color:#f39c12;">.ZIP</span>
+                    <span class="fname">Photos_v2</span>
+                </div>
+                <!-- Docx -->
+                <div class="file-icon" onclick="scanFile('doc')">
+                    <span class="ext" style="color:#3498db;">.DOCX</span>
+                    <span class="fname">Invoice_99</span>
+                </div>
+                <!-- PDF -->
+                <div class="file-icon" onclick="scanFile('pdf')">
+                    <span class="ext" style="color:#e74c3c;">.PDF</span>
+                    <span class="fname">Report_Final</span>
+                </div>
+            </div>
+
+            <div id="scan-output" class="scan-result"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: WALLET LAB -->
+    <div id="wallet" class="section">
+        <div class="card">
+            <h2>Credit vs. Debit: The Liability Lab</h2>
+            <p>See what happens when a hacker steals your card info. Click "Simulate Fraud".</p>
+
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="btn-danger" onclick="simulateFraud()">Simulate Fraud Attack 🦹</button>
+                <button onclick="resetFraud()">Reset</button>
+            </div>
+
+            <div class="wallet-lab">
+                <!-- Debit -->
+                <div class="card-type" id="debit-card">
+                    <div class="card-icon">💳</div>
+                    <h3>Debit Card</h3>
+                    <p style="font-size:0.8rem;">Linked to Checking Acc.</p>
+                    <div style="text-align:left; font-size:0.8rem;">Your Money:</div>
+                    <div class="money-bar" id="debit-bar"></div>
+                    <div id="debit-msg" style="height:40px; color:#c0392b; font-weight:bold; font-size:0.8rem;"></div>
+                    <div class="hacker-hand" id="debit-hand">🦹</div>
+                </div>
+
+                <!-- Credit -->
+                <div class="card-type" id="credit-card">
+                    <div class="card-icon">💳</div>
+                    <h3>Credit Card</h3>
+                    <p style="font-size:0.8rem;">The Bank's Money</p>
+                    <div style="text-align:left; font-size:0.8rem;">Your Money:</div>
+                    <div class="money-bar" id="credit-bar"></div>
+                    <div class="shield" id="credit-shield">🛡️</div>
+                    <div id="credit-msg" style="height:40px; color:#2ecc71; font-weight:bold; font-size:0.8rem;"></div>
+                    <div class="hacker-hand" id="credit-hand">🦹</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: SCAM STORE -->
+    <div id="store" class="section">
+        <div class="card">
+            <h2>The "Too Good To Be True" Test</h2>
+            <p>You want to buy a luxury watch (Retail $500). Which store is safe?</p>
+            
+            <div class="product-display">
+                <!-- Fake Store -->
+                <div class="product" onclick="checkStore(false)">
+                    <div class="url-mock">http://luxury-watch-discount-outlet.xyz</div>
+                    <h3>Rolex (Super Sale)</h3>
+                    <div class="price-tag">$49.99</div>
+                    <div class="old-price">$500.00</div>
+                    <p style="color:red; font-weight:bold;">Ending in 04:59!</p>
+                    <button style="width:100%;">Buy Now</button>
+                </div>
+
+                <!-- Real Store -->
+                <div class="product" onclick="checkStore(true)">
+                    <div class="url-mock">https://www.watch-official.com</div>
+                    <h3>Rolex (Standard)</h3>
+                    <div class="price-tag">$500.00</div>
+                    <div class="old-price"></div>
+                    <p style="color:green;">In Stock</p>
+                    <button style="width:100%;">Buy Now</button>
+                </div>
+            </div>
+            <div id="store-result" style="text-align:center; margin-top:20px; font-weight:bold; font-size:1.1rem;"></div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    Network Security Course - Lecture 5 Companion App
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['spear', 'files', 'wallet', 'store'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 2: File Scanner ---
+    function scanFile(type) {
+        const out = document.getElementById('scan-output');
+        out.style.display = 'block';
+        out.className = 'scan-result'; // reset
+
+        if (type === 'exe') {
+            out.classList.add('scan-danger');
+            out.innerHTML = "⚠️ <strong>DANGER:</strong> An .EXE is a program. It can install viruses instantly. Never open unless you are 100% sure.";
+        } else if (type === 'zip') {
+            out.classList.add('scan-warn');
+            out.innerHTML = "⚠️ <strong>CAUTION:</strong> A .ZIP file hides its contents. It often contains malware. Scan it with antivirus first.";
+        } else if (type === 'doc' || type === 'pdf') {
+            out.classList.add('scan-warn');
+            out.innerHTML = "⚠️ <strong>WARNING:</strong> Even Docs and PDFs can contain malicious 'Macros'. Verify with the sender before opening!";
+        }
+    }
+
+    // --- Module 3: Wallet Lab ---
+    function simulateFraud() {
+        // Debit: Lose Money
+        document.getElementById('debit-bar').style.width = "0%";
+        document.getElementById('debit-bar').style.background = "#e74c3c";
+        document.getElementById('debit-msg').innerText = "CASH GONE! It was your money.";
+        
+        // Credit: Shield Up
+        document.getElementById('credit-shield').style.opacity = "1";
+        document.getElementById('credit-msg').innerText = "SAFE! The bank fights the fraud.";
+        
+        // Show Hackers
+        document.getElementById('debit-hand').style.opacity = "1";
+        document.getElementById('credit-hand').style.opacity = "1";
+        document.getElementById('credit-hand').style.color = "red"; // blocked
+    }
+
+    function resetFraud() {
+        document.getElementById('debit-bar').style.width = "100%";
+        document.getElementById('debit-bar').style.background = "#2ecc71";
+        document.getElementById('debit-msg').innerText = "";
+        
+        document.getElementById('credit-shield').style.opacity = "0";
+        document.getElementById('credit-msg').innerText = "";
+
+        document.getElementById('debit-hand').style.opacity = "0";
+        document.getElementById('credit-hand').style.opacity = "0";
+    }
+
+    // --- Module 4: Scam Store ---
+    function checkStore(isReal) {
+        const res = document.getElementById('store-result');
+        if(isReal) {
+            res.style.color = "green";
+            res.innerText = "Correct! The price is realistic and the URL is official.";
+        } else {
+            res.style.color = "red";
+            res.innerText = "SCAM ALERT! 90% off usually means it's fake. Plus, did you see the weird URL?";
+        }
+    }
+</script>
+
+</body>
+</html>
