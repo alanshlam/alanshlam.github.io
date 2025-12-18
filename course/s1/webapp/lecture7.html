@@ -164,8 +164,15 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             cursor: pointer;
+            
+            /* FIX: Explicitly set text color to dark to override global button white text */
+            color: var(--dark); 
+            font-weight: bold;
         }
-        .quiz-option:hover { background: #e5e8e8; }
+        .quiz-option:hover { 
+            background: #e5e8e8; 
+            border-color: #bdc3c7;
+        }
 
         footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
     </style>
