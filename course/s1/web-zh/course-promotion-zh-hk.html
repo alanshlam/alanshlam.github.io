@@ -7,7 +7,8 @@
     <style>
         :root {
             --primary-color: #2c3e50;
-            --accent-color: #e74c3c;
+            --accent-color: #c0392b; /* Urgent Red */
+            --highlight-color: #d35400; /* Orange for numbers */
             --bg-color: #f4f4f9;
             --text-color: #333;
             --card-bg: #fff;
@@ -107,24 +108,39 @@
         }
 
         ul, ol {
-            line-height: 1.6;
+            line-height: 1.5;
+            margin: 10px 0;
         }
 
         li {
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
-        .stat-box {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 0 5px 5px 0;
+        .stat-container {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
         }
-        .stat-number {
-            font-size: 1.4em;
+        .stat-box {
+            flex: 1;
+            background: #fff8e1;
+            border-top: 4px solid var(--highlight-color);
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .stat-header {
             font-weight: bold;
-            color: #d35400;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .big-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--accent-color);
         }
 
         .controls {
@@ -152,7 +168,7 @@
         }
 
         button:hover {
-            background-color: #c0392b;
+            background-color: #a93226;
         }
 
         button:disabled {
@@ -184,6 +200,9 @@
             }
             .text-container {
                 padding: 20px;
+            }
+            .stat-container {
+                flex-direction: column;
             }
             .controls {
                 flex-wrap: wrap;
@@ -237,19 +256,31 @@
         {
             id: 2,
             html: `
-                <h3>威脅真實存在：數字會說話</h3>
+                <h3>香港網絡犯罪趨勢 (2024-2025)</h3>
                 
-                <div class="stat-box">
-                    <div class="stat-number">全球影響</div>
-                    預計到 2025 年，網絡犯罪每年將給全球帶來 <strong>10.5 兆美元</strong>的損失。
+                <div class="stat-container">
+                    <div class="stat-box">
+                        <div class="stat-header">HKCERT (2024年報告)</div>
+                        <ul>
+                            <li>總事件數：<strong>12,536</strong></li>
+                            <li>釣魚案件：<strong>7,811</strong></li>
+                            <li>釣魚案件同比增長 <span class="big-number">+108%</span>。</li>
+                            <li><em>釣魚仍然是主要威脅。</em></li>
+                        </ul>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-header">香港警方 (2025年1月-7月)</div>
+                        <ul>
+                            <li>財務損失：</li>
+                            <li><span class="big-number">> 36億港元</span></li>
+                            <li>每年損失數十億的趨勢持續。</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="stat-box">
-                    <div class="stat-number">香港情況</div>
-                    香港電腦保安事故協調中心（HKCERT）報告指出，釣魚和科技罪案<strong>顯著激增</strong>，每年造成的損失高達數十億港元。
-                </div>
-
-                <p><em>每 39 秒，就有一次黑客攻擊。下一個會是您嗎？</em></p>
+                <p style="font-size:0.9em; margin-top:10px;">
+                    <strong>解讀：</strong>香港的科技犯罪正迅速升級，對您這樣的個人造成持續的經濟影響。
+                </p>
             `
         },
         {
