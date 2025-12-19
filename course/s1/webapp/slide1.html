@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security for Daily Life</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Smooth transition for background when toggling fullscreen */
+            transition: background-color 0.3s; 
+        }
+
+        /* Specific style when in full screen mode to focus attention */
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        /* Safari prefix support */
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            /* Ensure container doesn't get too tall on small screens */
+            max-height: 90vh; 
+        }
+
+        /* Slide View Area */
+        .slide-content {
+            display: flex;
+            flex-direction: row; /* Side by side on desktop */
+            min-height: 500px;
+            /* Allow scrolling within content if needed, but keep container fixed */
+            overflow: hidden; 
+        }
+
+        /* Image Section */
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        /* Text Section Layout */
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes footer to bottom */
+            position: relative;
+            background-color: white;
+        }
+
+        /* The dynamic text area */
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px; /* Space for scrollbar */
+        }
+
+        /* The Slide Footnote */
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Specific Styling for specific slides */
+        .fake-email {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 15px 0;
+        }
+
+        .ransomware-alert {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        /* Question Slide Styling */
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        /* Controls Bar */
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        /* Button Styling */
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Specific style for the Full Screen button */
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <!-- Image Area -->
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="Presentation Visual">
+        </div>
+
+        <!-- Text Area (Right Side) -->
+        <div class="text-container">
+            <!-- Dynamic Slide Content Injection Point -->
+            <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Fixed Footnote -->
+            <div class="slide-footer">
+                Daily Cyber Security Essentials and Emergency Response
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; Previous</button>
+        
+        <span class="progress" id="slide-counter">1 / 11</span>
+        
+        <button id="nextBtn" onclick="changeSlide(1)">Next &#8594;</button>
+
+        <!-- Spacer -->
+        <div style="flex-grow:1"></div>
+
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; Full Screen</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p1-";
+    
+    // --- Slide Content Data ---
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>Network Security for Daily Life</h1>
+                <hr>
+                <h2>Lecture 1: Understanding the Landscape</h2>
+                <p><strong>A guide to protecting your digital home.</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h2>Today's Agenda</h2>
+                <p><strong>Lecture 1: Understanding the Landscape</strong></p>
+                <ul>
+                    <li>What is Network Security?</li>
+                    <li>The "Digital House" Analogy</li>
+                    <li>Common Risks: Phishing, Malware, and More</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h1>Lecture 1: Concepts of Network Security and Common Risks</h1>
+                <hr>
+                <p>Let's dive into the core concepts.</p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>Let's Think About Security Like a House</h3>
+                <ul>
+                    <li><strong>Your Devices</strong> are your house.</li>
+                    <li><strong>Your Information</strong> (data) is your valuables.</li>
+                    <li><strong>The Internet</strong> is the neighborhood.</li>
+                </ul>
+                <p style="background:#e8f4fc; padding:10px; border-radius:5px;"><strong>Network Security is how you lock your digital doors and windows.</strong></p>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>What Are We Protecting? The Three Pillars</h3>
+                <ol>
+                    <li><strong>Confidentiality (Keeping Secrets)</strong>
+                        <br>Ensuring only the right people can see your information.
+                    </li>
+                    <li><strong>Integrity (Keeping it Real)</strong>
+                        <br>Ensuring your information isn't changed without your permission.
+                    </li>
+                    <li><strong>Availability (Keeping it Working)</strong>
+                        <br>Ensuring you can access your information when you need it.
+                    </li>
+                </ol>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h2>Common Risk #1: Phishing</h2>
+                <p><em>(The Impersonator)</em></p>
+                <ul>
+                    <li><strong>What it is:</strong> A scam to trick you into giving up your passwords or financial info.</li>
+                    <li><strong>How it works:</strong> A fake email or text pretending to be from a trusted company (your bank, Netflix, Microsoft).</li>
+                    <li><strong>The Goal:</strong> To get you to click a link and enter your login details on a fake website.</li>
+                </ul>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>Phishing Example</h3>
+                <div class="fake-email">
+                    <p><strong>From:</strong> Netfl1x-support@some-random-domain.com</p>
+                    <p><strong>Subject:</strong> Urgent! Your Account is On Hold</p>
+                    <hr>
+                    <p>"Dear Customer,<br>
+                    We were unable to process your last payment. Please update your details to avoid suspension. Click here: [link to a fake site]"</p>
+                </div>
+                <p style="color:red;"><strong>Red Flags: Sense of urgency, generic greeting, strange sender email.</strong></p>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h2>Common Risk #2: Malware</h2>
+                <p><em>(Malicious Software)</em></p>
+                <p><strong>Software designed to harm your computer or steal your data.</strong></p>
+                <ul>
+                    <li><strong>Viruses:</strong> Infect files and spread from computer to computer.</li>
+                    <li><strong>Ransomware:</strong> Locks your files and demands money (a ransom) to get them back.</li>
+                </ul>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>Ransomware Example</h3>
+                <div class="ransomware-alert">
+                    <p>Your Files Have Been Encrypted!</p>
+                </div>
+                <p>"All your photos, documents, and videos have been locked. To get the key to unlock them, you must send $500 in Bitcoin to this address within 72 hours. After that, your files will be deleted forever."</p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h2>Other Common Risks</h2>
+                
+                <h3>Weak Passwords</h3>
+                <ul>
+                    <li>Easy-to-guess passwords like <code>123456</code> or <code>password</code>.</li>
+                    <li>Hackers use computers to guess billions of passwords a second.</li>
+                    <li><strong>Using the same password everywhere is a huge risk!</strong></li>
+                </ul>
+
+                <h3>Unsecured Wi-Fi</h3>
+                <ul>
+                    <li>Free, open Wi-Fi at places like cafes and airports.</li>
+                    <li>Criminals on the same network can "eavesdrop" and steal your information.</li>
+                </ul>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>Any Questions?</h1>
+                    <hr>
+                    <p>Thank you for listening!</p>
+                    <p>The floor is now open for any questions regarding today's topics.</p>
+                </div>
+            `
+        }
+    ];
+
+    // --- Logic ---
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        // 1. Update Content
+        textElement.innerHTML = slides[index].html;
+        
+        // 2. Update Image URL
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+
+        // 3. Update Counter
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+
+        // 4. Update Button States
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    // --- Full Screen Logic ---
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; Exit Full Screen";
+        } else {
+            fsBtn.innerHTML = "&#9974; Full Screen";
+        }
+    });
+
+    // Initialize Keyboard Navigation
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    // Initial Load
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>

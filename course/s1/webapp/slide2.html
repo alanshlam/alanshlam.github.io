@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security - Lecture 2</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Styling for the checklist slide */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .checklist-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-color);
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        /* Controls Bar */
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <!-- Image Area -->
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="Presentation Visual">
+        </div>
+
+        <!-- Text Area (Right Side) -->
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Fixed Footnote -->
+            <div class="slide-footer">
+                Daily Cyber Security Essentials and Emergency Response
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; Previous</button>
+        <span class="progress" id="slide-counter">1 / 11</span>
+        <button id="nextBtn" onclick="changeSlide(1)">Next &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; Full Screen</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    // Note: Updated to 'p2-' for Lecture 2 images
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p2-";
+    
+    // --- Slide Content Data ---
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>Network Security for Daily Life</h1>
+                <hr>
+                <h2>Lecture 2: Building Your Defenses</h2>
+                <p><strong>Part 2: Essential habits to keep your devices safe.</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h2>Today's Agenda</h2>
+                <p><strong>Lecture 2: Building Your Defenses</strong></p>
+                <ul>
+                    <li>The 4 Essential Security Habits</li>
+                    <li>Protecting Your Computer & Smartphone</li>
+                    <li>A Simple Checklist to Keep You Safe</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h1>Lecture 2: Basic Methods for Protecting Your Devices</h1>
+                <hr>
+                <p>Moving from understanding the risks to building your defenses.</p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>From Risks to Defense</h3>
+                <p>Last time, we met the "bad guys." Now, we build our defenses.</p>
+                <p><strong>The Four Essential Habits for Every Device:</strong></p>
+                <ol>
+                    <li>Use a Strong Screen Lock</li>
+                    <li>Keep Your Software Updated</li>
+                    <li>Use Security Software</li>
+                    <li>Be Smart About Apps</li>
+                </ol>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>Habit 1: Use a Strong Screen Lock</h3>
+                <p>This is your digital front door. Keep it locked!</p>
+                <ul>
+                    <li><strong>Use Biometrics:</strong> Face ID or Fingerprint is best.</li>
+                    <li><strong>Use a good PIN/Passcode:</strong>
+                        <ul>
+                            <li><strong>6 digits</strong> is 100x stronger than 4 digits.</li>
+                            <li>Avoid obvious dates or sequences.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Enable Auto-Lock:</strong> Set your screen to lock after 1-5 minutes of inactivity.</li>
+                </ul>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>Habit 2: Keep Your Software Updated</h3>
+                <p>Updates fix security holes before criminals can use them.</p>
+                <div style="background:#e8f4fc; padding:15px; border-radius:5px; margin: 15px 0;">
+                    <strong>The Golden Rule: TURN ON AUTOMATIC UPDATES!</strong>
+                </div>
+                <ul>
+                    <li>This is the single most important "set it and forget it" action you can take.</li>
+                    <li>Applies to your phone's OS (iOS/Android), computer's OS (Windows/Mac), and your applications.</li>
+                </ul>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>Habit 3: Use Security Software</h3>
+                <p>Your digital guard dog, watching for threats.</p>
+                <ul>
+                    <li><strong>Computers:</strong> The built-in tools are great!
+                        <ul>
+                            <li><strong>Windows Security (Defender)</strong> is on by default and it's excellent.</li>
+                            <li><strong>macOS</strong> also has strong, built-in protection.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Smartphones:</strong> You don't need extra antivirus <strong>IF</strong> you stick to official app stores.</li>
+                </ul>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>Habit 4: Be Smart About Apps</h3>
+                <p>The easiest way malware gets in is when you invite it.</p>
+                <ul>
+                    <li><strong>Stick to Official App Stores ONLY.</strong>
+                        <br>(Apple App Store & Google Play Store)
+                    </li>
+                    <li><strong>Check App Permissions:</strong> 
+                        <br>Does that simple game <em>really</em> need access to your contacts and microphone? If it feels wrong, deny the permission.
+                    </li>
+                </ul>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>Lifesaving Tip: Enable "Find My Device"</h3>
+                <p>For a lost or stolen phone, this is your remote control.</p>
+                <ul>
+                    <li><strong>Locate:</strong> See your device on a map.</li>
+                    <li><strong>Lock:</strong> Secure it remotely so no one can use it.</li>
+                    <li><strong>Erase:</strong> As a last resort, wipe all your data to protect your privacy.</li>
+                </ul>
+                <p><strong>Action: Make sure this is enabled on your smartphone!</strong></p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>Your Security Checklist</h3>
+                <p>Ask these questions for your computer and smartphone:</p>
+                
+                <div class="checklist-item"><div class="checklist-box"></div> Is there a strong lock on it?</div>
+                <div class="checklist-item"><div class="checklist-box"></div> Is it set to update automatically?</div>
+                <div class="checklist-item"><div class="checklist-box"></div> Do I only download from official stores?</div>
+                <div class="checklist-item"><div class="checklist-box"></div> Is "Find My Device" turned on?</div>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>Any Questions?</h1>
+                    <hr>
+                    <p>Thank you for listening!</p>
+                    <p>The floor is now open for any questions regarding today's topics.</p>
+                </div>
+            `
+        }
+    ];
+
+    // --- Logic ---
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        
+        // Image format: p2-1.jpg, p2-2.jpg, etc.
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; Exit Full Screen";
+        } else {
+            fsBtn.innerHTML = "&#9974; Full Screen";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>
