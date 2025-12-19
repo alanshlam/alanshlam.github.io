@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網絡安全第一課：互動學習伴侶</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f6f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav h1 { margin: 0; font-size: 1.5rem; }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #34495e;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 3px solid var(--accent); font-weight: bold; }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 { border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--primary); }
+
+        /* --- Module 1: Digital House --- */
+        .house-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 600px) { .house-grid { grid-template-columns: 1fr; } }
+
+        .house-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .house-item:hover { border-color: var(--accent); background: white; }
+        .house-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .house-desc { display: none; margin-top: 10px; font-size: 0.9rem; color: var(--dark); }
+
+        /* --- Module 2: CIA Game --- */
+        .cia-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .cia-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-c { background-color: #e67e22; } /* Orange */
+        .btn-i { background-color: #9b59b6; } /* Purple */
+        .btn-a { background-color: #3498db; } /* Blue */
+        
+        .scenario-box {
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 30px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 1px solid #ffeeba;
+            margin-bottom: 20px;
+        }
+        .feedback { text-align: center; font-weight: bold; margin-top: 15px; min-height: 1.5em; }
+
+        /* --- Module 3: Phishing Dojo --- */
+        .email-viewer {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .email-header {
+            background: #f1f1f1;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            font-size: 0.9rem;
+        }
+        .email-body {
+            padding: 20px;
+            background: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .phish-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .btn-legit { background-color: var(--success); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-phish { background-color: var(--danger); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        
+        /* --- Module 4: Password Lab --- */
+        .pwd-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .strength-meter {
+            height: 10px;
+            background: #ddd;
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: 0.3s;
+        }
+        .crack-time {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #bdc3c7;
+            color: var(--dark);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第一課：網絡安全基礎</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('intro')">1. 數碼房屋</button>
+    <button class="tab-btn" onclick="showSection('cia')">2. CIA 三元組遊戲</button>
+    <button class="tab-btn" onclick="showSection('phishing')">3. 識破釣魚郵件</button>
+    <button class="tab-btn" onclick="showSection('password')">4. 密碼實驗室</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: DIGITAL HOUSE -->
+    <div id="intro" class="section active">
+        <div class="card">
+            <h2>類比</h2>
+            <p>點擊左側的項目，查看它們對應的數碼世界物件。</p>
+            <div class="house-grid">
+                <!-- House Item 1 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🔑 屋企鎖匙</span>
+                    <strong>密碼</strong>
+                    <div class="house-desc">好似你唔會隨便俾鎖匙陌生人一樣，唔好分享你嘅密碼。如果唔見咗，入侵者就可以入屋。</div>
+                </div>
+                <!-- House Item 2 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🚪 門窗</span>
+                    <strong>操作系統</strong>
+                    <div class="house-desc">你夜晚會鎖門。同樣道理，你必須「修補」（更新）你嘅操作系統，封堵小偷可能利用嘅漏洞。</div>
+                </div>
+                <!-- House Item 3 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">🚧 圍欄/大閘</span>
+                    <strong>防火牆</strong>
+                    <div class="house-desc">圍欄可以阻止人行上你嘅草坪。防火牆就係阻止隨機嘅網絡流量進入你嘅設備。</div>
+                </div>
+                <!-- House Item 4 -->
+                <div class="house-item" onclick="toggleHouse(this)">
+                    <span class="house-icon">💎 珠寶盒</span>
+                    <strong>你嘅數據</strong>
+                    <div class="house-desc">相片、文件、銀行資料。呢啲先係小偷真正想要嘅嘢。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: CIA TRIAD -->
+    <div id="cia" class="section">
+        <div class="card">
+            <h2>CIA 三元組遊戲</h2>
+            <p>閱讀場景。諗下邊個安全支柱被破壞？</p>
+            
+            <div class="scenario-box" id="cia-scenario">
+                載入場景中...
+            </div>
+
+            <div class="cia-btn-group">
+                <button class="cia-btn btn-c" onclick="checkCIA('C')">保密性<br><small>(私隱)</small></button>
+                <button class="cia-btn btn-i" onclick="checkCIA('I')">完整性<br><small>(真實/準確)</small></button>
+                <button class="cia-btn btn-a" onclick="checkCIA('A')">可用性<br><small>(存取)</small></button>
+            </div>
+            <div id="cia-feedback" class="feedback"></div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="nextCIA()" style="padding:5px 10px; cursor:pointer;">下一個場景</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: PHISHING -->
+    <div id="phishing" class="section">
+        <div class="card">
+            <h2>釣魚郵件道場</h2>
+            <p>呢封電郵係真定假？</p>
+            
+            <div class="email-viewer" id="email-display">
+                <!-- 電郵內容由 JS 注入 -->
+            </div>
+
+            <div class="phish-controls">
+                <button class="btn-legit" onclick="checkPhish(true)">係真嘅 ✅</button>
+                <button class="btn-phish" onclick="checkPhish(false)">係呃人嘅！ 🎣</button>
+            </div>
+            <div id="phish-feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: PASSWORD LAB -->
+    <div id="password" class="section">
+        <div class="card">
+            <h2>密碼強度實驗室</h2>
+            <p>輸入一個密碼，睇下電腦要幾耐先破解到。</p>
+            <p><em><small>注意：呢個完全喺你嘅瀏覽器度運行，唔會傳送任何資料到互聯網。</small></em></p>
+            
+            <input type="text" id="pwdInput" class="pwd-input" placeholder="喺度輸入..." onkeyup="checkStrength()">
+            
+            <div class="strength-meter">
+                <div id="strengthBar" class="strength-fill"></div>
+            </div>
+            
+            <div id="crackTime" class="crack-time">破解時間：0 秒</div>
+            <ul id="pwd-tips" style="color: #7f8c8d; font-size: 0.9rem; margin-top: 20px;">
+                <li>試下加啲數字</li>
+                <li>試下加啲符號 (!@#$)</li>
+                <li>長度超過 12 個字元</li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網絡安全課程 - 第一課學習伴侶應用程式
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // Find button that matches and set active
+        const index = ['intro', 'cia', 'phishing', 'password'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Digital House ---
+    function toggleHouse(element) {
+        const desc = element.querySelector('.house-desc');
+        const allDescs = document.querySelectorAll('.house-desc');
+        
+        // If currently hidden, show it and hide others
+        if (desc.style.display !== 'block') {
+            allDescs.forEach(d => d.style.display = 'none');
+            desc.style.display = 'block';
+        } else {
+            desc.style.display = 'none';
+        }
+    }
+
+    // --- Module 2: CIA Game Data & Logic ---
+    const ciaScenarios = [
+        { text: "勒索軟件鎖咗醫院所有電腦。醫生睇唔到病人檔案。", type: 'A', explanation: "正確！數據存在，但冇人存取到。可用性喪失。" },
+        { text: "一個學生入侵數據庫，將自己嘅成績由 F 改成 A。", type: 'I', explanation: "正確！數據被篡改，唔再可信（完整性）。" },
+        { text: "喺巴士執到一隻冇加密嘅USB，入面有客戶名單。", type: 'C', explanation: "正確！未經授權嘅人可以讀取秘密。保密性喪失。" },
+        { text: "伺服器數據中心停電。", type: 'A', explanation: "正確！如果伺服器熄咗，服務就唔可用。" },
+        { text: "一個員工未經許可，睇咗同事嘅薪資試算表。", type: 'C', explanation: "正確！佢哋冇權限去睇嗰啲資料。" }
+    ];
+    let ciaIndex = 0;
+
+    function loadCIA() {
+        document.getElementById('cia-scenario').innerText = ciaScenarios[ciaIndex].text;
+        document.getElementById('cia-feedback').innerText = "";
+        document.getElementById('cia-feedback').style.color = "#333";
+    }
+
+    function checkCIA(guess) {
+        const current = ciaScenarios[ciaIndex];
+        const feedback = document.getElementById('cia-feedback');
+        
+        if (guess === current.type) {
+            feedback.innerText = current.explanation;
+            feedback.style.color = "green";
+        } else {
+            feedback.innerText = "唔係好啱。再諗下：係關於私隱（C）、真實性（I），定係正常運作時間（A）？";
+            feedback.style.color = "red";
+        }
+    }
+
+    function nextCIA() {
+        ciaIndex = (ciaIndex + 1) % ciaScenarios.length;
+        loadCIA();
+    }
+    loadCIA(); // Init
+
+    // --- Module 3: Phishing Data & Logic ---
+    const phishEmails = [
+        {
+            subject: "緊急：帳戶已暫停",
+            sender: "support@netf1ix-verify.com",
+            body: "親愛嘅客戶,<br><br>我哋無法驗證你嘅付款。請<a href='#'>點擊此處</a>更新資料，否則你嘅帳戶將被鎖定。<br><br>NetFlix 客戶服務",
+            isReal: false,
+            reason: "呃人嘅！睇下寄件人：'netf1ix' 用咗數字 1。仲有，通用嘅稱呼 '親愛嘅客戶'。"
+        },
+        {
+            subject: "你嘅訂單確認",
+            sender: "auto-confirm@amazon.com",
+            body: "你好 Jane,<br><br>多謝你嘅訂單 #402-221。貨品將於星期二送達。你可以喺應用程式追蹤包裹。<br><br>Amazon.com",
+            isReal: true,
+            reason: "真嘅。寄件人係 amazon.com。佢用你個名嚟稱呼你，亦冇緊急叫你點擊連結。"
+        },
+        {
+            subject: "人事部：政策更新",
+            sender: "hr-department@company-internal.net",
+            body: "各位員工,<br><br>請查閱附件 PDF 了解新嘅休假政策。<br><br>人事部 謹啟",
+            isReal: true,
+            reason: "好可能係真嘅。內部網域，預期中嘅內容，標準附件。（不過對附件都要時刻保持警惕！）。"
+        },
+        {
+            subject: "中獎者！！！",
+            sender: "prize@lottery-winner-global.xyz",
+            body: "你贏咗 5,000,000 美元！即刻傳送你嘅銀行資料嚟領獎！！！",
+            isReal: false,
+            reason: "呃人嘅！好到難以置信。緊急。奇怪嘅網域 (.xyz)。仲要你嘅銀行資料。"
+        }
+    ];
+    let phishIndex = 0;
+
+    function loadPhish() {
+        const email = phishEmails[phishIndex];
+        const html = `
+            <div class="email-header">
+                <strong>寄件人:</strong> ${email.sender}<br>
+                <strong>主旨:</strong> ${email.subject}
+            </div>
+            <div class="email-body">${email.body}</div>
+        `;
+        document.getElementById('email-display').innerHTML = html;
+        document.getElementById('phish-feedback').innerText = "";
+    }
+
+    function checkPhish(userGuessedReal) {
+        const current = phishEmails[phishIndex];
+        const feedback = document.getElementById('phish-feedback');
+        
+        if (userGuessedReal === current.isReal) {
+            feedback.innerText = "正確！ " + current.reason;
+            feedback.style.color = "green";
+            // 2 秒後自動前進
+            setTimeout(() => {
+                phishIndex = (phishIndex + 1) % phishEmails.length;
+                loadPhish();
+            }, 3000);
+        } else {
+            feedback.innerText = "錯誤！ " + current.reason;
+            feedback.style.color = "red";
+        }
+    }
+    loadPhish(); // Init
+
+    // --- Module 4: Password Logic ---
+    function checkStrength() {
+        const pwd = document.getElementById('pwdInput').value;
+        const bar = document.getElementById('strengthBar');
+        const text = document.getElementById('crackTime');
+        
+        let score = 0;
+        let time = "即時";
+        let color = "red";
+
+        // Very basic estimation logic for educational purposes
+        if (pwd.length > 0) score += 10;
+        if (pwd.length > 8) score += 20;
+        if (pwd.length > 12) score += 30;
+        if (/[A-Z]/.test(pwd)) score += 10;
+        if (/[0-9]/.test(pwd)) score += 10;
+        if (/[^A-Za-z0-9]/.test(pwd)) score += 20;
+
+        if (score < 30) {
+            time = "即時";
+            color = "#e74c3c"; // red
+        } else if (score < 60) {
+            time = "2 日";
+            color = "#f39c12"; // orange
+        } else if (score < 80) {
+            time = "5 年";
+            color = "#f1c40f"; // yellow
+        } else {
+            time = "4 百萬年";
+            color = "#27ae60"; // green
+        }
+
+        if (pwd.length === 0) {
+            bar.style.width = "0%";
+            text.innerText = "破解時間：0 秒";
+        } else {
+            bar.style.width = score + "%";
+            bar.style.backgroundColor = color;
+            text.innerText = "破解時間：約 " + time;
+            text.style.color = color;
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake 勒索意識 2025</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { background-color: #050505; color: #e2e8f0; font-family: 'Courier New', Courier, monospace, 'Microsoft JhengHei', '微軟正黑體'; margin: 0; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        
+        @keyframes glitch { 0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) } }
+        .glitch-hover:hover { animation: glitch 0.3s infinite; }
+        
+        .scanline { width: 100%; height: 2px; background: rgba(0, 255, 0, 0.1); position: absolute; z-index: 10; animation: scanline 6s linear infinite; opacity: 0.3; }
+        @keyframes scanline { 0% { top: 0% } 100% { top: 100% } }
+    </style>
+</head>
+<body>
+
+    <div id="error-box" style="display:none; padding:20px; background:#991b1b; color:white;"></div>
+
+    <div id="root">
+        <div id="loading-content" class="flex h-screen items-center justify-center text-center">
+            <div class="text-2xl font-bold text-purple-500 mb-2 animate-pulse">正在合成現實...</div>
+        </div>
+    </div>
+
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorBox = document.getElementById('error-box');
+            document.getElementById('root').style.display = 'none';
+            errorBox.style.display = 'block';
+            errorBox.innerHTML = `<h3>嚴重錯誤</h3><p>${message}</p><p>行數: ${lineno}</p>`;
+        };
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const icons = {
+                Eye: <g><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></g>,
+                Video: <g><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></g>,
+                Lock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></g>,
+                Alert: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />,
+                Fingerprint: <path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10" />,
+                UserCheck: <g><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><polyline points="17 11 19 13 23 9" /></g>,
+                Shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+                Smartphone: <g><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></g>
+            };
+            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{icons[name] || <circle cx="12" cy="12" r="10" />}</svg>;
+        };
+
+        const Card = ({ children, className = "" }) => (
+            <div className={`bg-neutral-900 border border-neutral-800 rounded-none p-6 shadow-lg relative ${className}`}>
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-purple-500"></div>
+                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-purple-500"></div>
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-purple-500"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-purple-500"></div>
+                {children}
+            </div>
+        );
+
+        const DashboardView = () => (
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="text-center">
+                        <h3 className="text-4xl font-bold text-purple-400 mb-2 glitch-hover">2,137%</h3>
+                        <p className="text-gray-400 text-xs uppercase tracking-widest">Deepfake 欺詐增長率 (自2022年)</p>
+                    </Card>
+                    <Card className="text-center">
+                        <h3 className="text-4xl font-bold text-green-400 mb-2 glitch-hover">2億+美元</h3>
+                        <p className="text-gray-400 text-xs uppercase tracking-widest">2025年第一季 Deepfake 損失</p>
+                    </Card>
+                    <Card className="text-center">
+                        <h3 className="text-4xl font-bold text-red-500 mb-2 glitch-hover">8 百萬</h3>
+                        <p className="text-gray-400 text-xs uppercase tracking-widest">偵測到嘅 Deepfake 檔案 (2025)</p>
+                    </Card>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-4 border-l-4 border-purple-500 pl-3">勒索途徑</h3>
+                        <div className="space-y-4">
+                            {[
+                                { title: "假嘅生命證明", desc: "攻擊者傳送「被綁架」員工乞求贖金嘅影片。", risk: "高度恐慌" },
+                                { title: "高層冒充", desc: "AI 複製嘅 CEO 透過視像通話下令緊急轉帳。", risk: "繞過驗證" },
+                                { title: "聲譽破壞", desc: "製造誹謗性影片嚟威脅品牌形象。", risk: "平均要求 113萬美元" }
+                            ].map((item, idx) => (
+                                <div key={idx} className="bg-neutral-800/50 p-4 border-l border-neutral-700">
+                                    <div className="flex justify-between items-start">
+                                        <h4 className="text-purple-300 font-bold">{item.title}</h4>
+                                        <span className="text-xs bg-red-900/30 text-red-400 px-2 py-1 rounded">{item.risk}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-400 mt-1">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-4 border-l-4 border-green-500 pl-3">偵測與防禦</h3>
+                        <div className="bg-neutral-900 p-6 border border-neutral-700 relative overflow-hidden">
+                            <div className="scanline"></div>
+                            <h4 className="text-green-400 font-mono mb-4 text-sm">> 啟動視覺分析...</h4>
+                            <ul className="space-y-3 text-sm text-gray-300 font-mono">
+                                <li className="flex items-center gap-2">
+                                    <Icon name="Eye" size={16} className="text-purple-500" />
+                                    <span><strong className="text-white">唔自然嘅眨眼：</strong>人類每2-10秒眨一次眼。AI 經常唔記得或者重複呢個動作。</span>
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <Icon name="Video" size={16} className="text-purple-500" />
+                                    <span><strong className="text-white">嘴形同步出錯：</strong>留意聲音同口形（音素）係咪唔夾。</span>
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <Icon name="Lock" size={16} className="text-purple-500" />
+                                    <span><strong className="text-white">Alpha 協議：</strong>今日就同家人/同事設立一個「安全詞」。</span>
+                                </li>
+                            </ul>
+                            <div className="mt-4 p-2 bg-purple-900/20 text-purple-200 text-xs text-center border border-purple-900">
+                                未經核實，切勿相信任何數碼內容
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const SimulatorView = () => {
+            const [step, setStep] = useState(0);
+            const [stress, setStress] = useState(20);
+            const [log, setLog] = useState([]);
+            const [finished, setFinished] = useState(false);
+
+            const scenarios = [
+                {
+                    phase: "收到傳輸",
+                    text: "你透過加密通訊軟件收到一個影片檔案。係你公司嘅 CEO，被綁喺一間黑房嘅凳度。把聲話：『佢哋捉咗我。唔好報警。即刻轉 50 萬美元去呢個錢包，如果唔係我會死。』",
+                    options: [
+                        { label: "恐慌並授權轉帳", stressMod: 20, correct: false, outcome: "失敗。你中咗「生命證明」deepfake 嘅計。CEO 其實食緊晏。" },
+                        { label: "分析影片有冇瑕疵", stressMod: -10, correct: true, outcome: "聰明。你留意到面上嘅陰影同房間燈光唔夾。" },
+                        { label: "打電話俾 CEO 配偶", stressMod: -5, correct: true, outcome: "已核實。配偶確認 CEO 安全喺屋企。呢個係騙局。" }
+                    ]
+                },
+                {
+                    phase: "局勢升級",
+                    text: "攻擊者發現你未俾錢。你收到一個視像通話。睇起嚟同你公司嘅 CFO 一模一樣。『點解你拖延？董事會睇緊。即刻過數！』",
+                    options: [
+                        { label: "同來電者爭論", stressMod: 10, correct: false, outcome: "錯誤。佢哋錄低咗你把聲，下一步就係複製你。" },
+                        { label: "問佢「狼群」暗號", stressMod: -20, correct: true, outcome: "斷正。來電者呆咗一阵，畫面出現故障，然後收線。佢哋唔知秘密短語。" },
+                        { label: "收線並打俾 CFO 手機", stressMod: -10, correct: true, outcome: "安全。你用咗一個「跨渠道」通訊方式。" }
+                    ]
+                }
+            ];
+
+            const handleChoice = (opt) => {
+                const newLog = [...log, { phase: scenarios[step].phase, choice: opt.label, result: opt.outcome, correct: opt.correct }];
+                setLog(newLog);
+                setStress(prev => Math.min(100, Math.max(0, prev + opt.stressMod)));
+                if (step < scenarios.length - 1) { setStep(step + 1); } else { setFinished(true); }
+            };
+
+            const resetSim = () => { setStep(0); setStress(20); setLog([]); setFinished(false); };
+
+            if (finished) {
+                const wins = log.filter(l => l.correct).length;
+                return (
+                    <div className="max-w-2xl mx-auto">
+                        <Card className="text-center">
+                            <h2 className={`text-3xl font-bold mb-4 ${wins === scenarios.length ? 'text-green-500' : 'text-red-500'}`}>
+                                {wins === scenarios.length ? "威脅已解除" : "系統已失陷"}
+                            </h2>
+                            <div className="w-full bg-gray-800 h-4 rounded-full mb-6 overflow-hidden">
+                                <div className={`h-full ${wins === scenarios.length ? 'bg-green-500' : 'bg-red-500'}`} style={{width: `${(wins/scenarios.length)*100}%`}}></div>
+                            </div>
+                            <div className="text-left space-y-4 mb-8">
+                                {log.map((l, i) => (
+                                    <div key={i} className="bg-black/30 p-3 border-b border-gray-800">
+                                        <div className="text-xs text-purple-400 mb-1">{l.phase}</div>
+                                        <div className="font-bold text-white text-sm">{l.choice}</div>
+                                        <div className={`text-xs mt-1 ${l.correct ? 'text-green-400' : 'text-red-400'}`}>{l.result}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <button onClick={resetSim} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded transition-colors">重新啟動模擬</button>
+                        </Card>
+                    </div>
+                );
+            }
+
+            const current = scenarios[step];
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="mb-6 flex items-center gap-4">
+                        <span className="text-xs font-mono text-red-500 animate-pulse">心理壓力</span>
+                        <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-green-500 to-red-600 transition-all duration-500" style={{width: `${stress}%`}}></div>
+                        </div>
+                        <span className="text-xs font-mono text-gray-400">{stress}%</span>
+                    </div>
+                    <Card>
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <span className="text-red-500 font-mono text-sm tracking-widest uppercase">實時連線...</span>
+                        </div>
+                        <div className="min-h-[150px] flex items-center justify-center bg-black mb-6 border border-gray-800 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+                            <div className="text-center p-8 relative z-10">
+                                <Icon name="UserCheck" size={64} className="mx-auto text-gray-600 mb-2 group-hover:text-purple-600 transition-colors" />
+                                <p className="text-lg font-bold text-white font-mono">"{current.phase}"</p>
+                                <p className="text-sm text-gray-400 mt-2">{current.text}</p>
+                            </div>
+                            <div className="absolute top-0 left-0 w-full h-full bg-purple-500/10 opacity-0 group-hover:opacity-100 pointer-events-none mix-blend-overlay transition-opacity"></div>
+                        </div>
+                        <div className="grid gap-3">
+                            {current.options.map((opt, idx) => (
+                                <button key={idx} onClick={() => handleChoice(opt)} className="text-left p-4 border border-gray-700 hover:bg-purple-900/20 hover:border-purple-500 transition-all text-sm font-mono text-gray-300 hover:text-white">> {opt.label}</button>
+                            ))}
+                        </div>
+                    </Card>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [view, setView] = useState('dashboard');
+            return (
+                <div className="min-h-screen pb-12 bg-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-black to-black">
+                    <nav className="border-b border-gray-800 bg-black/50 backdrop-blur sticky top-0 z-50 py-2 min-h-[4rem] flex flex-col justify-center">
+                        <div className="max-w-6xl mx-auto px-4 w-full flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Icon name="Fingerprint" className="text-purple-500" />
+                                <span className="font-bold text-white tracking-widest hidden md:inline">DEEP<span className="text-purple-500">FAKE</span>_防禦</span>
+                                <span className="font-bold text-white tracking-widest md:hidden">DF_DEFENSE</span>
+                            </div>
+                            <div className="flex gap-4 text-sm font-mono">
+                                <button onClick={() => setView('dashboard')} className={`${view === 'dashboard' ? 'text-purple-400 underline decoration-2 underline-offset-4' : 'text-gray-500 hover:text-white'}`}>情報</button>
+                                <button onClick={() => setView('simulator')} className={`${view === 'simulator' ? 'text-purple-400 underline decoration-2 underline-offset-4' : 'text-gray-500 hover:text-white'}`}>模擬</button>
+                            </div>
+                        </div>
+                    </nav>
+                    <main className="max-w-6xl mx-auto px-4 py-8">
+                        <div className="mb-10 text-center">
+                            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter leading-tight">{view === 'dashboard' ? '人工智能勒索浪潮' : '實時威脅模擬'}</h1>
+                            <p className="text-gray-400 font-mono max-w-2xl mx-auto">{view === 'dashboard' ? '勒索軟件已經進化。佢而家戴住你信任嘅人嘅面具。了解呢個威脅。' : 'Deepfake 攻擊會引發極度恐慌。即刻測試你嘅心理韌性。'}</p>
+                        </div>
+                        {view === 'dashboard' ? <DashboardView /> : <SimulatorView />}
+                    </main>
+                    <footer className="border-t border-gray-800 mt-12 py-8 text-center">
+                        <p className="text-gray-600 text-xs font-mono">安全頻道已建立 // 2025 // 向 FBI/IC3 報告可疑活動</p>
+                    </footer>
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>課程講座</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #menu {
+      width: 25%;
+      min-width: 250px;
+      background-color: #f4f4f4;
+      padding: 1em;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    #resizer {
+      width: 5px;
+      cursor: col-resize;
+      background-color: #ccc;
+      flex-shrink: 0;
+    }
+    #content {
+      flex-grow: 1;
+      padding: 0;
+      display: flex;
+    }
+    h1, h2 {
+      color: #333;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+    h1:first-child, h2:first-child {
+        margin-top: 0;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 0.5em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    a {
+      text-decoration: none;
+      color: #007bff;
+      margin-right: auto;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .popup-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 10px;
+      flex-shrink: 0;
+    }
+    .popup-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <h1>日常網絡安全要點與應急響應</h1>
+    <h2>課程內容</h2>
+    
+    <h2>投影片</h2>
+    <ul>
+      <li><a href="slide0-zh-hk.html" target="content_frame">總覽</a> <button class="popup-btn" onclick="openPopup('slide0-zh-hk.html')">彈出</button></li>
+      <li><a href="slide1-zh-hk.html" target="content_frame">第一課投影片：網絡安全基礎</a> <button class="popup-btn" onclick="openPopup('slide1-zh-hk.html')">彈出</button></li>
+      <li><a href="slide2-zh-hk.html" target="content_frame">第二課投影片：保護你的裝置</a> <button class="popup-btn" onclick="openPopup('slide2-zh-hk.html')">彈出</button></li>
+      <li><a href="slide3-zh-hk.html" target="content_frame">第三課投影片：密碼與多重驗證</a> <button class="popup-btn" onclick="openPopup('slide3-zh-hk.html')">彈出</button></li>
+      <li><a href="slide4-zh-hk.html" target="content_frame">第四課投影片：安全瀏覽</a> <button class="popup-btn" onclick="openPopup('slide4-zh-hk.html')">彈出</button></li>
+      <li><a href="slide5-zh-hk.html" target="content_frame">第五課投影片：電郵與交易</a> <button class="popup-btn" onclick="openPopup('slide5-zh-hk.html')">彈出</button></li>
+      <li><a href="slide6-zh-hk.html" target="content_frame">第六課投影片：更新與備份</a> <button class="popup-btn" onclick="openPopup('slide6-zh-hk.html')">彈出</button></li>
+      <li><a href="slide7-zh-hk.html" target="content_frame">第七課投影片：常見事件</a> <button class="popup-btn" onclick="openPopup('slide7-zh-hk.html')">彈出</button></li>
+      <li><a href="slide8-zh-hk.html" target="content_frame">第八課投影片：急救</a> <button class="popup-btn" onclick="openPopup('slide8-zh-hk.html')">彈出</button></li>
+      <li><a href="slide9-zh-hk.html" target="content_frame">第九課投影片：案例研究</a> <button class="popup-btn" onclick="openPopup('slide9-zh-hk.html')">彈出</button></li>
+      <li><a href="slide10-zh-hk.html" target="content_frame">第十課投影片：AI 與騙局</a> <button class="popup-btn" onclick="openPopup('slide10-zh-hk.html')">彈出</button></li>
+    </ul>
 
+    <h2>互動講座</h2>
+    <ul>
+      <li><a href="lecture1-zh-hk.html" target="content_frame">第一課：網絡安全基礎</a> <button class="popup-btn" onclick="openPopup('lecture1-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture2-zh-hk.html" target="content_frame">第二課：保護你的裝置</a> <button class="popup-btn" onclick="openPopup('lecture2-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture3-zh-hk.html" target="content_frame">第三課：密碼與多重驗證</a> <button class="popup-btn" onclick="openPopup('lecture3-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture4-zh-hk.html" target="content_frame">第四課：安全瀏覽</a> <button class="popup-btn" onclick="openPopup('lecture4-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture5-zh-hk.html" target="content_frame">第五課：電郵與交易</a> <button class="popup-btn" onclick="openPopup('lecture5-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture6-zh-hk.html" target="content_frame">第六課：更新與備份</a> <button class="popup-btn" onclick="openPopup('lecture6-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture7-zh-hk.html" target="content_frame">第七課：常見事件</a> <button class="popup-btn" onclick="openPopup('lecture7-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture8-zh-hk.html" target="content_frame">第八課：急救</a> <button class="popup-btn" onclick="openPopup('lecture8-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture9-zh-hk.html" target="content_frame">第九課：案例研究</a> <button class="popup-btn" onclick="openPopup('lecture9-zh-hk.html')">彈出</button></li>
+      <li><a href="lecture10-zh-hk.html" target="content_frame">第十課：AI 與騙局</a> <button class="popup-btn" onclick="openPopup('lecture10-zh-hk.html')">彈出</button></li>
+    </ul>
+
+    <h2>AI 安全</h2>
+    <ul>
+      <li><a href="AI_phishing-zh-hk.html" target="content_frame">AI 釣魚意識訓練 2025</a> <button class="popup-btn" onclick="openPopup('AI_phishing-zh-hk.html')">彈出</button></li>
+      <li><a href="AI_Ransomware_Tactics-zh-hk.html" target="content_frame">AI 勒索軟件防禦訓練 2025</a> <button class="popup-btn" onclick="openPopup('AI_Ransomware_Tactics-zh-hk.html')">彈出</button></li>
+      <li><a href="AI_Deepfakes_Ransomware_Extortion-zh-hk.html" target="content_frame">Deepfake 勒索意識 2025</a> <button class="popup-btn" onclick="openPopup('AI_Deepfakes_Ransomware_Extortion-zh-hk.html')">彈出</button></li>
+    </ul>
+
+    <h2>工具</h2>
+    <ul>
+        <li><a href="fake_domain-zh-hk.html" target="content_frame">釣魚域名獵人 v2.1</a> <button class="popup-btn" onclick="openPopup('fake_domain-zh-hk.html')">彈出</button></li>
+    </ul>
+  </div>
+  <div id="resizer"></div>
+  <div id="content">
+    <iframe name="content_frame" src="slide0-zh-hk.html"></iframe>
+  </div>
+
+  <script>
+    function openPopup(url) {
+      window.open(url, 'slidePopup', 'width=1024,height=768,scrollbars=yes,resizable=yes');
+    }
+
+    const resizer = document.getElementById('resizer');
+    const menu = document.getElementById('menu');
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', () => {
+        isResizing = false;
+        document.removeEventListener('mousemove', handleMouseMove);
+      });
+    });
+
+    function handleMouseMove(e) {
+      if (!isResizing) return;
+      const newWidth = e.clientX;
+      if (newWidth > 250 && newWidth < window.innerWidth - 200) {
+        menu.style.width = newWidth + 'px';
+      }
+    }
+  </script>
+</body>
+</html>

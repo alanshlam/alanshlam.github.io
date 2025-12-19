@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網絡安全第二課：鎖定你的裝置</title>
+    <style>
+        :root {
+            --primary: #2980b9;
+            --accent: #f1c40f;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --bg: #ecf0f1;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav h1 { margin: 0; font-size: 1.4rem; }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #34495e;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* --- Module 1: Patch It Game --- */
+        .game-area {
+            height: 250px;
+            background: #2c3e50;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .bug {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        
+        .game-ui { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-start { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+        .btn-start:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* --- Module 2: PIN Logic --- */
+        .pin-visualizer {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pin-box {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 40%;
+            transition: 0.3s;
+        }
+        .pin-number { font-size: 2.5rem; color: var(--primary); font-weight: bold; display: block; }
+        .pin-label { color: #7f8c8d; font-size: 0.9rem; }
+        .pin-bar-container { height: 10px; background: #ddd; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .pin-bar { height: 100%; background: var(--accent); width: 0%; transition: 1s width ease-out; }
+
+        /* --- Module 3: Permission Judge --- */
+        .perm-scenario {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .perm-buttons { display: flex; gap: 10px; justify-content: center; }
+        .btn-allow { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+        .btn-deny { background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+
+        /* --- Module 4: Checklist --- */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .checklist-item:hover { background: #e0e6e8; }
+        .checklist-item.checked { background: #d5f5e3; text-decoration: line-through; color: #7f8c8d; }
+        .checkbox {
+            width: 20px; height: 20px; border: 2px solid var(--primary); border-radius: 4px; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .checklist-item.checked .checkbox { background: var(--success); border-color: var(--success); }
+        .checklist-item.checked .checkbox::after { content: '✓'; color: white; font-weight: bold; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #bdc3c7;
+            color: var(--text);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第二課：保護你的裝置</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('game')">1. 修補漏洞遊戲</button>
+    <button class="tab-btn" onclick="showSection('pin')">2. PIN 碼數學</button>
+    <button class="tab-btn" onclick="showSection('perms')">3. App 權限判官</button>
+    <button class="tab-btn" onclick="showSection('audit')">4. 行動計劃</button>
+</div>
+
+<main>
+
+    <!-- SECTION 1: PATCH IT GAME -->
+    <div id="game" class="section active">
+        <div class="card">
+            <h2>點解更新咁重要</h2>
+            <p>軟件有窿（bugs）。黑客就係利用呢啲窿嚟入侵。更新就係「修補」呢啲窿。</p>
+            <p><strong>目標：</strong> 喺計時結束前，點擊紅色嘅蟲（🐛）嚟修補佢哋！</p>
+            
+            <div class="game-ui">
+                <span id="score">已修補：0</span>
+                <button class="btn-start" onclick="startGame()">開始遊戲</button>
+                <span id="timer">時間：10秒</span>
+            </div>
+            
+            <div class="game-area" id="gameArea" onclick="clickArea(event)">
+                <div style="text-align:center; padding-top:100px; color:rgba(255,255,255,0.5); pointer-events:none;">
+                    區域安全
+                </div>
+            </div>
+            <div id="game-msg" style="text-align:center; font-weight:bold; height:20px;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: PIN MATH -->
+    <div id="pin" class="section">
+        <div class="card">
+            <h2>6位數字嘅威力</h2>
+            <p>點解我哋建議用6位PIN碼而唔係4位？個數學結果好驚人。</p>
+            
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="btn-start" onclick="animatePin()">進行比較</button>
+            </div>
+
+            <div class="pin-visualizer">
+                <div class="pin-box">
+                    <span class="pin-number">4</span>
+                    <span class="pin-label">位數</span>
+                    <div style="margin:10px 0; font-weight:bold;">10,000</div>
+                    <span class="pin-label">組合數量</span>
+                    <div class="pin-bar-container"><div id="bar4" class="pin-bar"></div></div>
+                    <p style="font-size:0.8rem; color:#e74c3c;">約11分鐘內破解</p>
+                </div>
+
+                <div class="pin-box">
+                    <span class="pin-number">6</span>
+                    <span class="pin-label">位數</span>
+                    <div style="margin:10px 0; font-weight:bold;">1,000,000</div>
+                    <span class="pin-label">組合數量</span>
+                    <div class="pin-bar-container"><div id="bar6" class="pin-bar"></div></div>
+                    <p style="font-size:0.8rem; color:#27ae60;">約20小時內破解</p>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:20px; font-style:italic;">
+                只係加多2位數字，就令破解難度增加<strong>100倍</strong>！
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: APP JUDGE -->
+    <div id="perms" class="section">
+        <div class="card">
+            <h2>權限判官</h2>
+            <p>App會要求存取你嘅資料。你應唔應該允許？</p>
+            
+            <div class="perm-scenario" id="permScenario">
+                載入場景中...
+            </div>
+
+            <div class="perm-buttons">
+                <button class="btn-allow" onclick="judge(true)">允許 ✅</button>
+                <button class="btn-deny" onclick="judge(false)">拒絕 ❌</button>
+            </div>
+            <div id="perm-feedback" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: AUDIT -->
+    <div id="audit" class="section">
+        <div class="card">
+            <h2>你嘅安全檢查清單</h2>
+            <p>即刻揀一部裝置。你可唔可以剔晒下面所有選項？</p>
+            
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>螢幕鎖已開啟</strong><br>
+                    <small>FaceID、指紋，或6位PIN碼。</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>自動更新已開啟</strong><br>
+                    <small>設定 > 一般 > 軟件更新 > 自動。</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>「尋找我的裝置」已啟用</strong><br>
+                    <small>如果唔見咗，可以清除裝置上嘅資料。</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checkbox"></div>
+                <div>
+                    <strong>清理門戶</strong><br>
+                    <small>我已經刪除咗超過6個月冇用過嘅App。</small>
+                </div>
+            </div>
+            
+            <p style="text-align:center; color: var(--success); font-weight:bold; display:none;" id="audit-complete">
+                🎉 做得好！你嘅裝置好安全。
+            </p>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網絡安全課程 - 第二課學習伴侶應用程式
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['game', 'pin', 'perms', 'audit'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    // --- Module 1: Patch Game ---
+    let score = 0;
+    let gameActive = false;
+    let timer = 10;
+    let gameInterval;
+    let bugInterval;
+
+    function startGame() {
+        if(gameActive) return;
+        gameActive = true;
+        score = 0;
+        timer = 15;
+        document.getElementById('score').innerText = "已修補：0";
+        document.getElementById('game-msg').innerText = "";
+        document.querySelector('.btn-start').disabled = true;
+
+        // Timer
+        gameInterval = setInterval(() => {
+            timer--;
+            document.getElementById('timer').innerText = "時間：" + timer + "秒";
+            if(timer <= 0) endGame();
+        }, 1000);
+
+        // Spawn Bugs
+        bugInterval = setInterval(spawnBug, 800);
+    }
+
+    function spawnBug() {
+        if(!gameActive) return;
+        const bug = document.createElement('div');
+        bug.classList.add('bug');
+        bug.innerHTML = "🐛";
+        
+        // Random Position
+        const area = document.getElementById('gameArea');
+        const x = Math.random() * (area.clientWidth - 40);
+        const y = Math.random() * (area.clientHeight - 40);
+        bug.style.left = x + 'px';
+        bug.style.top = y + 'px';
+        
+        bug.onclick = (e) => {
+            e.stopPropagation();
+            score++;
+            document.getElementById('score').innerText = "已修補：" + score;
+            bug.remove();
+        };
+
+        area.appendChild(bug);
+        
+        // Remove bug if not clicked
+        setTimeout(() => { if(bug.parentNode) bug.remove(); }, 1500);
+    }
+
+    function endGame() {
+        gameActive = false;
+        clearInterval(gameInterval);
+        clearInterval(bugInterval);
+        document.querySelector('.btn-start').disabled = false;
+        
+        // Clear remaining bugs
+        document.querySelectorAll('.bug').forEach(b => b.remove());
+        
+        let msg = "";
+        if(score > 10) msg = "做得好！你嘅系統已經修補好。";
+        else msg = "錯過太多漏洞！試下更新快啲。";
+        
+        document.getElementById('game-msg').innerText = msg;
+        document.getElementById('game-msg').style.color = score > 10 ? "green" : "red";
+    }
+
+    // --- Module 2: PIN Animation ---
+    function animatePin() {
+        // Reset
+        document.getElementById('bar4').style.width = '0%';
+        document.getElementById('bar6').style.width = '0%';
+        
+        setTimeout(() => {
+            document.getElementById('bar4').style.width = '5%'; // Tiny bar
+            document.getElementById('bar6').style.width = '100%'; // Full bar
+        }, 100);
+    }
+
+    // --- Module 3: Permissions Logic ---
+    const scenarios = [
+        { text: "一個簡單嘅計數機App要求存取你嘅「聯絡人」。", allow: false, reason: "點解計數機需要打電話俾你啲朋友？拒絕佢。" },
+        { text: "Google地圖要求存取你嘅「位置」。", allow: true, reason: "地圖需要位置資訊先可以正常運作。呢個係安全嘅。" },
+        { text: "一個電筒App要求存取你嘅「咪高峰」。", allow: false, reason: "電筒唔需要聽你講嘢。小心間諜軟件！" },
+        { text: "Instagram要求存取你嘅「相片」。", allow: true, reason: "如果你想貼相，佢就需要存取權限。安全嘅。" }
+    ];
+    let permIndex = 0;
+
+    function loadScenario() {
+        document.getElementById('permScenario').innerText = scenarios[permIndex].text;
+        document.getElementById('perm-feedback').innerText = "";
+    }
+
+    function judge(allowed) {
+        const current = scenarios[permIndex];
+        const feedback = document.getElementById('perm-feedback');
+        
+        if(allowed === current.allow) {
+            feedback.innerText = "正確！ " + current.reason;
+            feedback.style.color = "green";
+            setTimeout(() => {
+                permIndex = (permIndex + 1) % scenarios.length;
+                loadScenario();
+            }, 3000);
+        } else {
+            feedback.innerText = "決定錯誤。 " + current.reason;
+            feedback.style.color = "red";
+        }
+    }
+    loadScenario();
+
+    // --- Module 4: Checklist ---
+    function toggleCheck(el) {
+        el.classList.toggle('checked');
+        
+        // Check if all are checked
+        const total = document.querySelectorAll('.checklist-item').length;
+        const checked = document.querySelectorAll('.checklist-item.checked').length;
+        const msg = document.getElementById('audit-complete');
+        
+        if(total === checked) msg.style.display = "block";
+        else msg.style.display = "none";
+    }
+
+</script>
+
+</body>
+</html>

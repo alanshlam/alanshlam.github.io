@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網絡安全第七課：常見事件</title>
+    <style>
+        :root {
+            --primary: #c0392b; /* Red for Danger/Incidents */
+            --secondary: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --accent: #f1c40f;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0;
+            background-color: #fce4ec; /* Light red/pink bg */
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #922b21;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #f1948a;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        button {
+            background: var(--primary); color: white; border: none; padding: 10px 20px; 
+            border-radius: 5px; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+
+        .timeline {
+            position: relative;
+            margin: 20px 0;
+            padding-left: 20px;
+            border-left: 4px solid #ddd;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 20px;
+            opacity: 0.3;
+            transition: 0.5s;
+        }
+        .timeline-item.visible { opacity: 1; }
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: #999;
+            border-radius: 50%;
+        }
+        .timeline-item.visible .timeline-dot { background: var(--primary); }
+
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .computer {
+            height: 50px;
+            background: #2ecc71; /* Green = Safe */
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: background 0.5s;
+        }
+        .computer.infected { background: #c0392b; animation: shake 0.5s; } /* Red = Infected */
+        
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(0, 0); } }
+
+        .breach-search {
+            display: flex;
+            gap: 10px;
+        }
+        .breach-input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        .breach-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9f9;
+            border-radius: 5px;
+            display: none;
+        }
+        .leak-tag {
+            display: inline-block;
+            background: #d35400;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f0f3f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            color: var(--dark); 
+            font-weight: bold;
+        }
+        .quiz-option:hover { 
+            background: #e5e8e8; 
+            border-color: #bdc3c7;
+        }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第七課：常見事件</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('phishing')">1. 釣魚剖析</button>
+    <button class="tab-btn" onclick="showSection('ransom')">2. 感染擴散</button>
+    <button class="tab-btn" onclick="showSection('breach')">3. 外洩檢查器</button>
+    <button class="tab-btn" onclick="showSection('quiz')">4. 事件測驗</button>
+</div>
+
+<main>
+
+    <div id="phishing" class="section active">
+        <div class="card">
+            <h2>攻擊鏈：一個點擊如何演變成一場危機</h2>
+            <p>點擊「下一步」追蹤釣魚攻擊嘅生命週期。</p>
+            
+            <div class="timeline">
+                <div class="timeline-item visible" id="step1">
+                    <div class="timeline-dot"></div>
+                    <strong>1. 誘餌</strong>
+                    <p>黑客寄出一封電郵：「緊急：密碼即將過期。」</p>
+                </div>
+                <div class="timeline-item" id="step2">
+                    <div class="timeline-dot"></div>
+                    <strong>2. 錯誤</strong>
+                    <p>用戶點擊連結，喺一個假網站輸入佢哋嘅密碼。</p>
+                </div>
+                <div class="timeline-item" id="step3">
+                    <div class="timeline-dot"></div>
+                    <strong>3. 失陷</strong>
+                    <p>黑客即時獲取憑證。</p>
+                </div>
+                <div class="timeline-item" id="step4">
+                    <div class="timeline-dot"></div>
+                    <strong>4. 事件</strong>
+                    <p>黑客登入真正嘅帳戶，偷取公司資料。</p>
+                </div>
+            </div>
+
+            <button onclick="nextPhishStep()">下一步 ➡️</button>
+            <button onclick="resetPhish()" style="background:#7f8c8d;">重設</button>
+        </div>
+    </div>
+
+    <div id="ransom" class="section">
+        <div class="card">
+            <h2>勒索軟件：橫向移動</h2>
+            <p>點擊<strong>任何</strong>一部電腦嚟開始感染。睇下佢喺網絡中擴散得幾快。</p>
+            
+            <div class="network-grid" id="grid">
+            </div>
+            
+            <p style="text-align:center; font-size:0.9rem; color:#666; margin-top:20px;">
+                呢個就係點解我哋要即刻隔離被感染嘅電腦！
+            </p>
+            <button onclick="resetGrid()">重設網絡</button>
+        </div>
+    </div>
+
+    <div id="breach" class="section">
+        <div class="card">
+            <h2>模擬數據外洩搜尋</h2>
+            <p>模擬喺暗網上搜尋。（唔使驚，呢個係用假數據！）。</p>
+            
+            <div class="breach-search">
+                <input type="email" class="breach-input" placeholder="輸入任何電郵地址..." id="emailInput">
+                <button onclick="checkBreach()" style="margin-top:0;">搜尋</button>
+            </div>
+
+            <div id="breach-result" class="breach-result">
+                <h3 style="color:var(--primary);">⚠️ 噢！搵到資料。</h3>
+                <p>呢個電郵出現喺 <strong>3</strong> 次已知嘅數據外洩事件中。</p>
+                
+                <div style="margin-bottom:10px;">
+                    <strong>來源：</strong> Adobe 黑客事件 (2013)<br>
+                    <span class="leak-tag">電郵地址</span> <span class="leak-tag">密碼提示</span>
+                </div>
+                
+                <div style="margin-bottom:10px;">
+                    <strong>來源：</strong> LinkedIn 資料擷取 (2021)<br>
+                    <span class="leak-tag">職位</span> <span class="leak-tag">全名</span> <span class="leak-tag">個人檔案網址</span>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <strong>來源：</strong> Collection #1 (2019)<br>
+                    <span class="leak-tag">舊密碼</span>
+                </div>
+
+                <p style="font-size:0.9rem; color:#555;"><em>罪犯會點用呢啲資料：</em>佢哋會將呢啲碎片拼埋一齊，嚟盜用你嘅身份或者估你而家嘅密碼。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="section">
+        <div class="card">
+            <h2>事件識別</h2>
+            <p>閱讀場景，然後識別出係邊種威脅。</p>
+            
+            <div style="background:#f9e79f; padding:15px; border-radius:5px; margin-bottom:15px;">
+                <strong>場景：</strong>你開著部電腦。所有桌面圖示都唔見晒。背景圖片變成一個紅色畫面，上面有個倒數計時器同埋要求 500 美元比特幣嘅勒索訊息。
+            </div>
+
+            <button class="quiz-option" onclick="checkQuiz(false)">A. 釣魚攻擊</button>
+            <button class="quiz-option" onclick="checkQuiz(true)">B. 勒索軟件攻擊</button>
+            <button class="quiz-option" onclick="checkQuiz(false)">C. 資料洩漏</button>
+            
+            <div id="quiz-feedback" style="text-align:center; font-weight:bold; margin-top:10px;"></div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網絡安全課程 - 第七課學習伴侶應用程式
+</footer>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['phishing', 'ransom', 'breach', 'quiz'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    let currentStep = 1;
+    function nextPhishStep() {
+        if(currentStep < 4) {
+            currentStep++;
+            document.getElementById('step' + currentStep).classList.add('visible');
+        }
+    }
+    function resetPhish() {
+        currentStep = 1;
+        [2,3,4].forEach(i => document.getElementById('step'+i).classList.remove('visible'));
+    }
+
+    const grid = document.getElementById('grid');
+    const gridSize = 25;
+    let infectedIndices = [];
+
+    function initGrid() {
+        grid.innerHTML = "";
+        infectedIndices = [];
+        for(let i=0; i<gridSize; i++) {
+            const div = document.createElement('div');
+            div.className = 'computer';
+            div.innerHTML = '💻';
+            div.onclick = () => triggerInfection(i);
+            grid.appendChild(div);
+        }
+    }
+
+    function triggerInfection(index) {
+        if(infectedIndices.includes(index)) return;
+        
+        infect(index);
+        
+        let spreadInterval = setInterval(() => {
+            let newInfections = [];
+            infectedIndices.forEach(idx => {
+                const neighbors = [idx-1, idx+1, idx-5, idx+5];
+                neighbors.forEach(n => {
+                    if(n >= 0 && n < gridSize && !infectedIndices.includes(n) && !newInfections.includes(n)) {
+                        if(Math.random() > 0.7) newInfections.push(n);
+                    }
+                });
+            });
+
+            if(newInfections.length === 0 && infectedIndices.length === gridSize) {
+                clearInterval(spreadInterval);
+            }
+
+            newInfections.forEach(n => infect(n));
+
+        }, 500);
+    }
+
+    function infect(index) {
+        if(infectedIndices.includes(index)) return;
+        const comps = document.getElementsByClassName('computer');
+        comps[index].classList.add('infected');
+        comps[index].innerHTML = '☠️';
+        infectedIndices.push(index);
+    }
+
+    function resetGrid() {
+        initGrid();
+    }
+    initGrid();
+
+    function checkBreach() {
+        const input = document.getElementById('emailInput').value;
+        if(input.length < 5 || !input.includes('@')) {
+            alert("請輸入有效嘅電郵地址");
+            return;
+        }
+        document.getElementById('breach-result').style.display = 'block';
+    }
+
+    function checkQuiz(isCorrect) {
+        const fb = document.getElementById('quiz-feedback');
+        if(isCorrect) {
+            fb.innerText = "正確！紅色畫面同付款要求係典型嘅勒索軟件特徵。";
+            fb.style.color = "green";
+        } else {
+            fb.innerText = "唔啱。請重溫釣魚同資料洩漏嘅定義。";
+            fb.style.color = "red";
+        }
+    }
+
+</script>
+
+</body>
+</html>

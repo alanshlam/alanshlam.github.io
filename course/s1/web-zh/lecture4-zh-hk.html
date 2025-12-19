@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網絡安全第四課：安全瀏覽</title>
+    <style>
+        :root {
+            --primary: #16a085;
+            --accent: #f39c12;
+            --danger: #c0392b;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0;
+            background-color: #e8f6f3;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #0e6655;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #a3e4d7;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        .url-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .url-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        .url-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9f9;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        .domain-highlight {
+            background-color: var(--accent);
+            color: black;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+        .sub-highlight { color: #7f8c8d; }
+        .path-highlight { color: #95a5a6; font-size: 0.9em; }
+
+        .email-list {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+        }
+        .email-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: default;
+        }
+        .email-item:last-child { border-bottom: none; }
+        .email-link {
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .status-bar {
+            background: #ffebb5;
+            border: 1px solid #f39c12;
+            color: #d35400;
+            padding: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .vpn-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+        .laptop, .wifi, .internet {
+            font-size: 3rem;
+            z-index: 2;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        .connection-line {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 10px;
+            background: #bdc3c7;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .vpn-tunnel {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 25px;
+            background: var(--primary);
+            transform: translateY(-50%);
+            z-index: 0;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .data-packet {
+            position: absolute;
+            top: 50%;
+            left: 60px;
+            width: 15px;
+            height: 15px;
+            background: var(--danger);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            animation: moveData 2s infinite linear;
+        }
+        .data-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: white;
+            padding: 2px 5px;
+            border: 1px solid #ccc;
+        }
+
+        @keyframes moveData {
+            0% { left: 60px; }
+            100% { left: 90%; }
+        }
+
+        .crypto-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .crypto-output {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            font-family: monospace;
+            border-radius: 5px;
+            word-break: break-all;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第四課：安全瀏覽</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('urltool')">1. 網址解剖器</button>
+    <button class="tab-btn" onclick="showSection('hover')">2. 懸停道場</button>
+    <button class="tab-btn" onclick="showSection('vpn')">3. VPN 展示</button>
+    <button class="tab-btn" onclick="showSection('https')">4. HTTPS 實驗室</button>
+</div>
+
+<main>
+
+    <div id="urltool" class="section active">
+        <div class="card">
+            <h2>網址解剖器</h2>
+            <p>貼上或輸入一個複雜嘅網址，我哋會幫你標示出<strong>真正</strong>嘅域名。</p>
+            <p style="font-size:0.9rem; color:#666;">試下輸入：<em>https://netflix.account-update.com/login</em></p>
+            
+            <div class="url-input-container">
+                <input type="text" id="urlInput" class="url-input" placeholder="喺度貼上網址..." value="https://www.paypal.com.security-check.net/login">
+                <button onclick="dissectURL()">分析</button>
+            </div>
+
+            <div class="url-display" id="urlResult">
+                請點擊分析...
+            </div>
+            <div id="url-feedback" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <div id="hover" class="section">
+        <div class="card">
+            <h2>懸停道場</h2>
+            <p><strong>任務：</strong>將滑鼠懸停喺藍色連結上（手機就長按），睇下目的地。只係點擊安全嗰個。</p>
+            <p style="font-size: 0.9rem; background: #fff3cd; padding: 10px; border-radius: 5px;">
+                ⚠️ <strong>注意：</strong>留意連呃人嘅網站都用 <code>https://</code>！有鎖頭唔代表個網站就係誠實嘅。
+            </p>
+            
+            <div class="email-list">
+                <div class="email-item">
+                    <strong>寄件人：</strong> Amazon 客戶服務<br>
+                    <p>你嘅訂單已寄出。<span class="email-link" onmouseover="showLink('https://www.amaz0n-support.net/login')" onmouseout="hideLink()" onclick="checkLink(false)">追蹤包裹</span></p>
+                </div>
+                <div class="email-item">
+                    <strong>寄件人：</strong> 你老細<br>
+                    <p>請查閱會議記錄：<span class="email-link" onmouseover="showLink('https://docs.google.com/document/d/123')" onmouseout="hideLink()" onclick="checkLink(true)">會議記錄.doc</span></p>
+                </div>
+                <div class="email-item">
+                    <strong>寄件人：</strong> Netflix<br>
+                    <p>付款失敗。<span class="email-link" onmouseover="showLink('https://netflix.account-update.info/pay')" onmouseout="hideLink()" onclick="checkLink(false)">更新付款資料</span></p>
+                </div>
+            </div>
+
+            <div id="hover-status" class="status-bar"></div>
+            <div id="click-result" style="text-align:center; font-weight:bold; margin-top:15px; min-height:1.5em;"></div>
+        </div>
+    </div>
+
+    <div id="vpn" class="section">
+        <div class="card">
+            <h2>VPN：私人隧道</h2>
+            <p>睇下 VPN 點樣喺公共 Wi-Fi 保護你嘅資料。</p>
+            
+            <div style="text-align:center;">
+                <label style="font-size:1.2rem; cursor:pointer;">
+                    <input type="checkbox" id="vpnToggle" onchange="toggleVPN()"> 
+                    啟用 VPN 🛡️
+                </label>
+            </div>
+
+            <div class="vpn-diagram">
+                <div class="laptop">💻</div>
+                
+                <div class="connection-line"></div>
+                <div class="vpn-tunnel" id="tunnel"></div>
+                
+                <div class="data-packet" id="packet">
+                    <div class="data-label" id="packetLabel">Password123</div>
+                </div>
+
+                <div class="wifi">☕<br><small>咖啡店 Wi-Fi</small></div>
+            </div>
+            
+            <div id="vpn-desc" style="text-align:center; font-weight:bold; color:var(--danger);">
+                狀態：唔安全。咖啡店老闆（或者黑客）可以讀取你嘅資料。
+            </div>
+        </div>
+    </div>
+
+    <div id="https" class="section">
+        <div class="card">
+            <h2>HTTPS 加密實驗室</h2>
+            <p>輸入一段秘密訊息。睇下有冇 HTTPS，喺黑客眼中會有咩分別。</p>
+            
+            <input type="text" id="secretMsg" class="url-input" placeholder="輸入秘密..." onkeyup="updateCrypto()">
+
+            <div class="crypto-box" style="margin-top:20px;">
+                <div>
+                    <strong>HTTP (唔安全)：</strong>
+                    <div class="crypto-output" style="background:#fce4ec; color:#c0392b;" id="http-out">...</div>
+                </div>
+                <div>
+                    <strong>HTTPS (安全)：</strong>
+                    <div class="crypto-output" id="https-out">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網絡安全課程 - 第四課學習伴侶應用程式
+</footer>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['urltool', 'hover', 'vpn', 'https'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    function dissectURL() {
+        const input = document.getElementById('urlInput').value.trim();
+        const display = document.getElementById('urlResult');
+        const feedback = document.getElementById('url-feedback');
+
+        try {
+            let urlStr = input;
+            if(!urlStr.startsWith('http')) urlStr = 'https://' + urlStr;
+            
+            const url = new URL(urlStr);
+            const host = url.hostname;
+            
+            const parts = host.split('.');
+            let domain = "";
+            let tld = "";
+            let sub = "";
+
+            if (parts.length >= 2) {
+                tld = parts[parts.length - 1];
+                domain = parts[parts.length - 2];
+                if(parts.length > 2 && (tld === 'uk' || tld === 'au')) {
+                    tld = parts[parts.length - 2] + '.' + parts[parts.length - 1];
+                    domain = parts[parts.length - 3];
+                    sub = parts.slice(0, parts.length - 3).join('.');
+                } else {
+                    sub = parts.slice(0, parts.length - 2).join('.');
+                }
+            }
+
+            let html = "";
+            if(sub) html += `<span class="sub-highlight">${sub}.</span>`;
+            html += `<span class="domain-highlight">${domain}</span>`;
+            html += `<span class="sub-highlight">.${tld}</span>`;
+            
+            display.innerHTML = html;
+            feedback.innerHTML = `你正在瀏覽：<span style="color:var(--accent); font-size:1.2rem;">${domain.toUpperCase()}</span>`;
+
+        } catch (e) {
+            display.innerText = "無效網址";
+            feedback.innerText = "請輸入一個有效嘅網址。";
+        }
+    }
+
+    function showLink(url) {
+        const status = document.getElementById('hover-status');
+        status.style.display = 'block';
+        status.innerText = "目的地：" + url;
+    }
+
+    function hideLink() {
+        document.getElementById('hover-status').style.display = 'none';
+    }
+
+    function checkLink(isSafe) {
+        const res = document.getElementById('click-result');
+        if(isSafe) {
+            res.style.color = 'green';
+            res.innerText = "正確！呢個連結去一個合法嘅域名 (google.com)。";
+        } else {
+            res.style.color = 'red';
+            res.innerText = "砰！你點咗個釣魚連結。再睇真啲個網址！";
+        }
+    }
+
+    function toggleVPN() {
+        const isOn = document.getElementById('vpnToggle').checked;
+        const tunnel = document.getElementById('tunnel');
+        const packetLabel = document.getElementById('packetLabel');
+        const desc = document.getElementById('vpn-desc');
+
+        if(isOn) {
+            tunnel.style.opacity = '1';
+            packetLabel.innerText = "X9#f@1"; // Encrypted
+            desc.innerText = "狀態：安全。咖啡店老闆只會見到一條隧道，睇唔到你嘅資料。";
+            desc.style.color = "var(--primary)";
+        } else {
+            tunnel.style.opacity = '0';
+            packetLabel.innerText = "Password123";
+            desc.innerText = "狀態：唔安全。咖啡店老闆（或者黑客）可以讀取你嘅資料。";
+            desc.style.color = "var(--danger)";
+        }
+    }
+
+    function updateCrypto() {
+        const txt = document.getElementById('secretMsg').value;
+        const httpDiv = document.getElementById('http-out');
+        const httpsDiv = document.getElementById('https-out');
+
+        if(txt.length === 0) {
+            httpDiv.innerText = "...";
+            httpsDiv.innerText = "...";
+            return;
+        }
+
+        httpDiv.innerText = txt;
+        httpsDiv.innerText = pseudoHash(txt);
+    }
+
+    function pseudoHash(str) {
+        let hash = "";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        for(let i=0; i<str.length; i++) {
+            hash += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return hash + "=";
+    }
+
+</script>
+
+</body>
+</html>
