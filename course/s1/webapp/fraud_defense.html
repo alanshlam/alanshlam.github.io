@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKMA Fraud Defense Academy</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ff4757;
+            --success: #2ed573;
+            --dark: #1e272e;
+            --darker: #111518;
+            --light: #f1f2f6;
+            --card-bg: #2f3640;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, var(--dark), var(--card-bg));
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .score-board { font-size: 0.9rem; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; }
+
+        /* Navigation */
+        nav {
+            background: var(--card-bg);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--light);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2 { color: var(--primary); }
+
+        /* MODULE 1: FLIP CARDS */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .flip-card-front { background-color: var(--card-bg); border: 1px solid var(--secondary); }
+        .flip-card-back { background-color: var(--secondary); color: white; transform: rotateY(180deg); }
+
+        /* MODULE 2: SIMULATOR */
+        .phone-mockup {
+            background: black;
+            border: 4px solid #333;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            height: 500px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-screen {
+            flex: 1;
+            background: #1a1a1a;
+            padding: 15px;
+            overflow-y: auto;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; }
+        .msg.incoming { background: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.outgoing { background: var(--secondary); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg.system { background: transparent; color: #888; text-align: center; align-self: center; font-size: 0.8rem; }
+
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-danger { background: var(--accent); color: white; }
+        .btn-safe { background: var(--success); color: #1e272e; }
+
+        /* MODULE 3: QUIZ */
+        .quiz-container { background: var(--card-bg); padding: 20px; border-radius: 10px; }
+        .option {
+            display: block;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option:hover { background: rgba(255,255,255,0.1); }
+        .option.correct { background: var(--success); color: #1e272e; }
+        .option.wrong { background: var(--accent); color: white; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛡️ Fraud Defense Academy</div>
+        <div class="score-board">Security Level: <span id="score">0</span> XP</div>
+    </header>
+
+    <nav>
+        <button onclick="switchTab('home')" class="active" id="btn-home">Home</button>
+        <button onclick="switchTab('learn')" id="btn-learn">Study</button>
+        <button onclick="switchTab('sim')" id="btn-sim">Simulator</button>
+        <button onclick="switchTab('quiz')" id="btn-quiz">Exam</button>
+    </nav>
+
+    <main>
+        <!-- HOME SECTION -->
+        <section id="home" class="section active">
+            <div style="text-align: center; padding: 40px 0;">
+                <h1>Welcome, Agent.</h1>
+                <p>Financial fraud is rising in 2025. Your mission is to master the defenses against Phishing, Impersonation, and Mule Scams.</p>
+                <br>
+                <div style="background: rgba(46, 213, 115, 0.1); padding: 20px; border-left: 4px solid var(--success); text-align: left;">
+                    <h3>The Golden Rule</h3>
+                    <p>The HKMA and Banks will <strong>NEVER</strong> send SMS or emails with embedded links asking for transactions or passwords.</p>
+                </div>
+                <br>
+                <button onclick="switchTab('learn')" class="btn-action btn-safe" style="width: 200px;">Start Training</button>
+            </div>
+        </section>
+
+        <!-- LEARN SECTION -->
+        <section id="learn" class="section">
+            <h2>Knowledge Base</h2>
+            <p>Click cards to reveal the truth.</p>
+            <div class="card-grid">
+                <!-- Card 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>🎣 Phishing</h3>
+                            <p>(Tap to reveal)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Scammers use fake SMS/Emails with links to steal passwords. <strong>Defense:</strong> Never click links in texts.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>🎭 Impersonation</h3>
+                            <p>(Tap to reveal)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Callers claiming to be HKMA/Police demanding money. <strong>Fact:</strong> Officials never ask for transfers by phone.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>🐴 Money Mules</h3>
+                            <p>(Tap to reveal)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Lending your bank account to others to receive cash. <strong>Result:</strong> Prison for money laundering.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>🛡️ E-Banking ABC</h3>
+                            <p>(Tap to reveal)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p><strong>A:</strong> Authenticate (Biometrics)<br><strong>B:</strong> Bye to unused limits<br><strong>C:</strong> Cancel suspicious alerts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIMULATOR SECTION -->
+        <section id="sim" class="section">
+            <h2>Threat Simulator</h2>
+            <p>You are receiving messages. Choose the correct action to survive.</p>
+            
+            <div class="phone-mockup">
+                <div class="chat-screen" id="chat-display">
+                    <div class="msg system">System: Connected to Network...</div>
+                    <div class="msg incoming">
+                        <strong>Sender: HK-Bank</strong><br>
+                        Alert: Your account ending 8842 has irregular activity. Click here to verify: <u>www.hk-bank-security-verify.com</u>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn-action btn-danger" onclick="handleSimAction('click')">Click Link</button>
+                    <button class="btn-action btn-safe" onclick="handleSimAction('ignore')">Ignore & Report</button>
+                </div>
+            </div>
+            <div id="sim-feedback" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz" class="section">
+            <h2>Final Exam</h2>
+            <div id="quiz-content" class="quiz-container">
+                <!-- Question 1 -->
+                <div class="question-block">
+                    <h3>1. You receive an SMS from "The Police" asking for your e-banking password to clear your name. What do you do?</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">Give them the password immediately.</div>
+                    <div class="option" onclick="checkAnswer(this, true)">Hang up and call the official station number.</div>
+                    <div class="option" onclick="checkAnswer(this, false)">Text them back to ask why.</div>
+                </div>
+                <br>
+                <!-- Question 2 -->
+                <div class="question-block">
+                    <h3>2. A friend offers you $1000 to use your bank account to receive a company payment. Is this safe?</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">Yes, it's easy money.</div>
+                    <div class="option" onclick="checkAnswer(this, true)">No, this is a Money Mule scam.</div>
+                </div>
+                <br>
+                <!-- Question 3 -->
+                <div class="question-block">
+                    <h3>3. What is the "Scameter"?</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">A device to measure internet speed.</div>
+                    <div class="option" onclick="checkAnswer(this, true)">A tool to check if a phone number or URL is risky.</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Based on 2025 HKMA "Beware of Fraudsters" Guidelines. For educational purposes only.</p>
+    </footer>
+
+    <script>
+        // STATE
+        let xp = 0;
+        let currentScenario = 0;
+
+        // SCENARIOS FOR SIMULATOR
+        const scenarios = [
+            {
+                text: "<strong>Sender: HK-Bank</strong><br>Alert: Your account has irregular activity. Click here: <u>www.hk-bank-secure.com</u>",
+                isScam: true,
+                correctAction: 'ignore',
+                feedbackCorrect: "Correct! Banks NEVER send links in SMS. (+50 XP)",
+                feedbackWrong: "FAIL! You clicked a phishing link. Your password was stolen."
+            },
+            {
+                text: "<strong>Caller: Investment Pro</strong><br>Hey! I have a crypto coin that guarantees 20% returns in 2 days. Want to buy?",
+                isScam: true,
+                correctAction: 'ignore',
+                feedbackCorrect: "Smart. High returns with low risk is always a lie. (+50 XP)",
+                feedbackWrong: "Ouch. You lost your savings to a crypto scam."
+            },
+            {
+                text: "<strong>Sender: Official Bank App</strong><br>Transaction of $500 approved. If this wasn't you, please log in to the official app to dispute.",
+                isScam: false, // This is tricky - it's a notification telling you to go to the REAL app, not a link.
+                correctAction: 'ignore', // In this game context, "Click Link" is the danger button. Ignoring/going to real app is safe.
+                feedbackCorrect: "Correct. Always use the official app to check, never click links in text.",
+                feedbackWrong: "Careful. While the notification might be real, never click links if provided."
+            }
+        ];
+
+        // NAVIGATION
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // SIMULATOR LOGIC
+        function handleSimAction(action) {
+            const feedbackEl = document.getElementById('sim-feedback');
+            const chatDisplay = document.getElementById('chat-display');
+            const scenario = scenarios[currentScenario];
+
+            if (scenario.correctAction === action) {
+                // Win
+                feedbackEl.innerHTML = `<span style="color:var(--success)">${scenario.feedbackCorrect}</span>`;
+                xp += 50;
+                updateScore();
+                
+                // Add user response to chat
+                chatDisplay.innerHTML += `<div class="msg outgoing">${action === 'ignore' ? 'Blocked/Reported' : 'Clicked'}</div>`;
+                
+                // Next Scenario after delay
+                setTimeout(() => {
+                    currentScenario = (currentScenario + 1) % scenarios.length;
+                    loadScenario();
+                }, 2000);
+
+            } else {
+                // Lose
+                feedbackEl.innerHTML = `<span style="color:var(--accent)">${scenario.feedbackWrong}</span>`;
+                xp = Math.max(0, xp - 20);
+                updateScore();
+                chatDisplay.innerHTML += `<div class="msg outgoing">${action === 'ignore' ? 'Blocked/Reported' : 'Clicked'}</div>`;
+            }
+        }
+
+        function loadScenario() {
+            const chatDisplay = document.getElementById('chat-display');
+            chatDisplay.innerHTML = `<div class="msg system">New Message Received...</div>`;
+            
+            setTimeout(() => {
+                chatDisplay.innerHTML += `<div class="msg incoming">${scenarios[currentScenario].text}</div>`;
+                document.getElementById('sim-feedback').innerHTML = "";
+            }, 500);
+        }
+
+        // QUIZ LOGIC
+        function checkAnswer(element, isCorrect) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return; // Already answered
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                xp += 20;
+                updateScore();
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = xp;
+        }
+
+        // INIT
+        loadScenario();
+
+    </script>
+</body>
+</html>
