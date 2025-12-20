@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全 - 第三課</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+            </div>
+            <div class="slide-footer">
+                日常網路安全要點與應急響應
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 11</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p3-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>密碼管理與多重身份驗證</h1>
+                <hr>
+                <h3>您數位王國的鑰匙</h3>
+                <p><strong>第三課</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h3>密碼的問題</h3>
+                <ul>
+                    <li>我們會忘記。</li>
+                    <li>我們設得太簡單。</li>
+                    <li><strong>我們到處重複使用。</strong></li>
+                </ul>
+                <p>當一個網站被駭，罪犯會用您洩漏的密碼嘗試登入您的電子郵件、銀行和社群媒體。</p>
+                <p style="background:#f8d7da; color:#721c24; padding:10px; border-radius:5px;"><strong>這是帳戶被盜用的頭號方式。</strong></p>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h3>什麼樣的密碼才算<strong>強</strong>？</h3>
+                <table>
+                    <tr>
+                        <th>舊方法 (弱) &#128577;</th>
+                        <th>新方法 (強) &#128512;</th>
+                    </tr>
+                    <tr>
+                        <td><code>P@ssw0rd!</code></td>
+                        <td><code>CorrectHorseBatteryStaple</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>Jsmith2024!</code></td>
+                        <td><code>GreenCarpetSleepsLoudly</code></td>
+                    </tr>
+                    <tr>
+                        <td>短而複雜</td>
+                        <td><strong>長而好記</strong></td>
+                    </tr>
+                </table>
+                <p><strong>長度比複雜度更重要。</strong></p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>問題是：</h3>
+                <p>您記不住幾十個又長又獨特的密碼。</p>
+                <hr>
+                <h2>解決方案是：</h2>
+                <h1>您根本不必記。</h1>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>使用密碼管理器</h3>
+                <p>密碼管理器是一個安全、加密的保險庫，用於存放您所有的密碼。</p>
+                <ul>
+                    <li>您只需要記住<strong>一個</strong>非常強的主密碼。</li>
+                    <li>管理器會處理剩下的事。</li>
+                </ul>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>密碼管理器如何幫助您</h3>
+                <ul>
+                    <li>為每個網站<strong>產生</strong>超長、隨機的密碼。</li>
+                    <li>安全地為您<strong>記住</strong>所有密碼。</li>
+                    <li>登入時為您<strong>自動填寫</strong>。</li>
+                    <li><strong>額外好處：</strong>幫助您防範釣魚網站！</li>
+                </ul>
+                <p><strong>從您手機上已有的那個開始使用吧！</strong> <br>(Google 密碼管理員 / Apple 鑰匙圈)</p>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h2>終極升級</h2>
+                <h1>多重身份驗證 (MFA)</h1>
+                <p><strong>這是什麼：</strong>證明真的是您本人登入。</p>
+                <ul>
+                    <li><strong>您知道的資訊</strong>（您的密碼）</li>
+                    <li><strong>加上</strong></li>
+                    <li><strong>您擁有的物品</strong>（您的手機）</li>
+                </ul>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>您為什麼需要 MFA</h3>
+                <p>即使罪犯偷了您的密碼，他們也<strong>無法</strong>登入您的帳戶，因為他們沒有您的手機。</p>
+                <p style="background:#e8f4fc; padding:15px; border-radius:5px;">這是您可以為保護重要帳戶做的<strong>最好的一件事</strong>。</p>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>常見的 MFA 類型</h3>
+                <p><strong>好：簡訊 / Text Message</strong><br>
+                會傳送一組代碼給您。聊勝於無。</p>
+                
+                <p><strong>更好：驗證器應用程式</strong><br>
+                您手機上的應用程式（Google/Microsoft Authenticator）會提供一個不斷變更的代碼。</p>
+                
+                <p><strong>最好：推送通知</strong><br>
+                一個簡單的「是的，這是我」彈出視窗在您的手機上。安全又方便。</p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>您的行動計畫</h3>
+                <ol>
+                    <li><strong>今天就在您的主要電子郵件帳戶上啟用 MFA。</strong>
+                        <br>前往「安全性設定」並依照指示操作。如果可能，請使用驗證器應用程式。
+                    </li>
+                    <br>
+                    <li><strong>開始使用密碼管理器。</strong>
+                        <br>從您的瀏覽器或手機內建的那個開始。讓它儲存您的下一個新密碼。
+                    </li>
+                </ol>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>感謝您的聆聽！</p>
+                    <p>現在開放問答時間，歡迎針對今天的議題提問。</p>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>

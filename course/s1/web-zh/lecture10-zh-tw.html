@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全第十課：AI 與詐騙</title>
+    <style>
+        :root {
+            --ai-purple: #8e44ad;
+            --tech-blue: #3498db;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0;
+            background-color: #fcf3cf;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: var(--ai-purple);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #6c3483;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #d2b4de;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid #f1c40f; font-weight: bold; }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--ai-purple);
+        }
+
+        h2 { margin-top: 0; color: var(--ai-purple); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        button {
+            background: var(--ai-purple); color: white; border: none; padding: 10px 20px; 
+            border-radius: 5px; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+
+        .face-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .face-card {
+            width: 150px;
+            height: 150px;
+            background: #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid transparent;
+            font-size: 3rem;
+        }
+        .face-card.selected { border-color: var(--tech-blue); }
+        .face-label {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 5px 0;
+            display: none;
+        }
+
+        .waveform {
+            height: 60px;
+            background: #333;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .wave-bar {
+            width: 4px;
+            background: var(--tech-blue);
+            margin: 0 2px;
+            animation: wave 1s infinite ease-in-out;
+        }
+        @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 40px; } }
+        
+        .clone-process {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .arrow { font-size: 1.5rem; color: #7f8c8d; }
+
+        .email-compare {
+            display: flex;
+            gap: 20px;
+        }
+        .email-box {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            font-size: 0.9rem;
+        }
+        .arrow-right { font-size: 2rem; align-self: center; color: var(--ai-purple); }
+
+        .video-sim {
+            height: 250px;
+            background: #000;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+        }
+        .glitch-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 0, 0, 0.2);
+            display: none;
+            pointer-events: none;
+        }
+        .hotspot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px dashed yellow;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+        .hotspot:hover { opacity: 1; background: rgba(255, 255, 0, 0.2); }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第十課：AI 與詐騙</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('faces')">1. AI vs 真人</button>
+    <button class="tab-btn" onclick="showSection('voice')">2. 語音複製</button>
+    <button class="tab-btn" onclick="showSection('rewrite')">3. 升級</button>
+    <button class="tab-btn" onclick="showSection('deepfake')">4. Deepfake 偵測</button>
+</div>
+
+<main>
+
+    <div id="faces" class="section active">
+        <div class="card">
+            <h2>挑戰：找出 AI</h2>
+            <p>這些「人」中有一位不存在。他們是由 AI 產生的。點擊假的那個。</p>
+            
+            <div class="face-grid">
+                <div class="face-card" onclick="checkFace(false, this)">
+                    👩‍💼
+                    <div class="face-label">真人：圖庫照片</div>
+                </div>
+                <div class="face-card" onclick="checkFace(true, this)">
+                    👨‍💻
+                    <div class="face-label">假的：看看眼鏡！</div>
+                </div>
+                <div class="face-card" onclick="checkFace(false, this)">
+                    👷
+                    <div class="face-label">真人：圖庫照片</div>
+                </div>
+            </div>
+            
+            <div id="face-result" style="text-align:center; margin-top:20px; font-weight:bold;"></div>
+            <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:20px;">
+                （在真實的演示中，我們會使用高解析度照片。AI 經常會搞砸眼鏡、耳環或背景細節。）
+            </p>
+        </div>
+    </div>
+
+    <div id="voice" class="section">
+        <div class="card">
+            <h2>「祖父母詐騙」2.0</h2>
+            <p>看看複製聲音有多容易。</p>
+            
+            <div class="clone-process">
+                <div style="text-align:center;">
+                    <div style="font-size:2rem;">📱</div>
+                    <small>3 秒的<br>TikTok 音訊</small>
+                </div>
+                <div class="arrow">➡️</div>
+                <div style="text-align:center;">
+                    <div style="font-size:2rem;">🤖</div>
+                    <small>AI 工具</small>
+                </div>
+                <div class="arrow">➡️</div>
+                <div style="text-align:center;">
+                    <div style="font-size:2rem;">😈</div>
+                    <small>詐騙電話</small>
+                </div>
+            </div>
+
+            <button onclick="playSim()">模擬通話 📞</button>
+            
+            <div id="voice-sim" style="display:none; margin-top:20px;">
+                <div class="waveform">
+                    <div class="wave-bar" style="animation-duration:0.5s"></div>
+                    <div class="wave-bar" style="animation-duration:0.7s"></div>
+                    <div class="wave-bar" style="animation-duration:0.4s"></div>
+                    <div class="wave-bar" style="animation-duration:0.6s"></div>
+                    <div class="wave-bar" style="animation-duration:0.5s"></div>
+                </div>
+                <p style="text-align:center; font-style:italic;">「嗨，奶奶...是我...我遇到麻煩了...」</p>
+                
+                <div style="background:#fff3cd; padding:10px; border-radius:5px; margin-top:10px;">
+                    <strong>防禦策略：</strong>要求說出<strong>安全詞</strong>。「我們第一隻狗叫什麼名字？」AI 不會知道。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rewrite" class="section">
+        <div class="card">
+            <h2>文法盾牌已失效</h2>
+            <p>看看 AI 如何立即修正詐騙犯的蹩腳英文。</p>
+            
+            <div class="email-compare">
+                <div class="email-box">
+                    <strong>之前 (容易識破)：</strong><br><br>
+                    「最親愛的，<br>
+                    我是奈及利亞王子。我有數百萬美元給你。請立即傳送銀行資料以便轉帳。」
+                </div>
+                
+                <div class="arrow-right">👉</div>
+                
+                <div class="email-box" id="ai-email">
+                    <strong>AI 之後 (難以識破)：</strong><br><br>
+                    <span style="color:#aaa; font-style:italic;">（點擊按鈕以產生）</span>
+                </div>
+            </div>
+            
+            <button onclick="rewriteEmail()">啟動 AI 改寫</button>
+        </div>
+    </div>
+
+    <div id="deepfake" class="section">
+        <div class="card">
+            <h2>Deepfake 偵測器實驗室</h2>
+            <p>您正在與「老闆」進行視訊通話。找出證明這是偽造的破綻。</p>
+            <p><strong>任務：</strong>點擊臉部看起來「有問題」的區域。</p>
+            
+            <div class="video-sim">
+                <div style="text-align:center;">
+                    <div style="font-size:5rem;">🤵</div>
+                    <div style="font-size:0.8rem;">CEO_視訊通話.mp4</div>
+                </div>
+                
+                <div class="hotspot" style="top:160px; left:50%; transform:translateX(-50%);" onclick="foundGlitch()"></div>
+                
+                <div class="glitch-overlay" id="glitch-fx"></div>
+            </div>
+            
+            <div id="deep-result" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+            
+            <div style="margin-top:20px;">
+                <strong>要尋找的線索：</strong>
+                <ul>
+                    <li>頭髮/頸部周圍邊緣模糊。</li>
+                    <li>不自然的眨眼模式。</li>
+                    <li>側身轉動時的奇怪動作。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網路安全課程 - 第十課互動夥伴應用程式
+</footer>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['faces', 'voice', 'rewrite', 'deepfake'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    function checkFace(isAI, el) {
+        document.querySelectorAll('.face-label').forEach(l => l.style.display = 'none');
+        document.querySelectorAll('.face-card').forEach(c => c.classList.remove('selected'));
+        
+        el.classList.add('selected');
+        el.querySelector('.face-label').style.display = 'block';
+        
+        const res = document.getElementById('face-result');
+        if(isAI) {
+            res.innerText = "正確！這是 AI。注意看奇怪的眼鏡框融入皮膚的樣子。";
+            res.style.color = "green";
+        } else {
+            res.innerText = "不正確。這是一張真實的圖庫照片。";
+            res.style.color = "red";
+        }
+    }
+
+    function playSim() {
+        document.getElementById('voice-sim').style.display = 'block';
+    }
+
+    function rewriteEmail() {
+        const box = document.getElementById('ai-email');
+        box.innerHTML = `
+            <strong>AI 之後 (難以識破)：</strong><br><br>
+            「嗨 [姓名]，<br>
+            希望您這週過得愉快。我有一個投資機會想私下與您討論。有空時請告訴我。<br>
+            祝好，<br>
+            James」
+        `;
+        box.style.border = "2px solid var(--danger)";
+    }
+
+    function foundGlitch() {
+        const res = document.getElementById('deep-result');
+        const fx = document.getElementById('glitch-fx');
+        
+        res.innerText = "抓到了！頸部/衣領區域很模糊。這是個 Deepfake。";
+        res.style.color = "green";
+        
+        fx.style.display = "block";
+        setTimeout(() => { fx.style.display = "none"; }, 500);
+    }
+</script>
+
+</body>
+</html>

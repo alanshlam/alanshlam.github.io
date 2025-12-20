@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全 - 第八課</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .highlight-danger {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+        
+        .step-box {
+            background: #e8f4fc;
+            border-left: 5px solid var(--accent-color);
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+            </div>
+            <div class="slide-footer">
+                日常網路安全要點與應急響應
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 9</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p8-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>網路事件急救</h1>
+                <hr>
+                <h3>當事情出錯時該怎麼辦</h3>
+                <p><strong>第八課</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h3>事件應對的兩大黃金法則</h3>
+                <table>
+                    <tr>
+                        <th width="50%" style="text-align:center; font-size:2em;">&#128524;</th> 
+                        <th width="50%" style="text-align:center; font-size:2em;">&#128465; &#10060;</th> 
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;"><h2>1. 不要驚慌。</h2><p>深呼吸。遵循程序。</p></td>
+                        <td style="text-align:center;"><h2>2. 不要刪除任何東西。</h2><p>刪除檔案或電子郵件會銷毀調查人員需要的證據。</p></td>
+                    </tr>
+                </table>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h3>情境一：「我點擊了一個釣魚連結並輸入了我的密碼！」</h3>
+                
+                <div class="step-box">
+                    <strong>1. 更改您的密碼</strong><br>
+                    立即前往真實網站更改您的密碼。在您重複使用該密碼的任何其他網站上也要更改。
+                </div>
+                
+                <div class="step-box">
+                    <strong>2. 報告事件</strong><br>
+                    告訴您的IT/安全部門（在公司）。致電您銀行的詐騙部門（如果是銀行密碼）。
+                </div>
+                
+                <div class="step-box">
+                    <strong>3. 升級您的安全性</strong><br>
+                    開啟多重身份驗證 (MFA)。
+                </div>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>情境二：「我看到一則勒索軟體訊息！」</h3>
+                
+                <div class="step-box" style="border-color: var(--danger-color);">
+                    <strong class="highlight-danger">1. 隔離！</strong><br>
+                    <strong>立即中斷網路連線。</strong>拔掉網路線或關閉 Wi-Fi。這可以阻止其擴散。
+                </div>
+                
+                <div class="step-box">
+                    <strong>2. 保持開機</strong><br>
+                    <strong>不要關閉電源。</strong>這可以保存證據。
+                </div>
+                
+                <div class="step-box">
+                    <strong>3. 報告！</strong><br>
+                    <strong>致電</strong>您的IT/安全部門。這是緊急情況。
+                </div>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>勒索軟體復原</h3>
+                <ul>
+                    <li>您唯一安全的復原選項是<strong>從乾淨的備份中還原。</strong></li>
+                    <li style="margin-top:20px; font-size:1.2em;" class="highlight-danger"><strong>不要支付贖金。</strong></li>
+                </ul>
+                <div style="background:#f8d7da; border: 1px solid #f5c6cb; padding:15px; border-radius:5px; margin-top:10px;">
+                    <ul>
+                        <li>這會資助犯罪活動。</li>
+                        <li>無法保證您能拿回您的檔案。</li>
+                    </ul>
+                </div>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>情境三：「我的資料在一次外洩事件中被洩漏了。」</h3>
+                
+                <div class="step-box">
+                    <strong>1. 換鎖</strong><br>
+                    前往被駭的網站並<strong>更改您的密碼。</strong>在您重複使用該密碼的任何其他地方也要更改。
+                </div>
+
+                <div class="step-box">
+                    <strong>2. 保持高度警覺</strong><br>
+                    留意針對性的<strong>魚叉式釣魚</strong>電子郵件。罪犯會利用您被盜的資訊來對付您。
+                </div>
+
+                <div class="step-box">
+                    <strong>3. 監控您的帳戶</strong><br>
+                    檢查您的信用卡和銀行對帳單是否有詐欺活動。
+                </div>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>在工作中報告事件是團隊合作</h3>
+                <h2 style="color:var(--primary-color);">您不會惹上麻煩。<br>您正在幫助保護團隊。</h2>
+                <hr>
+                <p>隱瞞錯誤會讓攻擊者造成更大的損害。</p>
+                <p><strong>快速誠實地報告安全問題。</strong></p>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>您的行動計畫</h3>
+                <ol>
+                    <li><strong>找出</strong>在您的工作場所發生安全事件時該聯絡誰。
+                        <br><em>是 IT 服務台嗎？安全熱線？還是某個電子郵件地址？</em>
+                    </li>
+                    <br>
+                    <li><strong>儲存</strong>該聯絡資訊，以便您能輕易找到。</li>
+                </ol>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>感謝您的聆聽！</p>
+                    <p>現在開放問答時間，歡迎針對今天的議題提問。</p>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>

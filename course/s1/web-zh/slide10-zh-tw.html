@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全 - 第十課</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .step-box {
+            background: #e8f4fc;
+            border-left: 5px solid var(--accent-color);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 5px 5px 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+            </div>
+            <div class="slide-footer">
+                日常網路安全要點與應急響應
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 12</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p10-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>AI 時代的詐騙與騙局</h1>
+                <hr>
+                <h3>在更聰明的世界中保持安全</h3>
+                <p><strong>第十課</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h3>AI 正在「升級」舊有騙局</h3>
+                <p>罪犯正在使用人工智慧讓他們的騙局更有效。</p>
+                <ul>
+                    <li><strong>釣魚：</strong>現在文法完美。</li>
+                    <li><strong>語音詐騙：</strong>現在有逼真的語音複製。</li>
+                    <li><strong>假個人檔案：</strong>現在有照片般逼真的假人。</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h3>釣魚 2.0</h3>
+                <table>
+                    <tr>
+                        <th width="50%">AI 之前</th>
+                        <th width="50%">AI 之後</th>
+                    </tr>
+                    <tr>
+                        <td>文法和拼寫差。</td>
+                        <td>文法和拼寫完美。</td>
+                    </tr>
+                    <tr>
+                        <td>尷尬、通用的文字。</td>
+                        <td>有說服力、針對性、專業的文字。</td>
+                    </tr>
+                </table>
+                <p style="margin-top:20px;"><strong>「尋找文法錯誤」這個舊線索已不再可靠。</strong></p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>AI 語音複製詐騙</h3>
+                <p>詐騙者可以從公開影片中截取幾秒鐘的聲音，並創造出一個逼真的複製品。</p>
+                <hr>
+                <h2 style="color:var(--danger-color);">電話中「有麻煩的孫子」的聲音現在可以聽起來<strong>和您真正的孫子一模一樣。</strong></h2>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>防範語音詐騙的方法</h3>
+                <h2>掛斷再回撥原則</h2>
+                <p>如果您接到一通急切、高壓的電話要求匯款：</p>
+                <ol>
+                    <li><strong>掛斷。</strong>即使聽起來很真實。</li>
+                    <li>用您知道是他們的電話號碼<strong>回撥</strong>。</li>
+                    <li><strong>核實</strong>情況。</li>
+                </ol>
+                <p><em>您也可以為緊急情況設定一個秘密的<strong>家庭安全詞</strong>。</em></p>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>Deepfakes：眼見不再為憑</h3>
+                <p><strong>Deepfakes</strong> 是 AI 生成的影片，可以讓人們看起來像在說或做他們從未做過的事。</p>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>案例研究：2500 萬美元的 Deepfake 詐騙案</h3>
+                <p><strong>事件：</strong>2024 年，Arup 公司的一名財務人員被騙，向詐騙者支付了 <strong>2560 萬美元</strong>。</p>
+                <p><strong>手法：</strong></p>
+                <div class="step-box">
+                    1. 從一封來自「財務長」的可疑電子郵件開始。
+                </div>
+                <div class="step-box">
+                    2. 為了「核實」，該員工加入了一個視訊通話。
+                </div>
+                <div class="step-box" style="border-color:var(--danger-color);">
+                    3. 通話中的每個人——財務長、其他同事——都是 <strong>deepfake</strong>。
+                </div>
+                <div class="step-box">
+                    4. 該員工相信指令是真的，於是進行了付款。
+                </div>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>從 Deepfake 詐騙案學到的教訓</h3>
+                <h2 style="color:var(--primary-color);">驗證必須是跨頻道的</h2>
+                <p>該員工以為視訊通話就是驗證，但罪犯控制了整個頻道。</p>
+                <p style="background:#e8f4fc; padding:15px; border-radius:5px;"><strong>如果您收到敏感的數位請求，請透過您已信任的獨立頻道進行驗證。</strong></p>
+                <ul>
+                    <li>打電話給已知的號碼。</li>
+                    <li>使用官方的內部聊天工具。</li>
+                    <li>走到大廳親自詢問。</li>
+                </ul>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>您在 AI 時代的第一道防線</h3>
+                <h1 style="font-size: 4em; color: var(--accent-color); text-align:center; margin: 30px 0;">暫 停</h1>
+                <p>AI 詐騙的設計就是要讓您情緒化並迅速採取行動。</p>
+                <p>最強大的防禦是在您點擊、傳送或回覆之前，<strong>停下來思考</strong>。</p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>應對未來威脅的永恆防禦</h3>
+                <table style="text-align:center;">
+                    <tr>
+                        <th style="text-align:center;">&#128222;<br>驗證</th>
+                        <th style="text-align:center;">&#128737;<br>懷疑</th>
+                        <th style="text-align:center;">&#128272;<br>基礎</th>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align:top;">透過不同管道確認請求。</td>
+                        <td style="vertical-align:top;">質疑緊急和不尋常的請求。</td>
+                        <td style="vertical-align:top;">我們學到的東西（MFA、密碼、更新）比以往任何時候都更重要。</td>
+                    </tr>
+                </table>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <h3>您的安全工具包：課程回顧</h3>
+                <ol>
+                    <li><strong>密碼管理器：</strong>建立並儲存強大、獨特的密碼。</li>
+                    <li><strong>MFA：</strong>您最重要帳戶的終極門鎖。</li>
+                    <li><strong>更新：</strong>保持您的軟體維護和修補。</li>
+                    <li><strong>備份：</strong>您應對災難的保險。</li>
+                    <li><strong>懷疑精神：</strong>您最好、最永恆的防禦。</li>
+                </ol>
+            `
+        },
+        {
+            id: 12,
+            html: `
+                <div class="question-slide">
+                    <h2 style="color:var(--primary-color);">不要害怕未來。<br>做一個用心且有能力的用戶。</h2>
+                    <hr>
+                    <h1>有問題嗎？</h1>
+                    <h1>謝謝！</h1>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>

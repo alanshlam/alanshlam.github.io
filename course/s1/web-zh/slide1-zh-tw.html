@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日常生活中的網路安全</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .fake-email {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 15px 0;
+        }
+
+        .ransomware-alert {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50;
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+            </div>
+            <div class="slide-footer">
+                日常網路安全要點與應急響應
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 11</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p1-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>日常生活中的網路安全</h1>
+                <hr>
+                <h2>第一課：了解基本環境</h2>
+                <p><strong>保護您數位家園的指南。</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h2>今日議程</h2>
+                <p><strong>第一課：了解基本環境</strong></p>
+                <ul>
+                    <li>什麼是網路安全？</li>
+                    <li>「數位房屋」類比</li>
+                    <li>常見風險：釣魚、惡意軟體等等</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h1>第一課：網路安全概念與常見風險</h1>
+                <hr>
+                <p>讓我們深入探討核心概念。</p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>將安全想像成一間房屋</h3>
+                <ul>
+                    <li><strong>您的裝置</strong> 就是您的房子。</li>
+                    <li><strong>您的資訊</strong> (資料) 就是您的貴重物品。</li>
+                    <li><strong>網際網路</strong> 就是您住的社區。</li>
+                </ul>
+                <p style="background:#e8f4fc; padding:10px; border-radius:5px;"><strong>網路安全就是您如何鎖好您數位世界的門窗。</strong></p>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>我們要保護什麼？三大支柱</h3>
+                <ol>
+                    <li><strong>機密性 (保守秘密)</strong>
+                        <br>確保只有授權的人才能看到您的資訊。
+                    </li>
+                    <li><strong>完整性 (保持真實)</strong>
+                        <br>確保您的資訊未經許可不會被更改。
+                    </li>
+                    <li><strong>可用性 (保持運作)</strong>
+                        <br>確保您在需要時可以存取您的資訊。
+                    </li>
+                </ol>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h2>常見風險 #1：網路釣魚 (Phishing)</h2>
+                <p><em>(模仿專家)</em></p>
+                <ul>
+                    <li><strong>這是什麼：</strong>一種誘騙您交出密碼或財務資料的騙局。</li>
+                    <li><strong>運作方式：</strong>一封假冒來自您信任公司（例如您的銀行、Netflix、Microsoft）的假電子郵件或簡訊。</li>
+                    <li><strong>目標：</strong>引誘您點擊一個連結，然後在一個假網站輸入您的登入資料。</li>
+                </ul>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>釣魚郵件範例</h3>
+                <div class="fake-email">
+                    <p><strong>寄件人：</strong> Netfl1x-support@some-random-domain.com</p>
+                    <p><strong>主旨：</strong> 緊急！您的帳戶已被暫停</p>
+                    <hr>
+                    <p>「親愛的顧客，<br>
+                    我們無法處理您上一筆付款。請更新您的資料以避免帳戶被暫停。請點擊此處：[連結到一個假網站]」</p>
+                </div>
+                <p style="color:red;"><strong>警示：營造緊迫感、通用稱呼、奇怪的寄件人電子郵件地址。</strong></p>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h2>常見風險 #2：惡意軟體 (Malware)</h2>
+                <p><em>(惡意的軟體)</em></p>
+                <p><strong>專門設計來損害您的電腦或竊取您資料的軟體。</strong></p>
+                <ul>
+                    <li><strong>病毒：</strong>感染檔案，並在電腦之間傳播。</li>
+                    <li><strong>勒索軟體：</strong>鎖住您的檔案，然後要求您付錢（贖金）才能解鎖。</li>
+                </ul>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>勒索軟體範例</h3>
+                <div class="ransomware-alert">
+                    <p>您的檔案已被加密！</p>
+                </div>
+                <p>「您所有的相片、文件和影片都已被鎖定。要取得解鎖的金鑰，您必須在72小時內將價值500美元的比特幣傳送到此地址。逾時後，您的檔案將被永久刪除。」</p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h2>其他常見風險</h2>
+                
+                <h3>弱密碼</h3>
+                <ul>
+                    <li>容易猜到的密碼，例如 <code>123456</code> 或 <code>password</code>。</li>
+                    <li>駭客會用電腦每秒嘗試數十億個密碼。</li>
+                    <li><strong>在所有地方使用相同的密碼是極大風險！</strong></li>
+                </ul>
+
+                <h3>不安全的 Wi-Fi</h3>
+                <ul>
+                    <li>在咖啡店、機場等地方的免費開放 Wi-Fi。</li>
+                    <li>在同一個網路上的不法之徒可以「竊聽」並竊取您的資訊。</li>
+                </ul>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>感謝您的聆聽！</p>
+                    <p>現在開放問答時間，歡迎針對今天的議題提問。</p>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`嘗試啟用全螢幕模式時出錯： ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全第三課：密碼與多重身份驗證</title>
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --accent: #f39c12;
+            --bg: #fdfefe;
+            --text: #2c3e50;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0;
+            background-color: #f0f3f4;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #6c3483;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #d7bde2;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        .battle-arena {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        @media(max-width: 600px) { .battle-arena { flex-direction: column; } }
+
+        .fighter {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background: #fafafa;
+        }
+        .fighter.winner { border-color: var(--success); background: #eafaf1; }
+        .fighter h3 { margin: 0; font-size: 1rem; color: #777; }
+        .pwd-display { 
+            font-family: monospace; font-size: 1.2rem; margin: 10px 0; background: #eee; padding: 5px; border-radius: 4px; 
+            word-break: break-all;
+        }
+        .stat-bar { height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .stat-fill { height: 100%; width: 0%; transition: width 1.5s ease-out; }
+        .crack-time { font-weight: bold; margin-top: 5px; font-size: 0.9rem; }
+
+        .mfa-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        @media(max-width: 600px) { .mfa-container { flex-direction: column; align-items: center; } }
+
+        .login-screen {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .phone-screen {
+            width: 180px;
+            height: 320px;
+            background: #333;
+            border-radius: 20px;
+            border: 8px solid #111;
+            padding: 10px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .authenticator-app {
+            text-align: center;
+            display: none;
+        }
+        .auth-code { font-size: 2rem; color: var(--accent); letter-spacing: 5px; font-family: monospace; margin: 10px 0; }
+        .timer-circle { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto; }
+        
+        input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        .network-map {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eee;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .node-label { position: absolute; bottom: -25px; font-size: 0.8rem; width: 100px; text-align: center; font-weight: bold; }
+        
+        .hacker-node { border-color: var(--danger); background: #fadbd8; }
+        .target-node { border-color: var(--success); background: #d5f5e3; }
+        .breached { background: var(--danger) !important; color: white; animation: shake 0.5s; }
+        
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(0, 0); } }
+
+        .packet {
+            width: 10px; height: 10px; background: var(--danger); border-radius: 50%;
+            position: absolute; top: 25px; left: 30px; z-index: 1; display: none;
+        }
+
+        .gen-box {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .gen-result { font-size: 1.5rem; font-weight: bold; margin: 20px 0; font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第三課：密碼與多重身份驗證 (MFA)</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('battle')">1. 密碼大戰</button>
+    <button class="tab-btn" onclick="showSection('mfa')">2. MFA 模擬器</button>
+    <button class="tab-btn" onclick="showSection('stuffer')">3. 憑證填充攻擊</button>
+    <button class="tab-btn" onclick="showSection('generator')">4. 密碼詞產生器</button>
+</div>
+
+<main>
+
+    <div id="battle" class="section active">
+        <div class="card">
+            <h2>長度 vs. 複雜度</h2>
+            <p>哪個更強？一個短的「複雜」密碼，還是一個長的「簡單」詞組？</p>
+            <div style="text-align:center;">
+                <button class="btn-primary" style="width:auto; padding: 10px 30px;" onclick="runBattle()">開戰！</button>
+            </div>
+
+            <div class="battle-arena">
+                <div class="fighter" id="f1">
+                    <h3>舊方法</h3>
+                    <div class="pwd-display">Tr0ub4dor&3</div>
+                    <small>11 個字元，奇怪的符號。</small>
+                    <div class="stat-bar"><div class="stat-fill" id="bar1" style="background: #e74c3c;"></div></div>
+                    <div class="crack-time" id="time1">等待中...</div>
+                </div>
+
+                <div class="fighter" id="f2">
+                    <h3>新方法</h3>
+                    <div class="pwd-display">CorrectHorseBatteryStaple</div>
+                    <small>25 個字元，簡單的單字。</small>
+                    <div class="stat-bar"><div class="stat-fill" id="bar2" style="background: #27ae60;"></div></div>
+                    <div class="crack-time" id="time2">等待中...</div>
+                </div>
+            </div>
+            <p id="battle-result" style="text-align:center; margin-top:20px; font-weight:bold;"></p>
+        </div>
+    </div>
+
+    <div id="mfa" class="section">
+        <div class="card">
+            <h2>MFA 模擬器</h2>
+            <p>體驗兩步驟驗證如何運作。試著登入！</p>
+            
+            <div class="mfa-container">
+                <div class="login-screen" id="login-box">
+                    <h3>登入</h3>
+                    <input type="text" value="user@example.com" disabled>
+                    <input type="password" value="CorrectHorseBatteryStaple" disabled>
+                    <button class="btn-primary" onclick="startMFA()">登入</button>
+                    <p id="login-msg" style="font-size:0.9rem; color:#666; margin-top:10px;"></p>
+                </div>
+
+                <div class="login-screen" id="mfa-input-box" style="display:none;">
+                    <h3>安全性檢查</h3>
+                    <p>請輸入您手機上的驗證碼：</p>
+                    <input type="text" id="code-input" placeholder="000 000" maxlength="6" style="text-align:center; letter-spacing:3px; font-size:1.2rem;">
+                    <button class="btn-primary" onclick="verifyMFA()">驗證</button>
+                    <button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="resetMFA()">取消</button>
+                </div>
+
+                <div class="phone-screen">
+                    <div style="font-size:0.8rem; color:#aaa; margin-bottom:20px;">我的手機</div>
+                    <div id="auth-app" class="authenticator-app">
+                        <div>🔒 驗證器</div>
+                        <div style="font-size:0.7rem; color:#ccc;">網路安全銀行</div>
+                        <div class="auth-code" id="generated-code">--- ---</div>
+                        <div class="timer-circle"></div>
+                    </div>
+                    <div id="phone-idle" style="color:#666;">（手機閒置中）</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stuffer" class="section">
+        <div class="card">
+            <h2>「憑證填充」攻擊</h2>
+            <p>為什麼重複使用密碼很危險。點擊「開始攻擊」觀看機器人如何使用被盜資料。</p>
+            
+            <div class="network-map">
+                <div class="node hacker-node">
+                    🤖
+                    <div class="node-label">駭客機器人</div>
+                </div>
+                
+                <div class="packet" id="packet"></div>
+
+                <div style="flex:1; display:flex; justify-content:space-around;">
+                    <div class="node" id="site1">
+                        🛒
+                        <div class="node-label">購物網站</div>
+                    </div>
+                    <div class="node" id="site2">
+                        🏦
+                        <div class="node-label">您的銀行</div>
+                    </div>
+                    <div class="node" id="site3">
+                        📧
+                        <div class="node-label">您的電子郵件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center;">
+                <button class="btn-primary" style="width:auto;" onclick="runStuffer()">開始攻擊</button>
+            </div>
+            <div id="hack-log" style="margin-top:20px; background:#333; color:#0f0; padding:10px; font-family:monospace; height:100px; overflow-y:auto; border-radius:5px;">
+                > 系統準備就緒...<br>
+                > 等待目標...
+            </div>
+        </div>
+    </div>
+
+    <div id="generator" class="section">
+        <div class="card">
+            <h2>密碼詞產生器</h2>
+            <p>建立一個您能記得住的強密碼。</p>
+            
+            <div class="gen-box">
+                <div>您的安全密碼詞：</div>
+                <div class="gen-result" id="phrase-output">點擊「產生」</div>
+                <button style="background:white; color:var(--primary); border:none; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="generatePhrase()">產生新密碼詞</button>
+            </div>
+            
+            <ul style="margin-top:20px; color:#555;">
+                <li><strong>長度：</strong>4 個隨機單字的組合，在數學上比 8 個隨機字元更強。</li>
+                <li><strong>記憶：</strong>創造一個心智圖像。（例如：一隻「紫色老虎」開著一輛「吵雜的卡車」）。</li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網路安全課程 - 第三課互動夥伴應用程式
+</footer>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['battle', 'mfa', 'stuffer', 'generator'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    function runBattle() {
+        document.getElementById('bar1').style.width = '0%';
+        document.getElementById('bar2').style.width = '0%';
+        document.getElementById('f1').classList.remove('winner');
+        document.getElementById('f2').classList.remove('winner');
+        document.getElementById('battle-result').innerText = "計算熵值中...";
+
+        setTimeout(() => {
+            document.getElementById('bar1').style.width = '10%';
+            document.getElementById('time1').innerText = "3 天內破解";
+            document.getElementById('time1').style.color = "#e74c3c";
+            
+            document.getElementById('bar2').style.width = '100%';
+            document.getElementById('time2').innerText = "500 個世紀內破解";
+            document.getElementById('time2').style.color = "#27ae60";
+
+            setTimeout(() => {
+                document.getElementById('f2').classList.add('winner');
+                document.getElementById('battle-result').innerText = "贏家：長度！長度永遠勝過複雜度。";
+            }, 1000);
+        }, 500);
+    }
+
+    let currentCode = "";
+    
+    function startMFA() {
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('mfa-input-box').style.display = 'block';
+        document.getElementById('phone-idle').style.display = 'none';
+        document.getElementById('auth-app').style.display = 'block';
+        generateMFACode();
+    }
+
+    function generateMFACode() {
+        const num = Math.floor(100000 + Math.random() * 900000);
+        currentCode = num.toString();
+        document.getElementById('generated-code').innerText = currentCode.substring(0,3) + " " + currentCode.substring(3,6);
+    }
+
+    function verifyMFA() {
+        const input = document.getElementById('code-input').value.replace(/\s/g, '');
+        if(input === currentCode) {
+            alert("成功！您已登入。");
+            resetMFA();
+        } else {
+            alert("驗證碼錯誤，請再試一次。");
+        }
+    }
+
+    function resetMFA() {
+        document.getElementById('login-box').style.display = 'block';
+        document.getElementById('mfa-input-box').style.display = 'none';
+        document.getElementById('auth-app').style.display = 'none';
+        document.getElementById('phone-idle').style.display = 'block';
+        document.getElementById('code-input').value = "";
+    }
+
+    function runStuffer() {
+        const log = document.getElementById('hack-log');
+        const packet = document.getElementById('packet');
+        const targets = ['site1', 'site2', 'site3'];
+        
+        targets.forEach(t => document.getElementById(t).classList.remove('breached'));
+        log.innerHTML = "> 載入被盜密碼列表...<br>> 找到：user@example.com : 'Fluffy123'<br>";
+        
+        let delay = 1000;
+
+        targets.forEach((siteId, index) => {
+            setTimeout(() => {
+                packet.style.display = 'block';
+                packet.style.left = '30px';
+                packet.style.transition = 'none';
+                
+                void packet.offsetWidth;
+
+                let moveDist = 150 + (index * 150); 
+                
+                packet.style.transition = 'left 0.5s linear';
+                packet.style.left = moveDist + 'px';
+
+                setTimeout(() => {
+                    packet.style.display = 'none';
+                    document.getElementById(siteId).classList.add('breached');
+                    
+                    let name = "";
+                    if(index==0) name="購物網站";
+                    if(index==1) name="銀行";
+                    if(index==2) name="電子郵件";
+                    
+                    log.innerHTML += `> 嘗試在 ${name} 使用 'Fluffy123'... <strong>存取成功</strong><br>`;
+                    log.scrollTop = log.scrollHeight;
+                }, 500);
+
+            }, delay);
+            delay += 1500;
+        });
+    }
+
+    const words = ["Horse", "Battery", "Staple", "Correct", "Blue", "Sky", "Coffee", "Jump", "Panda", "Guitar", "Pizza", "Rocket", "Sleep", "Green", "Phone", "Tiger", "Loud", "Happy", "Ocean", "Book"];
+    
+    function generatePhrase() {
+        let phrase = "";
+        let used = [];
+        while(used.length < 4) {
+            const r = Math.floor(Math.random() * words.length);
+            if(!used.includes(r)) used.push(r);
+        }
+        
+        phrase = words[used[0]] + "-" + words[used[1]] + "-" + words[used[2]] + "-" + words[used[3]];
+        document.getElementById('phrase-output').innerText = phrase;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全 - 第二課</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen {
+            background-color: #000;
+        }
+        
+        body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .checklist-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-color);
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #fullscreenBtn {
+            background-color: #2c3e50; 
+        }
+        #fullscreenBtn:hover {
+            background-color: #1a252f;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                flex-direction: column;
+            }
+            .visual-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                min-height: 250px;
+            }
+            .text-container {
+                padding: 20px;
+            }
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+            </div>
+            <div class="slide-footer">
+                日常網路安全要點與應急響應
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 11</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p2-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>日常生活中的網路安全</h1>
+                <hr>
+                <h2>第二課：建立您的防禦</h2>
+                <p><strong>第二部分：保護您裝置安全的基本習慣。</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h2>今日議程</h2>
+                <p><strong>第二課：建立您的防禦</strong></p>
+                <ul>
+                    <li>四大基本安全習慣</li>
+                    <li>保護您的電腦和智慧型手機</li>
+                    <li>一個讓您安全的簡單清單</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h1>第二課：保護裝置的基本方法</h1>
+                <hr>
+                <p>從了解風險，到建立您的防禦。</p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h3>從風險到防禦</h3>
+                <p>上次，我們見識了「壞人」。現在，我們來建立防禦。</p>
+                <p><strong>適用於所有裝置的四大基本習慣：</strong></p>
+                <ol>
+                    <li>使用高強度螢幕鎖</li>
+                    <li>保持軟體更新</li>
+                    <li>使用安全軟體</li>
+                    <li>精明使用應用程式</li>
+                </ol>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h3>習慣一：使用高強度螢幕鎖</h3>
+                <p>這是您數位世界的大門。請務必鎖好！</p>
+                <ul>
+                    <li><strong>使用生物辨識：</strong>Face ID 或指紋最好。</li>
+                    <li><strong>使用良好的 PIN/密碼：</strong>
+                        <ul>
+                            <li><strong>6位數</strong>比4位數強100倍。</li>
+                            <li>避免使用明顯的日期或順序。</li>
+                        </ul>
+                    </li>
+                    <li><strong>啟用自動鎖定：</strong>設定螢幕在1-5分鐘無活動後自動鎖定。</li>
+                </ul>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>習慣二：保持軟體更新</h3>
+                <p>更新會在罪犯利用保安漏洞之前將其修補好。</p>
+                <div style="background:#e8f4fc; padding:15px; border-radius:5px; margin: 15px 0;">
+                    <strong>黃金法則：開啟自動更新！</strong>
+                </div>
+                <ul>
+                    <li>這是您可以採取的單一最重要「設定一次就不用管」的動作。</li>
+                    <li>適用於您手機的作業系統（iOS/Android）、電腦的作業系統（Windows/Mac）及您的應用程式。</li>
+                </ul>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>習慣三：使用安全軟體</h3>
+                <p>您的數位看門狗，時刻警惕威脅。</p>
+                <ul>
+                    <li><strong>電腦：</strong>內建的工具已經很棒了！
+                        <ul>
+                            <li><strong>Windows 安全中心 (Defender)</strong> 預設開啟，而且非常出色。</li>
+                            <li><strong>macOS</strong> 亦有強大的內建保護。</li>
+                        </ul>
+                    </li>
+                    <li><strong>智慧型手機：</strong>您不需要額外的防毒軟體，<strong>只要</strong>您堅持使用官方應用程式商店。</li>
+                </ul>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>習慣四：精明使用應用程式</h3>
+                <p>惡意軟體最容易的入侵方式，就是您邀請它進來。</p>
+                <ul>
+                    <li><strong>堅持只用官方應用程式商店。</strong>
+                        <br>（Apple App Store 和 Google Play Store）
+                    </li>
+                    <li><strong>檢查應用程式權限：</strong> 
+                        <br>那個簡單的遊戲<em>真的</em>需要存取您的聯絡人和麥克風嗎？如果覺得不對勁，就拒絕權限。
+                    </li>
+                </ul>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>救命提示：啟用「尋找我的裝置」</h3>
+                <p>如果手機遺失或被盜，這就是您的遙控器。</p>
+                <ul>
+                    <li><strong>定位：</strong>在地圖上看到您裝置的位置。</li>
+                    <li><strong>鎖定：</strong>遠端鎖機，沒有人能使用。</li>
+                    <li><strong>清除：</strong>作為最後手段，清除所有資料以保護您的隱私。</li>
+                </ul>
+                <p><strong>行動：確保您的智慧型手機已啟用此功能！</strong></p>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>您的安全檢查清單</h3>
+                <p>為您的電腦和智慧型手機問以下問題：</p>
+                
+                <div class="checklist-item"><div class="checklist-box"></div> 上面有高強度的鎖嗎？</div>
+                <div class="checklist-item"><div class="checklist-box"></div> 是否設定自動更新？</div>
+                <div class="checklist-item"><div class="checklist-box"></div> 我是否只從官方商店下載？</div>
+                <div class="checklist-item"><div class="checklist-box"></div> 「尋找我的裝置」是否開啟？</div>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>感謝您的聆聽！</p>
+                    <p>現在開放問答時間，歡迎針對今天的議題提問。</p>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>
