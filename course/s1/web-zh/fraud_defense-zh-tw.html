@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港金融管理局防詐騙學院</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #ff4757;
+            --success: #2ed573;
+            --dark: #1e272e;
+            --darker: #111518;
+            --light: #f1f2f6;
+            --card-bg: #2f3640;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--dark), var(--card-bg));
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .score-board { font-size: 0.9rem; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; }
+
+        nav {
+            background: var(--card-bg);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--light);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2 { color: var(--primary); }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .flip-card-front { background-color: var(--card-bg); border: 1px solid var(--secondary); }
+        .flip-card-back { background-color: var(--secondary); color: white; transform: rotateY(180deg); }
+
+        .phone-mockup {
+            background: black;
+            border: 4px solid #333;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            height: 500px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-screen {
+            flex: 1;
+            background: #1a1a1a;
+            padding: 15px;
+            overflow-y: auto;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; }
+        .msg.incoming { background: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.outgoing { background: var(--secondary); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg.system { background: transparent; color: #888; text-align: center; align-self: center; font-size: 0.8rem; }
+
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-danger { background: var(--accent); color: white; }
+        .btn-safe { background: var(--success); color: #1e272e; }
+
+        .quiz-container { background: var(--card-bg); padding: 20px; border-radius: 10px; }
+        .option {
+            display: block;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option:hover { background: rgba(255,255,255,0.1); }
+        .option.correct { background: var(--success); color: #1e272e; }
+        .option.wrong { background: var(--accent); color: white; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛡️ 防詐騙學院</div>
+        <div class="score-board">安全等級：<span id="score">0</span> XP</div>
+    </header>
+
+    <nav>
+        <button onclick="switchTab('home')" class="active" id="btn-home">主頁</button>
+        <button onclick="switchTab('learn')" id="btn-learn">學習</button>
+        <button onclick="switchTab('sim')" id="btn-sim">模擬器</button>
+        <button onclick="switchTab('quiz')" id="btn-quiz">考試</button>
+    </nav>
+
+    <main>
+        <section id="home" class="section active">
+            <div style="text-align: center; padding: 40px 0;">
+                <h1>歡迎，探員。</h1>
+                <p>2025年金融詐騙案件日益增多。您的任務是掌握防禦釣魚、冒充及傀儡帳戶詐騙的技巧。</p>
+                <br>
+                <div style="background: rgba(46, 213, 115, 0.1); padding: 20px; border-left: 4px solid var(--success); text-align: left;">
+                    <h3>黃金法則</h3>
+                    <p>香港金融管理局及銀行<strong>絕不會</strong>透過載有嵌入式連結的短訊或電郵，要求您進行交易或提供密碼。</p>
+                </div>
+                <br>
+                <button onclick="switchTab('learn')" class="btn-action btn-safe" style="width: 200px;">開始訓練</button>
+            </div>
+        </section>
+
+        <section id="learn" class="section">
+            <h2>知識庫</h2>
+            <p>點擊卡片以揭示真相。</p>
+            <div class="card-grid">
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><h3>🎣 網路釣魚</h3><p>(點擊揭示)</p></div>
+                        <div class="flip-card-back"><p>詐騙者使用假的短訊/電郵連結竊取密碼。<strong>防禦：</strong>切勿點擊文字訊息中的連結。</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><h3>🎭 冒充</h3><p>(點擊揭示)</p></div>
+                        <div class="flip-card-back"><p>來電者自稱是香港金融管理局/警方，要求匯款。<strong>事實：</strong>官員絕不會透過電話要求轉帳。</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><h3>🐴 傀儡帳戶</h3><p>(點擊揭示)</p></div>
+                        <div class="flip-card-back"><p>將您的銀行帳戶借給他人收款。<strong>後果：</strong>因洗錢而入獄。</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><h3>🛡️ 電子銀行 ABC</h3><p>(點擊揭示)</p></div>
+                        <div class="flip-card-back"><p><strong>A：</strong>認證 (生物辨識)<br><strong>B：</strong>告別未使用額度<br><strong>C：</strong>取消可疑警報</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sim" class="section">
+            <h2>威脅模擬器</h2>
+            <p>您正在接收訊息。選擇正確的行動以求生存。</p>
+            <div class="phone-mockup">
+                <div class="chat-screen" id="chat-display">
+                    <div class="msg system">系統：已連接至網絡...</div>
+                    <div class="msg incoming">
+                        <strong>寄件人：HK-Bank</strong><br>
+                        警報：您尾號為 8842 的帳戶有異常活動。點此驗證：<u>www.hk-bank-security-verify.com</u>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn-action btn-danger" onclick="handleSimAction('click')">點擊連結</button>
+                    <button class="btn-action btn-safe" onclick="handleSimAction('ignore')">忽略並舉報</button>
+                </div>
+            </div>
+            <div id="sim-feedback" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+        </section>
+
+        <section id="quiz" class="section">
+            <h2>期末考試</h2>
+            <div id="quiz-content" class="quiz-container">
+                <div class="question-block">
+                    <h3>1. 您收到一則來自「警方」的短訊，要求您提供電子銀行密碼以洗清罪名。您該怎麼辦？</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">立即提供密碼。</div>
+                    <div class="option" onclick="checkAnswer(this, true)">掛斷電話並致電官方警局號碼。</div>
+                    <div class="option" onclick="checkAnswer(this, false)">回覆短訊詢問原因。</div>
+                </div>
+                <br>
+                <div class="question-block">
+                    <h3>2. 一位朋友提供您 1000 元，讓您用您的銀行帳戶收取一筆公司款項。這樣安全嗎？</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">安全，這是輕鬆錢。</div>
+                    <div class="option" onclick="checkAnswer(this, true)">不安全，這是傀儡帳戶騙局。</div>
+                </div>
+                <br>
+                <div class="question-block">
+                    <h3>3. 「防騙視伏器」是什麼？</h3>
+                    <div class="option" onclick="checkAnswer(this, false)">一種測量網速的裝置。</div>
+                    <div class="option" onclick="checkAnswer(this, true)">一種檢查電話號碼或網址是否有風險的工具。</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>根據 2025 年香港金融管理局「提防騙子」指引。僅供教育用途。</p>
+    </footer>
+
+    <script>
+        let xp = 0;
+        let currentScenario = 0;
+
+        const scenarios = [
+            {
+                text: "<strong>寄件人：HK-Bank</strong><br>警報：您的帳戶有異常活動。點此驗證：<u>www.hk-bank-secure.com</u>",
+                isScam: true,
+                correctAction: 'ignore',
+                feedbackCorrect: "正確！銀行絕不會在短訊中發送連結。 (+50 XP)",
+                feedbackWrong: "失敗！您點擊了一個釣魚連結。您的密碼被盜了。"
+            },
+            {
+                text: "<strong>來電者：投資專家</strong><br>嗨！我有一個加密貨幣，保證 2 天內有 20% 的回報。想買嗎？",
+                isScam: true,
+                correctAction: 'ignore',
+                feedbackCorrect: "聰明。高回報低風險永遠是謊言。 (+50 XP)",
+                feedbackWrong: "糟糕。您的積蓄被加密貨幣騙局騙走了。"
+            },
+            {
+                text: "<strong>寄件人：官方銀行應用程式</strong><br>已核准 500 元交易。若非您本人操作，請登入官方應用程式提出爭議。",
+                isScam: false,
+                correctAction: 'ignore',
+                feedbackCorrect: "正確。永遠使用官方應用程式檢查，絕不點擊文字中的連結。",
+                feedbackWrong: "小心。雖然通知可能是真的，但若有提供連結，切勿點擊。"
+            }
+        ];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        function handleSimAction(action) {
+            const feedbackEl = document.getElementById('sim-feedback');
+            const chatDisplay = document.getElementById('chat-display');
+            const scenario = scenarios[currentScenario];
+
+            if (scenario.correctAction === action) {
+                feedbackEl.innerHTML = `<span style="color:var(--success)">${scenario.feedbackCorrect}</span>`;
+                xp += 50;
+                updateScore();
+                chatDisplay.innerHTML += `<div class="msg outgoing">${action === 'ignore' ? '已封鎖/舉報' : '已點擊'}</div>`;
+                setTimeout(() => {
+                    currentScenario = (currentScenario + 1) % scenarios.length;
+                    loadScenario();
+                }, 2000);
+            } else {
+                feedbackEl.innerHTML = `<span style="color:var(--accent)">${scenario.feedbackWrong}</span>`;
+                xp = Math.max(0, xp - 20);
+                updateScore();
+                chatDisplay.innerHTML += `<div class="msg outgoing">${action === 'ignore' ? '已封鎖/舉報' : '已點擊'}</div>`;
+            }
+        }
+
+        function loadScenario() {
+            const chatDisplay = document.getElementById('chat-display');
+            chatDisplay.innerHTML = `<div class="msg system">收到新訊息...</div>`;
+            setTimeout(() => {
+                chatDisplay.innerHTML += `<div class="msg incoming">${scenarios[currentScenario].text}</div>`;
+                document.getElementById('sim-feedback').innerHTML = "";
+            }, 500);
+        }
+
+        function checkAnswer(element, isCorrect) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+            if (isCorrect) {
+                element.classList.add('correct');
+                xp += 20;
+                updateScore();
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = xp;
+        }
+
+        loadScenario();
+    </script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第八課：網路事件急救</title>
+    <style>
+        :root {
+            --primary-color: #c0392b;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+        }
+
+        body:fullscreen, body:-webkit-full-screen {
+            background-color: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row; 
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px; 
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol {
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: #e8f8f5;
+            border: 1px solid #a2d9ce;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .alert-box {
+            background: #fadbd8;
+            color: #7b241c;
+            border: 1px solid #f1948a;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .question-slide {
+            text-align: center;
+        }
+        .question-slide h1 {
+            font-size: 3em;
+            color: var(--accent-color);
+        }
+
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover { background-color: #c0392b; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        #fullscreenBtn { background-color: #2c3e50; }
+        #fullscreenBtn:hover { background-color: #1a252f; }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content { flex-direction: column; }
+            .visual-container { border-right: none; border-bottom: 1px solid #ddd; min-height: 250px; }
+            .text-container { padding: 20px; }
+            .controls { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖示" onerror="this.src='https://via.placeholder.com/600x450?text=找不到圖片'">
+        </div>
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content"></div>
+            <div class="slide-footer">
+                第八課：網路事件急救（根據 HKCERT 指引）
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
+        <span class="progress" id="slide-counter">1 / 11</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/";
+    const imageFilenamePrefix = "fa-";
+    
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>第八課：網路事件急救</h1>
+                <hr>
+                <h2>當安全漏洞發生時如何應對</h2>
+                <p><strong>根據香港電腦保安事故協調中心 (HKCERT) 的中小企指引</strong></p>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h2>為何需要「數位急救」？</h2>
+                <p>當事件發生時，您的目標不是進行「手術」（修復程式碼）。</p>
+                <div class="info-box">
+                    <strong>您的目標：止血。</strong>
+                </div>
+                <ul>
+                    <li><strong>驚慌</strong>造成的損害比惡意軟體本身更大。</li>
+                    <li>先<strong>穩定病人</strong>，再致電專家。</li>
+                    <li>不要試圖成為英雄；試圖成為安全網。</li>
+                </ul>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h3>HKCERT 事件應變週期</h3>
+                <p>HKCERT 為處理事件定義了一個四階段的生命週期：</p>
+                <ol>
+                    <li><strong>準備：</strong>在事件發生前做好準備（備份、防毒軟體）。</li>
+                    <li><strong>偵測與分析：</strong>識別跡象。</li>
+                    <li><strong>控制、根除與復原：</strong>制止並修復威脅（我們今天的重點）。</li>
+                    <li><strong>事件後：</strong>從錯誤中學習。</li>
+                </ol>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h2>階段二：偵測</h2>
+                <p>這是真的嗎？區分「可能發生」與「正在發生」。</p>
+                <ul>
+                    <li><strong>前兆（警告信號）：</strong>收件匣中的可疑郵件、失敗的登入嘗試。</li>
+                    <li><strong>指標（危險！）：</strong>
+                        <ul>
+                            <li>防毒軟體紅色警報 🚨</li>
+                            <li>系統運行極度緩慢 🐢</li>
+                            <li>螢幕上出現勒索訊息 ☠️</li>
+                        </ul>
+                    </li>
+                </ul>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h2>階段三：控制</h2>
+                <p>這是最關鍵的急救步驟。</p>
+                <div class="alert-box">
+                    立即行動：隔離主機
+                </div>
+                <ul>
+                    <li><strong>有線連接：</strong>立即拔掉網路（LAN）線。</li>
+                    <li><strong>無線連接：</strong>關閉 Wi-Fi 或啟用「飛航模式」。</li>
+                </ul>
+                <p><strong>原因：</strong>勒索軟體會透過網路傳播，感染伺服器和同事。切斷橋樑可以保住城堡。</p>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>「犯罪現場」規則</h3>
+                <p>保存證據對專家至關重要。</p>
+                <ul>
+                    <li style="color:red;"><strong>❌ 不要重新開機：</strong>證據存在於活動記憶體 (RAM) 中，重啟後會遺失。</li>
+                    <li style="color:red;"><strong>❌ 不要刪除檔案：</strong>不要試圖「清理」。您正在銷毀線索。</li>
+                    <li style="color:green;"><strong>✅ 應該做：</strong>用手機拍下螢幕上的畫面（錯誤訊息、勒索訊息）。</li>
+                </ul>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h2>根除與復原</h2>
+                <p>「醫院」階段（通常由 IT 人員處理）。</p>
+                <ol>
+                    <li><strong>根除：</strong>找到根本原因（敞開的窗戶）並移除惡意軟體。</li>
+                    <li><strong>復原：</strong>從<strong>乾淨的備份</strong>中還原資料。</li>
+                </ol>
+                <div class="info-box">
+                    <strong>嚴重警告：</strong>在 100% 確定感染已清除前，切勿還原備份，否則您只會再次被感染。
+                </div>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h2>報告：該打給誰？</h2>
+                <p>您不是孤單一人。HKCERT 在此提供協助。</p>
+                <ul>
+                    <li><strong>內部：</strong>立即致電您的 IT 部門或資訊安全事故應變小組。</li>
+                    <li><strong>外部（香港）：</strong>HKCERT</li>
+                </ul>
+                <div class="info-box" style="text-align:center;">
+                    <h3>☎️ 熱線：8105 6060</h3>
+                    <p>（24小時）</p>
+                    <p>📧 hkcert@hkcert.org</p>
+                </div>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h2>摘要：您的急救行動計畫</h2>
+                <p>記住這個簡單的檢查清單：</p>
+                <ol style="font-size:1.2em; font-weight:bold;">
+                    <li>識別：<span style="font-weight:normal;">是前兆還是指標？</span></li>
+                    <li>控制：<span style="font-weight:normal;">拔掉插頭 / 中斷 Wi-Fi。</span></li>
+                    <li>保存：<span style="font-weight:normal;">不要重新開機。拍照。</span></li>
+                    <li>報告：<span style="font-weight:normal;">致電 IT 或 HKCERT (8105 6060)。</span></li>
+                </ol>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h2>今晚的功課</h2>
+                <p>建立您的肌肉記憶。</p>
+                <ul>
+                    <li><strong>1. 儲存號碼：</strong>將 HKCERT (8105 6060) 加入您的手機聯絡人，命名為「網路緊急事件」。</li>
+                    <li><strong>2. 找到纜線：</strong>看看您的電腦。找到網路線。練習拔掉它，這樣在緊急情況下您就能準確知道它的位置。</li>
+                </ul>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>記住：驚慌是敵人。</p>
+                    <p><strong>拔掉插頭，不要重新開機，尋求協助。</strong></p>
+                </div>
+            `
+        }
+    ];
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        const slideNum = String(slides[index].id).padStart(2, '0');
+        imgElement.src = `${imageBaseUrl}${imageFilenamePrefix}${slideNum}.jpg`;
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`嘗試啟用全螢幕模式時出錯： ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 離開全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>

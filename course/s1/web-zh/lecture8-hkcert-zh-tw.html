@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全第八課：事件急救 (HKCERT)</title>
+    <style>
+        :root {
+            --primary: #c0392b; /* HKCERT 紅色 */
+            --secondary: #2c3e50;
+            --accent: #f1c40f;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --dark: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0;
+            background-color: #f4f6f7;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #922b21;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #ffcccc;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+        .tab-btn.active { color: white; border-bottom: 4px solid var(--accent); font-weight: bold; }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+        }
+
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        button {
+            background: var(--secondary); color: white; border: none; padding: 10px 20px; 
+            border-radius: 5px; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+
+        .cycle-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cycle-step {
+            width: 150px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #eee;
+            border: 2px solid transparent;
+        }
+        .cycle-step:hover { transform: translateY(-5px); }
+        .cycle-step.active { border-color: var(--primary); background: #fdedec; }
+        .cycle-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .cycle-desc { margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--primary); display:none; }
+
+        .game-area {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .item-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ccc;
+        }
+        .bin-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        .bin {
+            flex: 1;
+            padding: 30px 10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+        .bin:hover { opacity: 0.9; transform: scale(1.02); }
+        .bin-pre { background: #f39c12; }
+        .bin-ind { background: #c0392b; }
+
+        .server-rack {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        .upload-bar-bg {
+            background: #555;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .upload-bar-fill {
+            background: #e74c3c;
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        .cable-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .cable {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .cable-power { background: #7f8c8d; color: white; border-bottom: 4px solid #555; }
+        .cable-net { background: #3498db; color: white; border-bottom: 4px solid #2980b9; }
+        .cable.cut { opacity: 0.5; cursor: default; border: none; transform: translateY(4px); }
+
+        .phone-screen {
+            background: #333;
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .key {
+            background: #555;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .key:active { background: #777; }
+        .key-call {
+            background: #27ae60;
+            grid-column: span 3;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .phone-display {
+            background: #eee;
+            color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            min-height: 40px;
+            letter-spacing: 2px;
+        }
+
+        footer { text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>第八課：事件急救 (HKCERT)</h1>
+</nav>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="showSection('lifecycle')">1. 生命週期</button>
+    <button class="tab-btn" onclick="showSection('detect')">2. 前兆 vs 指標</button>
+    <button class="tab-btn" onclick="showSection('contain')">3. 控制演練</button>
+    <button class="tab-btn" onclick="showSection('report')">4. 致電 HKCERT</button>
+</div>
+
+<main>
+
+    <div id="lifecycle" class="section active">
+        <div class="card">
+            <h2>HKCERT 事件應變週期</h2>
+            <p>點擊各階段以了解每個步驟的內容。</p>
+            
+            <div class="cycle-container">
+                <div class="cycle-step" onclick="showCycle(1)"><span class="cycle-icon">🛡️</span><strong>1. 準備</strong></div>
+                <div class="cycle-step" onclick="showCycle(2)"><span class="cycle-icon">🔍</span><strong>2. 偵測</strong></div>
+                <div class="cycle-step" onclick="showCycle(3)"><span class="cycle-icon">🧯</span><strong>3. 控制</strong></div>
+                <div class="cycle-step" onclick="showCycle(4)"><span class="cycle-icon">📝</span><strong>4. 事件後</strong></div>
+            </div>
+
+            <div id="desc-1" class="cycle-desc">
+                <h3>火災發生前。</h3><p>這是您每天都在做的事：備份、安裝防毒軟體，並保留一份聯絡人清單（HKCERT/IT）。</p>
+            </div>
+            <div id="desc-2" class="cycle-desc">
+                <h3>聞到煙味。</h3><p>識別跡象。區分「前兆」（警告）和「指標」（攻擊正在發生）。</p>
+            </div>
+            <div id="desc-3" class="cycle-desc">
+                <h3>滅火。</h3><p><strong>急救階段：</strong>拔掉網路線。不要重新開機。隔離機器以拯救網路。</p>
+            </div>
+            <div id="desc-4" class="cycle-desc">
+                <h3>重建。</h3><p>吸取教訓。撰寫報告。改善防禦措施，以防再次發生。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="detect" class="section">
+        <div class="card">
+            <h2>偵探：警告還是攻擊？</h2>
+            <p>HKCERT 表示您必須區分跡象。將下方的項目分類。</p>
+            
+            <div class="item-card" id="detect-item">載入中...</div>
+            
+            <div class="bin-container">
+                <div class="bin bin-pre" onclick="guessDetect('precursor')"><strong>前兆</strong><br><small>(可能發生的跡象)</small></div>
+                <div class="bin bin-ind" onclick="guessDetect('indicator')"><strong>指標</strong><br><small>(正在發生的跡象)</small></div>
+            </div>
+            <div id="detect-msg" style="text-align:center; margin-top:15px; font-weight:bold; height:20px;"></div>
+        </div>
+    </div>
+
+    <div id="contain" class="section">
+        <div class="card">
+            <h2>控制演練：隔離主機</h2>
+            <p><strong>情境：</strong>勒索軟體正在擴散到公司伺服器！阻止它！</p>
+            <p><strong>目標：</strong>選擇正確的電纜以切斷連線。</p>
+            
+            <button onclick="startContainment()" id="start-btn" style="background:var(--success); color:white;">開始演練</button>
+            
+            <div class="server-rack" style="margin-top:20px;">
+                <div style="font-size:3rem;">💻 ➡️ ☁️</div>
+                <div id="upload-text">系統閒置</div>
+                <div class="upload-bar-bg"><div class="upload-bar-fill" id="virus-bar"></div></div>
+
+                <div class="cable-group">
+                    <div class="cable cable-power" onclick="cutCable('power')">🔌 電源線</div>
+                    <div class="cable cable-net" onclick="cutCable('net')">🌐 網路線</div>
+                </div>
+            </div>
+            
+            <div id="contain-result" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <div id="report" class="section">
+        <div class="card">
+            <h2>尋求協助</h2>
+            <p>撥打 <strong>HKCERT 24小時熱線</strong>電話號碼以完成關卡。</p>
+            
+            <div class="phone-screen">
+                <div class="phone-display" id="phone-display"></div>
+                <div class="keypad">
+                    <div class="key" onclick="pressKey(1)">1</div><div class="key" onclick="pressKey(2)">2</div><div class="key" onclick="pressKey(3)">3</div>
+                    <div class="key" onclick="pressKey(4)">4</div><div class="key" onclick="pressKey(5)">5</div><div class="key" onclick="pressKey(6)">6</div>
+                    <div class="key" onclick="pressKey(7)">7</div><div class="key" onclick="pressKey(8)">8</div><div class="key" onclick="pressKey(9)">9</div>
+                    <div class="key" onclick="pressKey('*')">*</div><div class="key" onclick="pressKey(0)">0</div><div class="key" onclick="pressKey('#')">#</div>
+                    <div class="key key-call" onclick="makeCall()">📞 通話</div>
+                </div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#aaa;">清除：雙擊顯示屏</div>
+            </div>
+            <div id="call-result" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    網路安全第八課互動夥伴應用程式 (HKCERT 指引)
+</footer>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const index = ['lifecycle', 'detect', 'contain', 'report'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    function showCycle(step) {
+        document.querySelectorAll('.cycle-desc').forEach(d => d.style.display = 'none');
+        document.querySelectorAll('.cycle-step').forEach(s => s.classList.remove('active'));
+        document.getElementById('desc-'+step).style.display = 'block';
+        document.querySelectorAll('.cycle-step')[step-1].classList.add('active');
+    }
+
+    const detectItems = [
+        { text: "收件匣中的釣魚郵件（您沒有點擊）", type: "precursor" },
+        { text: "防毒軟體紅色警報彈出視窗", type: "indicator" },
+        { text: "桌面上的勒索訊息", type: "indicator" },
+        { text: "顯示登入失敗的日誌", type: "precursor" },
+        { text: "滑鼠自行移動", type: "indicator" },
+        { text: "網頁伺服器運行非常緩慢", type: "indicator" }
+    ];
+    let currentDetect = 0;
+
+    function loadDetect() {
+        document.getElementById('detect-item').innerText = detectItems[currentDetect].text;
+        document.getElementById('detect-msg').innerText = "";
+    }
+
+    function guessDetect(guess) {
+        const correct = detectItems[currentDetect].type;
+        const msg = document.getElementById('detect-msg');
+        if(guess === correct) {
+            msg.innerText = "正確！";
+            msg.style.color = "green";
+            setTimeout(() => {
+                currentDetect = (currentDetect + 1) % detectItems.length;
+                loadDetect();
+            }, 1000);
+        } else {
+            msg.innerText = "分類錯誤。再試一次。";
+            msg.style.color = "red";
+        }
+    }
+    loadDetect();
+
+    let virusInterval, progress = 0, gameActive = false;
+
+    function startContainment() {
+        if(gameActive) return;
+        gameActive = true;
+        progress = 0;
+        document.getElementById('start-btn').disabled = true;
+        document.getElementById('upload-text').innerText = "正在上傳資料...";
+        document.getElementById('contain-result').innerText = "";
+        
+        document.querySelectorAll('.cable').forEach(c => c.classList.remove('cut'));
+
+        virusInterval = setInterval(() => {
+            progress += 1;
+            document.getElementById('virus-bar').style.width = progress + '%';
+            if(progress >= 100) endContainment(false, "太遲了！資料已被竊取。");
+        }, 50);
+    }
+
+    function cutCable(type) {
+        if(!gameActive) return;
+        if(type === 'power') endContainment(false, "錯誤！不要切斷電源。您會遺失 RAM 中的證據！");
+        else if (type === 'net') endContainment(true, "成功！網路已隔離。證據已保存。");
+    }
+
+    function endContainment(win, msg) {
+        clearInterval(virusInterval);
+        gameActive = false;
+        document.getElementById('start-btn').disabled = false;
+        const res = document.getElementById('contain-result');
+        res.innerText = msg;
+        res.style.color = win ? "green" : "red";
+        if(win) {
+            document.querySelector('.cable-net').classList.add('cut');
+            document.getElementById('upload-text').innerText = "連線已切斷";
+        } else {
+            document.getElementById('upload-text').innerText = "失敗";
+        }
+    }
+
+    let dialNumber = "";
+    function pressKey(key) {
+        if(dialNumber.length < 10) {
+            dialNumber += key;
+            document.getElementById('phone-display').innerText = dialNumber;
+        }
+    }
+    document.getElementById('phone-display').addEventListener('dblclick', () => {
+        dialNumber = "";
+        document.getElementById('phone-display').innerText = "";
+    });
+
+    function makeCall() {
+        const res = document.getElementById('call-result');
+        if(dialNumber === "81056060") {
+            res.innerText = "正在連接至 HKCERT... 做得好！";
+            res.style.color = "green";
+        } else {
+            res.innerText = "號碼錯誤。(提示：8105 6060)";
+            res.style.color = "red";
+        }
+        setTimeout(() => {
+            dialNumber = "";
+            document.getElementById('phone-display').innerText = "";
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
