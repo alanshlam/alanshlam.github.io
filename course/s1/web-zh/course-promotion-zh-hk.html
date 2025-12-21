@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>課程推廣：日常網絡安全要點</title>
+    <title>課程推廣：日常網路安全要點</title>
     <style>
         :root {
             --primary-color: #2c3e50;
-            --accent-color: #c0392b; /* Urgent Red */
-            --highlight-color: #d35400; /* Orange for numbers */
+            --accent-color: #c0392b;
+            --highlight-color: #d35400;
             --bg-color: #f4f4f9;
             --text-color: #333;
             --card-bg: #fff;
@@ -222,13 +222,13 @@
             <div id="slide-text-content" class="dynamic-content">
             </div>
             <div class="slide-footer">
-                日常網絡安全要點與應急響應
+                日常網路安全要點與應急響應
             </div>
         </div>
     </div>
     <div class="controls">
         <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
-        <span class="progress" id="slide-counter">1 / 4</span>
+        <span class="progress" id="slide-counter">1 / 11</span>
         <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
         <div style="flex-grow:1"></div>
         <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
@@ -242,12 +242,12 @@
         {
             id: 1,
             html: `
-                <h1>為何網絡安全對您至關重要</h1>
+                <h1>為何網路安全對您至關重要</h1>
                 <hr>
                 <p>這不僅關乎電腦，更關乎您的生活。</p>
                 <ul>
                     <li><strong>您的財富：</strong>銀行應用程式和投資帳戶是主要目標。</li>
-                    <li><strong>您的回憶：</strong>十年的家庭照片可能在幾秒鐘內被勒索軟件鎖定。</li>
+                    <li><strong>您的回憶：</strong>十年的家庭照片可能在幾秒鐘內被勒索軟體鎖定。</li>
                     <li><strong>您的身份：</strong>被盜用的身份需要數月甚至數年才能修復。</li>
                 </ul>
                 <h3 style="color:var(--accent-color); margin-top:20px;">您會鎖上家門，為何讓您的數位生活門戶大開？</h3>
@@ -256,7 +256,7 @@
         {
             id: 2,
             html: `
-                <h3>香港網絡犯罪趨勢 (2024-2025)</h3>
+                <h3>香港網路犯罪趨勢 (2024-2025)</h3>
                 
                 <div class="stat-container">
                     <div class="stat-box">
@@ -289,7 +289,7 @@
                 <h3>當您落入陷阱時會發生什麼？</h3>
                 <p><strong>骨牌效應：</strong></p>
                 <ul>
-                    <li><strong>個人失誤：</strong>您點擊一個連結。勒索軟件加密您的筆記型電腦。您永遠失去了您的工作和照片。</li>
+                    <li><strong>個人失誤：</strong>您點擊一個連結。勒索軟體加密您的筆記型電腦。您永遠失去了您的工作和照片。</li>
                     <li><strong>「無形」的漏洞：</strong>您使用的某家公司被駭。您「重複使用」的密碼被盜。駭客用它來清空您的銀行帳戶。</li>
                 </ul>
                 <p style="background:#ffebee; padding:15px; border-radius:5px; border: 1px solid #ffcdd2;"><strong>後果：</strong>財務損失、精神壓力和聲譽損害。</p>
@@ -306,9 +306,117 @@
                     <li><strong>快速恢復：</strong>學習在您被駭客攻擊時確切的「急救」步驟。</li>
                 </ol>
                 <hr>
-                <h2 style="color:var(--primary-color);">立即參加「日常網絡安全要點」。</h2>
+                <h2 style="color:var(--primary-color);">立即參加「日常網路安全要點」。</h2>
+            `
+        },
+
+       {
+            id: 5,
+            html: `
+                <h1>日常網路安全要點與應急響應</h1>
+                <hr>
+                <h2>課程總覽</h2>
+                <p><strong>您的數位安全路線圖</strong></p>
+                <p>在這 10 單元的課程中，我們將把您從一個易受攻擊的使用者，轉變為一個有能力的數位防禦者。</p>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>模組一：基礎</h3>
+                <p>我們首先要了解我們所居住的「數位房屋」，以及如何鎖好門窗。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>第一單元：了解概況</strong><br>
+                        機密性、完整性、可用性，以及「數位房屋」的類比。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>第二單元：建立您的防禦</strong><br>
+                        四大基本習慣：鎖、更新、安全軟體和安全的應用程式。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>第三單元：密碼與多重身份驗證 (MFA)</strong><br>
+                        為什麼密碼會失效，以及為什麼多重身份驗證是終極的鎖。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>模組二：線上安全習慣</h3>
+                <p>在不被欺騙的情況下瀏覽網際網路和處理交易。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>第四單元：安全瀏覽</strong><br>
+                        辨識假連結、了解 HTTPS，以及使用 VPN。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>第五單元：電子郵件與交易</strong><br>
+                        識別魚叉式網路釣魚，以及為什麼信用卡比簽帳卡更安全。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>模組三：維護與韌性</h3>
+                <p>確保您的裝置持久耐用，您的資料能在災難中倖存。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>第六單元：更新與備份</strong><br>
+                        3-2-1 備份策略，以及為什麼更新是您的免費安全服務。
+                    </div>
+                </div>
+                <p style="margin-top:20px;"><em>「更新是保養，備份是保險。」</em></p>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>模組四：事件應對</h3>
+                <p>了解威脅，並確切知道發生威脅時該怎麼做。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>第七單元：威脅簡報</strong><br>
+                        深入探討釣魚、勒索軟體和資料外洩。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>第八單元：急救</strong><br>
+                        黃金法則：不要驚慌，不要刪除。逐步恢復指南。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>模組五：真實世界與未來</h3>
+                <p>從歷史中學習，為人工智慧時代做好準備。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>第九單元：案例研究</strong><br>
+                        分析 Target、Colonial Pipeline 和 Twitter 的駭客事件，學到真實的教訓。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>第十單元：人工智慧與詐騙</strong><br>
+                        語音複製、Deepfakes，以及在 AI 時代如何驗證真偽。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <h3>為何這很重要</h3>
+                <h2 style="color:var(--primary-color);">安全不是要您偏執多疑。</h2>
+                <h2 style="color:var(--accent-color);">而是要您做好準備。</h2>
+                <hr>
+                <p>在本課程結束時，您將擁有一個完整的<strong>行動計畫</strong>，以保護您自己、您的家人和您的工作場所。</p>
             `
         }
+        
     ];
 
     let currentIndex = 0;
