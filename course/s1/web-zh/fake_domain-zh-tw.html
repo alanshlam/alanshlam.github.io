@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>釣魚網域獵人 v2.1</title>
+    <title>釣魚網域獵人 v2.2</title>
     <style>
         :root {
             --primary: #4f46e5;
@@ -206,16 +206,11 @@
         
         <div id="gameScreen">
             <p class="subtitle">從更新的資料集中識別假網域</p>
-
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             <div class="stats">
                 <span id="scoreDisplay">分數：0</span>
                 <span id="qCountDisplay">問題：1 / 10</span>
             </div>
-
             <div class="question-area">
                 <p class="instruction">選擇<strong>假的</strong>網域：</p>
                 <div class="options-grid" id="optionsContainer">
@@ -223,7 +218,6 @@
                     <button class="domain-btn" id="btn2" onclick="handleChoice(1)"></button>
                 </div>
             </div>
-
             <div id="resultArea" class="info-box">
                 <div id="resultHeader" class="info-header"></div>
                 <div class="info-content">
@@ -244,9 +238,7 @@
             <div class="score-circle" id="finalScoreDisplay">0%</div>
             <h2>訓練完成！</h2>
             <p id="finalMessage">您正確識別了 Y 個釣魚網域中的 X 個。</p>
-            
             <button class="action-btn" onclick="initGame()">重新訓練 🔄</button>
-
             <div class="summary-container">
                 <h3 style="color: #4b5563;">📋 本次總結與攻擊情報</h3>
                 <div id="summaryList"></div>
@@ -266,33 +258,34 @@
             { fake: "faacebook.com", real: "facebook.com", type: "新增 'a'", context: "釣魚和廣告重新導向；常見於社群媒體目標。" },
             { fake: "yuube.com", real: "youtube.com", type: "省略 't'", context: "重新導向至惡意軟體或偽造的擴充功能（據報活躍至 2025 年）。" },
             { fake: "jacqumus.com", real: "jacquemus.com", type: "省略 'e'", context: "2020 年針對時尚品牌使用者的惡意軟體分發。" },
-            { fake: "onedrivesync.com", real: "onedrive.com", type: "新增單字 ('sync')", context: "組合搶注變體；託管惡意遠端工具 (2024)。" }
+            { fake: "onedrivesync.com", real: "onedrive.com", type: "新增單字 ('sync')", context: "組合搶注變體；託管惡意遠端工具 (2024)。" },
+            { fake: "rnicrosoft.com", real: "microsoft.com", type: "字元替換 (r+n 取代 m)", context: "用於 Microsoft 冒充釣魚郵件以竊取 Office 365 憑證；自 2020 年起常見於 BEC 攻擊。" },
+            { fake: "micros0ft.com", real: "microsoft.com", type: "零取代 'o'", context: "廣泛 Office 365 登入詐騙中的打字錯誤搶注變體；在 2023-2024 年的活動中針對企業進行憑證竊取。" },
+            { fake: "g00gle.com", real: "google.com", type: "零取代 'o'", context: "Gmail 釣魚中的典型打字錯誤搶注；重新導向至偽造登入頁面，自 2015 年以來在攻擊中出現。" },
+            { fake: "goigle.com", real: "google.com", type: "缺少 'o'", context: "利用搜尋相關釣魚中的打字錯誤；用於廣告詐欺和惡意軟體分發，直至 2024 年。" },
+            { fake: "cl0udflare.com", real: "cloudflare.com", type: "零取代 'o'", context: "在「Oktapus」釣魚浪潮（2022-2023）中冒充 Cloudflare，針對企業存取的 MFA 重設。" },
+            { fake: "cloudflare-okta.com", real: "cloudflare.com / okta.com", type: "品牌串聯", context: "在 Oktapus 攻擊前幾分鐘註冊；誘騙使用者進入混合登入頁面以收集憑證。" },
+            { fake: "gacebook.com", real: "facebook.com", type: "缺少 'f'", context: "早期的 Facebook 登入釣魚（2020 年前）；後來 Facebook 實施自動重新導向以對抗。" },
+            { fake: "wlklpedia.org", real: "wikipedia.org", type: "'k' 取代 'i'", context: "維基百科捐款詐騙；自 2018 年以來用於模仿慈善活動的電子郵件活動。" },
+            { fake: "rnicrosoft-security.com", real: "microsoft.com", type: "字元替換 + 字首", context: "BEC 變體，附加 'security' 以製造緊迫感；在 2024 年的事件中竊取高階主管憑證。" },
+            { fake: "secure-google-login.com", real: "google.com", type: "新增字首", context: "Google Workspace 釣魚；在 2023-2025 年的浪潮中託管偽造的 2FA 提示。" },
+            { fake: "insurrance.com", real: "insurance.com", type: "多一個 'r'", context: "用於保險理賠詐騙的打字錯誤搶注；透過帶有惡意軟體的電子郵件附件進行攻擊。" },
+            { fake: "travelcity.com", real: "travelocity.com", type: "缺少 'o'", context: "旅遊預訂詐欺；在 2022 年假日活動中重新導向至偽造的預訂網站。" },
+            { fake: "awsdns-061.org", real: "awsdns-61.org", type: "移除連字號", context: "在 2018 年 Coincheck 加密貨幣駭客事件中被劫持；用於在漏洞後聯繫受害者進行進一步釣魚。" },
+            { fake: "findfotos.com", real: "findphotos.com", type: "替代拼寫", context: "冒充相片分享服務；用於 2019 年左右的資料竊取活動。" }
         ];
 
         const TOTAL_QUESTIONS = 10; 
-        
-        let quizPool = [];
-        let score = 0;
-        let questionIndex = 0;
-        let currentQuestion = null;
-        let currentOptions = []; 
+        let quizPool = [], score = 0, questionIndex = 0, currentQuestion = null, currentOptions = []; 
 
-        const gameScreen = document.getElementById('gameScreen');
-        const finalScreen = document.getElementById('finalScreen');
-        const btn1 = document.getElementById('btn1');
-        const btn2 = document.getElementById('btn2');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const qCountDisplay = document.getElementById('qCountDisplay');
-        const progressBar = document.getElementById('progressBar');
-        const resultArea = document.getElementById('resultArea');
-        const resultHeader = document.getElementById('resultHeader');
-        const realDomainDisplay = document.getElementById('realDomainDisplay');
-        const spoofTypeDisplay = document.getElementById('spoofTypeDisplay');
-        const contextDisplay = document.getElementById('contextDisplay');
-        const nextBtn = document.getElementById('nextBtn');
-        const finalScoreDisplay = document.getElementById('finalScoreDisplay');
-        const finalMessage = document.getElementById('finalMessage');
-        const summaryList = document.getElementById('summaryList');
+        const gameScreen = document.getElementById('gameScreen'), finalScreen = document.getElementById('finalScreen'),
+              btn1 = document.getElementById('btn1'), btn2 = document.getElementById('btn2'),
+              scoreDisplay = document.getElementById('scoreDisplay'), qCountDisplay = document.getElementById('qCountDisplay'),
+              progressBar = document.getElementById('progressBar'), resultArea = document.getElementById('resultArea'),
+              resultHeader = document.getElementById('resultHeader'), realDomainDisplay = document.getElementById('realDomainDisplay'),
+              spoofTypeDisplay = document.getElementById('spoofTypeDisplay'), contextDisplay = document.getElementById('contextDisplay'),
+              nextBtn = document.getElementById('nextBtn'), finalScoreDisplay = document.getElementById('finalScoreDisplay'),
+              finalMessage = document.getElementById('finalMessage'), summaryList = document.getElementById('summaryList');
 
         function initGame() {
             let deepCopy = JSON.parse(JSON.stringify(rawData));
@@ -312,26 +305,16 @@
             }
 
             resultArea.style.display = 'none';
-            btn1.disabled = false;
-            btn2.disabled = false;
-            btn1.className = 'domain-btn';
-            btn2.className = 'domain-btn';
+            btn1.disabled = false; btn2.disabled = false;
+            btn1.className = 'domain-btn'; btn2.className = 'domain-btn';
 
             qCountDisplay.textContent = `問題：${questionIndex + 1} / ${TOTAL_QUESTIONS}`;
-            const progressPercent = ((questionIndex) / TOTAL_QUESTIONS) * 100;
-            progressBar.style.width = `${progressPercent}%`;
+            progressBar.style.width = `${((questionIndex) / TOTAL_QUESTIONS) * 100}%`;
             scoreDisplay.textContent = `分數：${score}`;
 
             currentQuestion = quizPool[questionIndex];
-            const opt1 = { text: currentQuestion.fake, isFake: true };
-            const opt2 = { text: currentQuestion.real, isFake: false };
-
-            if (Math.random() > 0.5) {
-                currentOptions = [opt1, opt2];
-            } else {
-                currentOptions = [opt2, opt1];
-            }
-
+            const opt1 = { text: currentQuestion.fake, isFake: true }, opt2 = { text: currentQuestion.real, isFake: false };
+            currentOptions = Math.random() > 0.5 ? [opt1, opt2] : [opt2, opt1];
             btn1.textContent = currentOptions[0].text;
             btn2.textContent = currentOptions[1].text;
         }
@@ -339,29 +322,20 @@
         function handleChoice(btnIndex) {
             const choice = currentOptions[btnIndex];
             const isCorrect = choice.isFake;
-
             currentQuestion.userWasCorrect = isCorrect;
-
-            btn1.disabled = true;
-            btn2.disabled = true;
-
+            btn1.disabled = true; btn2.disabled = true;
             if (isCorrect) score++;
-
             if (currentOptions[0].isFake) {
-                btn1.classList.add('result-correct'); 
-                btn2.classList.add('result-wrong');   
+                btn1.classList.add('result-correct'); btn2.classList.add('result-wrong');   
             } else {
-                btn1.classList.add('result-wrong');
-                btn2.classList.add('result-correct');
+                btn1.classList.add('result-wrong'); btn2.classList.add('result-correct');
             }
-
             scoreDisplay.textContent = `分數：${score}`;
             showResult(isCorrect, choice.text);
         }
 
         function showResult(isCorrect, selectedDomain) {
             resultArea.style.display = 'block';
-
             if (isCorrect) {
                 resultHeader.className = 'info-header header-correct';
                 resultHeader.textContent = `✅ 正確！ ${selectedDomain} 是假網域。`;
@@ -369,16 +343,10 @@
                 resultHeader.className = 'info-header header-wrong';
                 resultHeader.textContent = `❌ 錯誤！您點擊了合法的網域。`;
             }
-
             realDomainDisplay.textContent = currentQuestion.real;
             spoofTypeDisplay.textContent = currentQuestion.type;
             contextDisplay.textContent = currentQuestion.context;
-
-            if (questionIndex === quizPool.length - 1) {
-                nextBtn.textContent = "查看最終摘要 🏁";
-            } else {
-                nextBtn.textContent = "下一題 ➡️";
-            }
+            nextBtn.textContent = questionIndex === quizPool.length - 1 ? "查看最終摘要 🏁" : "下一題 ➡️";
         }
 
         function nextQuestion() {
@@ -389,23 +357,15 @@
         function endGame() {
             gameScreen.style.display = 'none';
             finalScreen.style.display = 'block';
-
             const percentage = Math.round((score / TOTAL_QUESTIONS) * 100);
             finalScoreDisplay.textContent = `${percentage}%`;
             finalMessage.textContent = `您正確識別了 ${TOTAL_QUESTIONS} 個釣魚網域中的 ${score} 個。`;
-
             summaryList.innerHTML = "";
-
             quizPool.forEach(item => {
                 const card = document.createElement('div');
                 const isWin = item.userWasCorrect;
-                
                 card.className = isWin ? "summary-card summary-win" : "summary-card summary-loss";
-                
-                const statusTag = isWin 
-                    ? `<span class="tag-correct">正確</span>` 
-                    : `<span class="tag-wrong">錯過</span>`;
-
+                const statusTag = isWin ? `<span class="tag-correct">正確</span>` : `<span class="tag-wrong">錯過</span>`;
                 card.innerHTML = `
                     <div class="summary-head">
                         <span class="summary-fake-url">${item.fake}</span>
@@ -419,7 +379,7 @@
                 summaryList.appendChild(card);
             });
         }
-        
+
         initGame();
     </script>
 </body>
