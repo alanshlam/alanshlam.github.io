@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Defense Force | 2025 Training Module</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6; /* Blue */
+            --accent: #8b5cf6; /* Purple for AI */
+            --danger: #ef4444;
+            --success: #22c55e;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--card-bg);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            color: var(--text);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Sections */
+        .module {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & Content */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+
+        .stat-box {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .stat {
+            flex: 1;
+            background: rgba(139, 92, 246, 0.1); /* purple tint */
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .stat h3 { margin: 0; font-size: 1.8rem; color: var(--accent); }
+        .stat p { margin: 5px 0 0; color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Simulators */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .email-preview {
+            background: #fff;
+            color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .email-preview.bad { border: 4px solid var(--danger); }
+        .email-preview.ai { border: 4px solid var(--accent); }
+
+        .overlay-label {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Tool Table */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+        }
+        .tool-card h4 { color: var(--primary); margin-top: 0; }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: #334155;
+            margin-right: 5px;
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            color: white;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover { background: rgba(255,255,255,0.1); }
+        
+        .correct { border-color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        .wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .btn-action:hover { background: #2563eb; }
+
+        @media (max-width: 768px) {
+            .comparison-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛡️ AI Defense Force</h1>
+        <div class="tagline">Interactive Training: Surviving the 2025 AI Threat Landscape</div>
+    </header>
+
+    <!-- FIXED: Passed 'this' in onclick to ensure reliable switching -->
+    <nav class="nav-grid">
+        <button class="nav-btn active" onclick="showModule('phishing', this)">🎣 AI Phishing</button>
+        <button class="nav-btn" onclick="showModule('ransomware', this)">🔒 Ransomware 2.0</button>
+        <button class="nav-btn" onclick="showModule('deepfake', this)">🎭 Deepfake Extortion</button>
+        <button class="nav-btn" onclick="showModule('tools', this)">🧰 Defense Tools</button>
+        <button class="nav-btn" onclick="showModule('quiz', this)">📝 Final Exam</button>
+    </nav>
+
+    <!-- MODULE 1: AI PHISHING -->
+    <div id="phishing" class="module active">
+        <div class="card">
+            <h2>The New Phishing Reality</h2>
+            <p>Forget poor grammar and "Dear Sir/Madam." In 2025, AI scrapes your LinkedIn, mimics your boss's writing style, and creates hyper-tailored emails.</p>
+            
+            <div class="stat-box">
+                <div class="stat">
+                    <h3>67.4%</h3>
+                    <p>of attacks in 2024 used AI</p>
+                </div>
+                <div class="stat">
+                    <h3>54%</h3>
+                    <p>Higher click rate for AI spear-phishing</p>
+                </div>
+                <div class="stat">
+                    <h3>82.6%</h3>
+                    <p>of spam is now AI-generated</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Simulation: Spot the Difference</h3>
+            <p>Compare these two phishing attempts. The AI version is much harder to spot.</p>
+            
+            <div class="comparison-container">
+                <!-- Old School -->
+                <div class="email-preview bad">
+                    <span class="overlay-label" style="background:var(--danger)">Old School (2015)</span>
+                    <p><strong>From:</strong> ceo.company@gmail.com</p>
+                    <p><strong>Subject:</strong> URGENT PAYMENT</p>
+                    <hr>
+                    <p>Dear Employee,</p>
+                    <p>I am in meeting right now. Kindly process urgent payment to vendor. I trust you.</p>
+                    <p>Sent from my iPhone</p>
+                    <div style="color:red; font-size:0.8rem; margin-top:10px;">🚩 Flags: Generic greeting, bad grammar, personal email address.</div>
+                </div>
+
+                <!-- AI Era -->
+                <div class="email-preview ai">
+                    <span class="overlay-label" style="background:var(--accent)">AI Powered (2025)</span>
+                    <p><strong>From:</strong> sarah.jenkins@compony.com (Spoofed)</p>
+                    <p><strong>Subject:</strong> Re: Q3 Marketing Budget - Vendor Invoice #4402</p>
+                    <hr>
+                    <p>Hi Mike,</p>
+                    <p>Great job on the presentation yesterday. Per our discussion about the Q3 expansion, can you expedite the attached invoice for the new digital assets? I need it cleared before the 2 PM board meeting.</p>
+                    <p>Thanks,<br>Sarah</p>
+                    <div style="color:var(--accent); font-size:0.8rem; margin-top:10px;">🤖 AI Tactics: References real events ("presentation"), creates specific urgency ("2 PM meeting"), perfect tone.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Defense Strategy</h3>
+            <ul>
+                <li><strong>Verify Context:</strong> Even if the details are right, call the sender on a known number.</li>
+                <li><strong>Check the Domain:</strong> Look closely at the sender address (e.g., compny.com vs company.com).</li>
+                <li><strong>Use AI Filters:</strong> Tools like <em>StrongestLayer</em> can analyze behavioral patterns to block these.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MODULE 2: RANSOMWARE -->
+    <div id="ransomware" class="module">
+        <div class="card">
+            <h2>Ransomware: Faster & Smarter</h2>
+            <p>AI has compressed the attack timeline. What used to take weeks now takes minutes. "Agentic AI" can map networks and find data autonomously.</p>
+            
+            <div class="stat-box">
+                <div class="stat">
+                    <h3>< 25 Mins</h3>
+                    <p>Time for AI intrusion (Simulated)</p>
+                </div>
+                <div class="stat">
+                    <h3>$1.13M</h3>
+                    <p>Average ransom demand (Q2 2025)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Interactive Scenario: The Help Desk Call</h3>
+            <p><em>Scenario: You receive a call from "IT Support." The voice sounds exactly like your colleague, Dave, complete with his local accent. He says your account is compromised and needs your MFA code immediately.</em></p>
+            
+            <div id="scenario-result" style="display:none; padding:15px; margin-top:10px; border-radius:8px;"></div>
+            
+            <button class="quiz-option" onclick="resolveScenario(false)">A) Give him the code. It sounds exactly like Dave.</button>
+            <button class="quiz-option" onclick="resolveScenario(true)">B) Hang up. Call Dave back on his internal extension.</button>
+        </div>
+    </div>
+
+    <!-- MODULE 3: DEEPFAKES -->
+    <div id="deepfake" class="module">
+        <div class="card">
+            <h2>Deepfakes: The Psychological Weapon</h2>
+            <p>Attackers now use "Proof-of-Life" videos or fake executive meetings to extort money. Deepfake files exploded to 8 million in 2025.</p>
+            <p style="font-style: italic; color: var(--accent);">Real Case (2025): A U.S. executive received a video of their spouse "kidnapped," demanding $500k. It was entirely AI-generated.</p>
+        </div>
+
+        <div class="card">
+            <h3>Detection Checklist</h3>
+            <p>Use these cues to spot AI video/audio:</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                    <strong style="color:var(--primary)">Video Glitches</strong>
+                    <ul style="font-size:0.9rem; color:var(--text-muted);">
+                        <li>Unnatural blinking patterns (too fast/slow).</li>
+                        <li>Lip sync issues (audio doesn't match mouth).</li>
+                        <li>Blurriness around the ears or hairline.</li>
+                        <li>Inconsistent lighting on the face vs. background.</li>
+                    </ul>
+                </div>
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                    <strong style="color:var(--primary)">Audio/Process</strong>
+                    <ul style="font-size:0.9rem; color:var(--text-muted);">
+                        <li>Robotic cadence or lack of emotion.</li>
+                        <li>Background noise cuts out abruptly.</li>
+                        <li><strong>Pro Tip:</strong> Establish a "Secret Code" with family/execs for emergencies.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 4: TOOLS -->
+    <div id="tools" class="module">
+        <div class="card">
+            <h2>🧰 The 2025 Defense Toolkit</h2>
+            <p>AI fights AI. Use these tools recommended for 2025 defenses.</p>
+            
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>Intel FakeCatcher</h4>
+                    <span class="tag">Free</span> <span class="tag">Real-time</span>
+                    <p>Detects deepfakes by analyzing "blood flow" (photoplethysmography) in video pixels. 96% Accuracy.</p>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Sensity AI</h4>
+                    <span class="tag">Enterprise</span> <span class="tag">Multi-modal</span>
+                    <p>Excellent for detecting identity theft and deepfakes in KYC processes. Covers video, image, and audio.</p>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Reality Defender</h4>
+                    <span class="tag">Enterprise</span> <span class="tag">API</span>
+                    <p>Ensemble models for banks/gov. Drag-and-drop analysis. No watermarks needed.</p>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Hive AI</h4>
+                    <span class="tag">Developer</span> <span class="tag">API</span>
+                    <p>Biometric analysis to spot blending boundaries. Great for content platforms.</p>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Resemble AI</h4>
+                    <span class="tag">Audio Focus</span>
+                    <p>Specific detection for cloned voices and audio deepfakes. Critical for call centers.</p>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Deepware Scanner</h4>
+                    <span class="tag">Free</span> <span class="tag">Beginner</span>
+                    <p>Simple upload tool for quick checks on suspicious videos. Good for personal use.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 5: QUIZ -->
+    <div id="quiz" class="module">
+        <div class="card">
+            <h2>🎓 Final Certification Exam</h2>
+            <p>Test your knowledge against the 2025 threat landscape.</p>
+            
+            <div id="quiz-container">
+                <!-- Question 1 -->
+                <div class="quiz-q" data-q="1">
+                    <h4>1. Why is AI Phishing (2025) more dangerous than traditional phishing?</h4>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">It uses data scraping to create hyper-personalized, error-free messages.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">It sends more emails per minute but they are low quality.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">It only targets personal Gmail accounts, not businesses.</button>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-q" data-q="2" style="display:none;">
+                    <h4>2. What is "Vishing" in the context of AI attacks?</h4>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">Visual Phishing using images.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">Voice Phishing using AI to clone voices of trusted people.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">Virus Phishing via email attachments.</button>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-q" data-q="3" style="display:none;">
+                    <h4>3. Which tool analyzes "blood flow" in pixels to detect deepfakes?</h4>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">ChatGPT Detector</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">Norton AntiVirus</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">Intel FakeCatcher</button>
+                </div>
+                
+                <!-- Question 4 -->
+                <div class="quiz-q" data-q="4" style="display:none;">
+                    <h4>4. What is the best non-technical defense against an AI "Kidnapping" scam call?</h4>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">Ask the caller for their IP address.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, true)">Use a pre-agreed "Secret Phrase" or code word.</button>
+                    <button class="quiz-option" onclick="checkAnswer(this, false)">Pay the ransom immediately to be safe.</button>
+                </div>
+
+                <div id="quiz-finish" style="display:none; text-align:center;">
+                    <h3 style="color:var(--success)">Training Complete!</h3>
+                    <p>You have reviewed the core concepts of AI-powered attacks.</p>
+                    <button class="btn-action" onclick="resetQuiz()">Restart Training</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // FIXED: Navigation Logic uses 'btn' directly instead of brittle string scraping
+    function showModule(moduleId, btn) {
+        // 1. Hide all modules
+        document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+        
+        // 2. Remove active class from all nav buttons
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
+        // 3. Show selected module by ID
+        const targetModule = document.getElementById(moduleId);
+        if (targetModule) {
+            targetModule.classList.add('active');
+        } else {
+            console.error("Module ID not found: " + moduleId);
+        }
+        
+        // 4. Highlight the clicked button
+        if (btn) {
+            btn.classList.add('active');
+        }
+    }
+
+    // Ransomware Scenario Logic
+    function resolveScenario(isCorrect) {
+        const result = document.getElementById('scenario-result');
+        result.style.display = 'block';
+        if(isCorrect) {
+            result.style.background = 'rgba(34, 197, 94, 0.2)';
+            result.style.border = '1px solid var(--success)';
+            result.innerHTML = "<strong>✅ Correct!</strong> This is a 'Vishing' (Voice Phishing) attack using AI voice cloning. 60% of targets are fooled by these. Always verify via a secondary channel.";
+        } else {
+            result.style.background = 'rgba(239, 68, 68, 0.2)';
+            result.style.border = '1px solid var(--danger)';
+            result.innerHTML = "<strong>❌ Failed.</strong> You fell for a Voice Clone. In 2025, AI can clone a voice with just 3 seconds of audio. Attackers use this to bypass MFA.";
+        }
+    }
+
+    // Quiz Logic
+    let currentQ = 1;
+    const totalQ = 4;
+
+    function checkAnswer(btn, isCorrect) {
+        // Disable all buttons in this question
+        const parent = btn.parentElement;
+        const opts = parent.querySelectorAll('.quiz-option');
+        opts.forEach(o => o.disabled = true);
+
+        if(isCorrect) {
+            btn.classList.add('correct');
+            btn.innerHTML += " ✅";
+        } else {
+            btn.classList.add('wrong');
+            btn.innerHTML += " ❌";
+        }
+
+        // Wait a moment then show next
+        setTimeout(() => {
+            if(currentQ < totalQ) {
+                parent.style.display = 'none';
+                currentQ++;
+                document.querySelector(`.quiz-q[data-q="${currentQ}"]`).style.display = 'block';
+            } else {
+                parent.style.display = 'none';
+                document.getElementById('quiz-finish').style.display = 'block';
+            }
+        }, 1500);
+    }
+
+    function resetQuiz() {
+        currentQ = 1;
+        document.getElementById('quiz-finish').style.display = 'none';
+        
+        // Reset buttons
+        document.querySelectorAll('.quiz-option').forEach(b => {
+            b.classList.remove('correct', 'wrong');
+            b.disabled = false;
+            b.innerHTML = b.innerText.replace(' ✅', '').replace(' ❌', '');
+        });
+
+        // Show first question
+        document.querySelectorAll('.quiz-q').forEach(q => q.style.display = 'none');
+        document.querySelector(`.quiz-q[data-q="1"]`).style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
