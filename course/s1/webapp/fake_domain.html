@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phishing Domain Hunter v2.1</title>
+    <title>Phishing Domain Hunter v2.2</title>
     <style>
         :root {
             --primary: #4f46e5; /* Indigo */
@@ -272,8 +272,9 @@
     </div>
 
     <script>
-        // --- 1. DATA ---
+        // --- 1. DATA (Updated with content from fake_deomain01.md) ---
         const rawData = [
+            // Original Dataset
             { fake: "goggle.com", real: "google.com", type: "Added 'g'", context: "Famous 2006 phishing site that downloaded malware; one of the earliest high-profile cases." },
             { fake: "gooogle.com", real: "google.com", type: "Added 'o'", context: "Common variant used for phishing and ad revenue; targeted in multiple campaigns." },
             { fake: "gogle.com", real: "google.com", type: "Omitted 'o'", context: "Character omission; redirected to malicious sites or ads." },
@@ -284,7 +285,23 @@
             { fake: "faacebook.com", real: "facebook.com", type: "Added 'a'", context: "Phishing and ad redirection; common on social media targets." },
             { fake: "yuube.com", real: "youtube.com", type: "Omitted 't'", context: "Redirected to malware or fake extensions (reported active until 2025)." },
             { fake: "jacqumus.com", real: "jacquemus.com", type: "Omitted 'e'", context: "2020 malware distribution targeting fashion brand users." },
-            { fake: "onedrivesync.com", real: "onedrive.com", type: "Added word ('sync')", context: "Combo-squatting variant; hosted malicious remote tools (2024)." }
+            { fake: "onedrivesync.com", real: "onedrive.com", type: "Added word ('sync')", context: "Combo-squatting variant; hosted malicious remote tools (2024)." },
+            
+            // New Dataset imported from fake_deomain01.md
+            { fake: "rnicrosoft.com", real: "microsoft.com", type: "Character substitution (r+n for m)", context: "Used in Microsoft impersonation phishing emails to steal Office 365 credentials; common in BEC attacks since 2020." },
+            { fake: "micros0ft.com", real: "microsoft.com", type: "Zero for 'o'", context: "Typosquatting variant in widespread Office 365 login scams; targeted enterprises for credential theft in 2023–2024 campaigns." },
+            { fake: "g00gle.com", real: "google.com", type: "Zeroes for 'o's", context: "Classic typosquatter in Gmail phishing; redirects to fake login pages, seen in attacks since 2015." },
+            { fake: "goigle.com", real: "google.com", type: "Missing 'o'", context: "Exploited typing errors in search-related phishing; used in ad fraud and malware distribution up to 2024." },
+            { fake: "cl0udflare.com", real: "cloudflare.com", type: "Zero for 'o'", context: "Impersonated Cloudflare in 'Oktapus' phishing wave (2022–2023), targeting MFA resets for enterprise access." },
+            { fake: "cloudflare-okta.com", real: "cloudflare.com / okta.com", type: "Concatenation of brands", context: "Registered minutes before Oktapus attacks; tricked users into hybrid login pages for credential harvest." },
+            { fake: "gacebook.com", real: "facebook.com", type: "Missing 'f'", context: "Early Facebook login phishing (pre-2020); auto-redirects were later implemented by Facebook to counter it." },
+            { fake: "wlklpedia.org", real: "wikipedia.org", type: "'k' for 'i'", context: "Wikipedia donation scams; used in email campaigns mimicking charity drives since 2018." },
+            { fake: "rnicrosoft-security.com", real: "microsoft.com", type: "Character sub + prefix", context: "BEC variant appending 'security' for urgency; stole executive creds in 2024 incidents." },
+            { fake: "secure-google-login.com", real: "google.com", type: "Prefix addition", context: "Google Workspace phishing; hosted fake 2FA prompts in 2023–2025 waves." },
+            { fake: "insurrance.com", real: "insurance.com", type: "Extra 'r'", context: "Typosquatted for insurance claim scams; targeted via email attachments with malware." },
+            { fake: "travelcity.com", real: "travelocity.com", type: "Missing 'o'", context: "Travel booking fraud; redirected to fake reservation sites in 2022 holiday campaigns." },
+            { fake: "awsdns-061.org", real: "awsdns-61.org", type: "Hyphen removal", context: "Hijacked in 2018 Coincheck crypto hack; used to contact victims post-breach for further phishing." },
+            { fake: "findfotos.com", real: "findphotos.com", type: "Alternative spelling", context: "Photo-sharing service impersonation; used in data theft campaigns around 2019." }
         ];
 
         // --- 2. GAME CONFIG ---
