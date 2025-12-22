@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homograph Attack Defender</title>
+    <title>Homograph Attack Defender v2.1</title>
     <style>
         :root {
             --primary: #0ea5e9; /* Sky Blue */
@@ -15,6 +15,7 @@
             --card-bg: #1e293b;
             --text: #f1f5f9;
             --text-muted: #94a3b8;
+            --info-bg: rgba(14, 165, 233, 0.1);
         }
 
         * { box-sizing: border-box; }
@@ -65,6 +66,8 @@
         }
 
         .tab-btn:hover { background: #334155; }
+        
+        /* Active State */
         .tab-btn.active {
             background: var(--primary);
             border-color: var(--primary);
@@ -110,11 +113,12 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0 24px;
+            padding: 12px 24px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             font-size: 1rem;
+            transition: background 0.2s;
         }
         button.action-btn:hover { background: var(--primary-dark); }
 
@@ -214,6 +218,59 @@
             border-radius: 4px;
         }
 
+        /* --- SUMMARY & REFERENCE LIST STYLES (Dark Mode) --- */
+        .section-title {
+            color: var(--text);
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .summary-container {
+            text-align: left;
+            margin-top: 2rem;
+        }
+
+        .summary-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 6px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        /* Card Variants */
+        .summary-win { border-left-color: var(--success); background-color: rgba(34, 197, 94, 0.05); }
+        .summary-loss { border-left-color: var(--danger); background-color: rgba(239, 68, 68, 0.05); }
+        .summary-reference { border-left-color: var(--primary); background-color: var(--info-bg); }
+
+        .summary-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-visual {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .text-fake { color: var(--danger); }
+        .text-safe { color: var(--success); }
+        .text-puny { color: var(--accent); font-family: monospace; font-size: 0.85rem; }
+
+        .tag-correct { color: var(--success); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--success); padding: 2px 8px; border-radius: 4px; }
+        .tag-wrong { color: var(--danger); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--danger); padding: 2px 8px; border-radius: 4px; }
+        .tag-info { color: var(--primary); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
+
+        .summary-details { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-top: 8px; }
+
         /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
@@ -232,10 +289,11 @@
             <p class="subtitle">Learn to spot Internationalized Domain Name (IDN) spoofing</p>
         </header>
 
+        <!-- UPDATED NAV: Added 'switchTab(this, ...)' to fix clicking issues -->
         <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('learn')">📖 Learn</button>
-            <button class="tab-btn" onclick="switchTab('inspector')">🔍 IDN Inspector</button>
-            <button class="tab-btn" onclick="switchTab('training')">⚔️ Training</button>
+            <button class="tab-btn active" onclick="switchTab(this, 'learn')">📖 Learn</button>
+            <button class="tab-btn" onclick="switchTab(this, 'inspector')">🔍 IDN Inspector</button>
+            <button class="tab-btn" onclick="switchTab(this, 'training')">⚔️ Training</button>
         </nav>
 
         <!-- 1. LEARN SECTION -->
@@ -286,16 +344,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="card">
-                <h2>🛡️ Prevention Tips</h2>
-                <ul class="tip-list">
-                    <li><strong>Hover Links:</strong> Always hover over a link before clicking. Look for the <code>xn--</code> prefix in the status bar.</li>
-                    <li><strong>Browser Settings:</strong> Use browsers configured to show Punycode for IDNs (e.g., Firefox <code>network.IDN_show_punycode</code>).</li>
-                    <li><strong>Password Managers:</strong> They won't autofill credentials if the underlying domain (Punycode) doesn't match the stored domain.</li>
-                    <li><strong>Beware of Urgent Emails:</strong> Many homograph attacks arrive via emails claiming your account is locked.</li>
-                </ul>
             </div>
         </div>
 
@@ -358,8 +406,21 @@
 
                 <div id="quizFinal" style="display:none;">
                     <h2>Training Complete!</h2>
-                    <p id="finalScoreMsg" style="font-size: 1.5rem;"></p>
-                    <button class="action-btn" onclick="restartQuiz()">Restart Training</button>
+                    <p id="finalScoreMsg" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem;"></p>
+                    <button class="action-btn" onclick="restartQuiz()">Restart Training 🔄</button>
+
+                    <div class="summary-container">
+                        <!-- 1. Session Results -->
+                        <h3 class="section-title">📊 Your Session Results</h3>
+                        <div id="sessionSummary"></div>
+
+                        <!-- 2. Full Reference List -->
+                        <h3 class="section-title">📚 Complete Homograph Database (Reference)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Study the full list of visual spoofing attacks contained in this tool:
+                        </p>
+                        <div id="fullDbRef"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -369,9 +430,9 @@
     <script>
         // --- DATASET FROM MARKDOWN ---
         const homographData = [
-            { visual: "apple.com", isFake: false, puny: "apple.com", note: "This is the legitimate site." },
+            { visual: "apple.com", isFake: false, puny: "apple.com", note: "This is the legitimate site (ASCII)." },
             { visual: "аррӏе.com", isFake: true, puny: "xn--80ak6aa92e.com", note: "Cyrillic 'а', 'р', 'е'. Famous 2017 Proof-of-Concept." },
-            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "Legitimate site." },
+            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "Legitimate site (ASCII)." },
             { visual: "paypaӏ.com", isFake: true, puny: "xn--paypa-ngc.com", note: "Uses Cyrillic 'ӏ' (palochka) instead of 'l'." },
             { visual: "adoḅe.com", isFake: true, puny: "xn--adoe-750a.com", note: "Uses Latin 'ḅ' with a dot below. Distributed Betabot malware." },
             { visual: "micrоsоft.com", isFake: true, puny: "xn--micrsft-wbd9a.com", note: "Uses Cyrillic 'о' characters." },
@@ -381,18 +442,23 @@
             { visual: "mеtаmаsk.io", isFake: true, puny: "xn--mtmsk-p4d2b.io", note: "Cyrillic 'е' and 'а'. Targeted crypto users." }
         ];
 
-        // --- TABS LOGIC ---
-        function switchTab(tabId) {
+        // --- FIXED TABS LOGIC ---
+        // We now pass 'btnElement' directly to avoid selector issues
+        function switchTab(btnElement, tabId) {
+            // 1. Hide all sections
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
-            document.getElementById(tabId).classList.add('active');
-            // Find the button that calls this function with this tabId
-            const buttons = document.getElementsByTagName('button');
-            for (let btn of buttons) {
-                if(btn.getAttribute('onclick') === `switchTab('${tabId}')`) {
-                    btn.classList.add('active');
-                }
+            // 2. Show the target section
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active');
+
+            // 3. Deactivate all navigation buttons
+            // We use .nav-tabs .tab-btn to ensure we don't accidentally select buttons inside the inspector tool
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            // 4. Activate the clicked button
+            if(btnElement) {
+                btnElement.classList.add('active');
             }
         }
 
@@ -400,6 +466,9 @@
         function fillInspector(text) {
             document.getElementById('inspectorInput').value = text;
             analyzeDomain();
+            // Automatically switch to inspector tab if not already there
+            const inspectorBtn = document.querySelector('.nav-tabs button:nth-child(2)');
+            switchTab(inspectorBtn, 'inspector');
         }
 
         function analyzeDomain() {
@@ -416,14 +485,10 @@
             breakdownDiv.innerHTML = '';
 
             let suspiciousCount = 0;
-            let html = '';
 
             for (let char of input) {
                 const code = char.codePointAt(0);
-                // Basic ASCII check (0-127 are standard Latin/Sym)
-                // Note: This is a simplification. Some legitimate domains use IDN, but for English contexts, anything > 127 is suspicious.
                 const isSuspicious = code > 127;
-                
                 if (isSuspicious) suspiciousCount++;
 
                 const div = document.createElement('div');
@@ -451,8 +516,10 @@
         let quizPool = [];
 
         function initQuiz() {
-            // Shuffle and pick 5
-            quizPool = [...homographData].sort(() => 0.5 - Math.random()).slice(0, 5);
+            // Deep copy and shuffle
+            let deepCopy = JSON.parse(JSON.stringify(homographData));
+            quizPool = deepCopy.sort(() => 0.5 - Math.random()).slice(0, 5);
+            
             currentQuizIndex = 0;
             score = 0;
             loadQuestion();
@@ -475,6 +542,9 @@
             const actuallySafe = !q.isFake;
             
             const isCorrect = (userSaidSafe === actuallySafe);
+            
+            // Save result for summary
+            q.userWasCorrect = isCorrect;
             
             if (isCorrect) score++;
 
@@ -517,6 +587,63 @@
             document.getElementById('quizFinal').style.display = 'block';
             
             document.getElementById('finalScoreMsg').textContent = `You scored ${score} out of ${quizPool.length}`;
+
+            // --- 1. GENERATE SESSION SUMMARY ---
+            const sessionDiv = document.getElementById('sessionSummary');
+            sessionDiv.innerHTML = "";
+
+            quizPool.forEach(item => {
+                const card = document.createElement('div');
+                const isWin = item.userWasCorrect;
+                card.className = isWin ? "summary-card summary-win" : "summary-card summary-loss";
+
+                const statusTag = isWin 
+                    ? `<span class="tag-correct">Correct</span>` 
+                    : `<span class="tag-wrong">Missed</span>`;
+                
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <span class="summary-visual ${urlClass}">${item.visual}</span>
+                        ${statusTag}
+                    </div>
+                    <div class="summary-details">
+                        <span class="text-puny">Real/Puny: ${item.puny}</span><br>
+                        ${item.note}
+                    </div>
+                `;
+                sessionDiv.appendChild(card);
+            });
+
+            // --- 2. GENERATE FULL DATABASE REFERENCE ---
+            const dbDiv = document.getElementById('fullDbRef');
+            dbDiv.innerHTML = "";
+
+            // Sort alphabetically by visual URL
+            const sortedData = [...homographData].sort((a, b) => a.visual.localeCompare(b.visual));
+
+            sortedData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "summary-card summary-reference";
+                
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+                const typeTag = item.isFake 
+                    ? `<span class="tag-wrong">FAKE</span>` 
+                    : `<span class="tag-correct">REAL</span>`;
+
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <span class="summary-visual ${urlClass}">${item.visual}</span>
+                        ${typeTag}
+                    </div>
+                    <div class="summary-details">
+                        <span class="text-puny">Real/Puny: ${item.puny}</span><br>
+                        ${item.note}
+                    </div>
+                `;
+                dbDiv.appendChild(card);
+            });
         }
 
         function restartQuiz() {

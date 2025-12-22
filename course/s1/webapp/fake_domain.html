@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phishing Domain Hunter v2.2</title>
+    <title>Phishing Domain Hunter v2.3</title>
     <style>
         :root {
             --primary: #4f46e5; /* Indigo */
+            --primary-light: #eef2ff;
             --success: #16a34a;
             --danger: #dc2626;
             --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1f2937;
+            --info: #0ea5e9; /* Light Blue for reference */
         }
 
         body {
@@ -27,7 +29,7 @@
         }
 
         .container {
-            max-width: 700px;
+            max-width: 800px;
             width: 100%;
             background: var(--card-bg);
             border-radius: 12px;
@@ -161,12 +163,19 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* Summary List Styles */
+        /* Summary & Reference List Styles */
+        .section-title {
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
         .summary-container {
             text-align: left;
             margin-top: 2rem;
-            border-top: 2px solid #e5e7eb;
-            padding-top: 2rem;
         }
         
         .summary-card {
@@ -179,8 +188,10 @@
             font-size: 0.95rem;
         }
 
-        .summary-card.summary-win { border-left-color: var(--success); }
-        .summary-card.summary-loss { border-left-color: var(--danger); }
+        /* Card Variants */
+        .summary-win { border-left-color: var(--success); background-color: #f0fdf4; }
+        .summary-loss { border-left-color: var(--danger); background-color: #fef2f2; }
+        .summary-reference { border-left-color: var(--info); background-color: #f0f9ff; }
 
         .summary-head {
             display: flex;
@@ -193,12 +204,20 @@
             font-family: 'Courier New', monospace;
             font-weight: bold;
             font-size: 1.1rem;
+            color: #dc2626; /* Red text for fake */
+        }
+        
+        .summary-real-url {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #16a34a; /* Green text for real */
         }
 
         .tag-correct { color: var(--success); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
         .tag-wrong { color: var(--danger); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; background: #fee2e2; padding: 2px 8px; border-radius: 4px; }
+        .tag-info { color: var(--info); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; background: #e0f2fe; padding: 2px 8px; border-radius: 4px; }
 
-        .summary-details { color: #4b5563; font-size: 0.9rem; line-height: 1.4; }
+        .summary-details { color: #4b5563; font-size: 0.9rem; line-height: 1.4; margin-top: 8px;}
 
         @media (max-width: 600px) {
             .options-grid { grid-template-columns: 1fr; }
@@ -260,10 +279,19 @@
             
             <button class="action-btn" onclick="initGame()">Restart Training 🔄</button>
 
-            <!-- Summary Table Area -->
+            <!-- 1. Session Summary (What user just answered) -->
             <div class="summary-container">
-                <h3 style="color: #4b5563;">📋 Session Summary & Attack Intel</h3>
+                <h3 class="section-title">📊 Your Session Results</h3>
                 <div id="summaryList">
+                    <!-- Dynamic Content -->
+                </div>
+
+                <!-- 2. Full Reference Database (All data) -->
+                <h3 class="section-title">📚 Complete Threat Database (Student Reference)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                    Review all potential phishing variations in the system below:
+                </p>
+                <div id="fullDbContainer">
                     <!-- Dynamic Content -->
                 </div>
             </div>
@@ -330,12 +358,12 @@
         const finalScoreDisplay = document.getElementById('finalScoreDisplay');
         const finalMessage = document.getElementById('finalMessage');
         const summaryList = document.getElementById('summaryList');
+        const fullDbContainer = document.getElementById('fullDbContainer');
 
         // --- 4. GAME LOGIC ---
 
         function initGame() {
             // 1. Shuffle data deeply to ensure clean start
-            // We use JSON parse/stringify to break references so we can add 'userResult' safely
             let deepCopy = JSON.parse(JSON.stringify(rawData));
             let shuffled = deepCopy.sort(() => 0.5 - Math.random());
             
@@ -449,9 +477,8 @@
             finalScoreDisplay.textContent = `${percentage}%`;
             finalMessage.textContent = `You identified ${score} out of ${TOTAL_QUESTIONS} phishing domains correctly.`;
 
-            // --- GENERATE SUMMARY ---
-            summaryList.innerHTML = ""; // Clear old summary
-
+            // --- 1. GENERATE SESSION SUMMARY (Your 10 Qs) ---
+            summaryList.innerHTML = ""; 
             quizPool.forEach(item => {
                 const card = document.createElement('div');
                 const isWin = item.userWasCorrect;
@@ -464,7 +491,11 @@
 
                 card.innerHTML = `
                     <div class="summary-head">
-                        <span class="summary-fake-url">${item.fake}</span>
+                        <div>
+                            <span class="summary-fake-url">${item.fake}</span>
+                            <br>
+                            <span class="summary-real-url">Real: ${item.real}</span>
+                        </div>
                         ${statusTag}
                     </div>
                     <div class="summary-details">
@@ -473,6 +504,33 @@
                     </div>
                 `;
                 summaryList.appendChild(card);
+            });
+
+            // --- 2. GENERATE FULL DATABASE LIST (Reference) ---
+            fullDbContainer.innerHTML = "";
+            
+            // Sort rawData alphabetically by fake domain for easier reference
+            const sortedData = [...rawData].sort((a, b) => a.fake.localeCompare(b.fake));
+
+            sortedData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "summary-card summary-reference";
+                
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <div>
+                            <span class="summary-fake-url" style="color:#1f2937;">${item.fake}</span>
+                            <br>
+                            <span class="summary-real-url">Real: ${item.real}</span>
+                        </div>
+                        <span class="tag-info">Database Entry</span>
+                    </div>
+                    <div class="summary-details">
+                        <strong>Type:</strong> ${item.type}<br>
+                        <strong>Intel:</strong> ${item.context}
+                    </div>
+                `;
+                fullDbContainer.appendChild(card);
             });
         }
 
