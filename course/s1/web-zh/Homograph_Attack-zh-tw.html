@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同形異義字攻擊防禦者</title>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Sky Blue */
+            --primary-dark: #0284c7;
+            --accent: #f59e0b; /* Amber for warnings */
+            --danger: #ef4444;
+            --success: #22c55e;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #334155; }
+        h1 { margin: 0; font-size: 2.5rem; color: var(--primary); }
+        .subtitle { color: var(--text-muted); margin-top: 0.5rem; }
+        .nav-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .tab-btn { background: var(--card-bg); border: 1px solid #334155; color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+        .tab-btn:hover { background: #334155; }
+        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 2rem; border: 1px solid #334155; margin-bottom: 2rem; }
+        h2 { margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 6px; border: 2px solid #475569; background: #0f172a; color: white; font-family: 'Courier New', monospace; font-size: 1.2rem; }
+        button.action-btn { background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        button.action-btn:hover { background: var(--primary-dark); }
+        .analysis-result { display: none; background: #0f172a; padding: 1.5rem; border-radius: 8px; border: 1px solid #334155; }
+        .big-url { font-family: 'Courier New', monospace; font-size: 2rem; letter-spacing: 2px; margin-bottom: 1rem; word-break: break-all; }
+        .char-breakdown { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 1rem; }
+        .char-box { border: 1px solid #475569; padding: 5px; text-align: center; border-radius: 4px; min-width: 40px; }
+        .char-box.safe { border-color: var(--success); color: var(--success); }
+        .char-box.danger { border-color: var(--danger); background: rgba(239, 68, 68, 0.2); color: var(--danger); animation: pulse 2s infinite; }
+        .char-code { font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 2px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .scenario-box { text-align: center; }
+        .domain-display { font-family: 'Courier New', monospace; font-size: 2.5rem; margin: 2rem 0; padding: 1rem; background: #0f172a; border-radius: 8px; display: inline-block; }
+        .choice-btn-group { display: flex; justify-content: center; gap: 20px; }
+        .choice-btn { padding: 15px 30px; border-radius: 8px; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; transition: transform 0.1s; }
+        .btn-safe { background: var(--success); color: white; }
+        .btn-fake { background: var(--danger); color: white; }
+        .choice-btn:hover { transform: scale(1.05); }
+        .feedback-box { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; }
+        .feedback-correct { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); }
+        .feedback-wrong { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); }
+        .punycode-reveal { font-family: monospace; background: #000; color: var(--accent); padding: 2px 6px; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
+        th { color: var(--primary); }
+        tr:hover { background: rgba(255,255,255,0.05); }
+        .tip-list li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🆔 同形異義字攻擊防禦者</h1>
+            <p class="subtitle">學習辨識國際化域名 (IDN) 欺騙</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('learn')">📖 學習</button>
+            <button class="tab-btn" onclick="switchTab('inspector')">🔍 IDN 檢查器</button>
+            <button class="tab-btn" onclick="switchTab('training')">⚔️ 訓練</button>
+        </nav>
+
+        <div id="learn" class="section active">
+            <div class="card">
+                <h2>什麼是同形異義字攻擊？</h2>
+                <p>同形異義字攻擊利用來自不同文字系統（如拉丁文 vs. 西里爾文或希臘文）的視覺相似字元來建立欺騙性的網域名稱。</p>
+                <p>攻擊者使用 <strong>Punycode</strong>（以 <code>xn--</code> 為字首）註冊網域。對電腦來說，<code>xn--80ak6aa92e.com</code> 是一個唯一的位址，但對您的瀏覽器來說，它會呈現為 <strong>apple.com</strong>（使用西里爾文字元）。</p>
+                <div style="background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin: 1rem 0;">
+                    <strong>真實世界範例：</strong><br>
+                    視覺：<code>apple.com</code> (西里爾文)<br>
+                    實際：<code>xn--80ak6aa92e.com</code><br>
+                    <em>在 2017 年一個著名的概念驗證中用於繞過瀏覽器安全機制。</em>
+                </div>
+            </div>
+            <div class="card">
+                <h2>常見替換類型</h2>
+                <table>
+                    <thead><tr><th>視覺欺騙</th><th>合法網域</th><th>技巧</th></tr></thead>
+                    <tbody>
+                        <tr><td>micrоsоft.com</td><td>microsoft.com</td><td>西里爾文 'о' (U+043E) 取代拉丁文 'o'</td></tr>
+                        <tr><td>paypaӏ.com</td><td>paypal.com</td><td>西里爾文 'ӏ' (U+04CF) 取代拉丁文 'l'</td></tr>
+                        <tr><td>tωitter.com</td><td>twitter.com</td><td>希臘文 'ω' 取代 'w'</td></tr>
+                        <tr><td>adoḅe.com</td><td>adobe.com</td><td>拉丁文 'ḅ' (下方有點) 取代 'b'</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h2>🛡️ 預防提示</h2>
+                <ul class="tip-list">
+                    <li><strong>懸停連結：</strong>點擊連結前務必先將滑鼠懸停在上方。在狀態列中尋找 <code>xn--</code> 字首。</li>
+                    <li><strong>瀏覽器設定：</strong>使用設定為顯示 IDN 的 Punycode 的瀏覽器（例如 Firefox 的 <code>network.IDN_show_punycode</code>）。</li>
+                    <li><strong>密碼管理器：</strong>如果底層網域 (Punycode) 與儲存的網域不符，它們不會自動填寫憑證。</li>
+                    <li><strong>提防緊急郵件：</strong>許多同形異義字攻擊都是透過聲稱您的帳戶已被鎖定的郵件發動。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="inspector" class="section">
+            <div class="card">
+                <h2>🔍 網域檢查器</h2>
+                <p>在下方貼上可疑網域。我們將分析字元，看它們是標準拉丁文 (ASCII) 還是潛在的同形異義字。</p>
+                <div class="input-group">
+                    <input type="text" id="inspectorInput" placeholder="例如 apple.com" value="аррӏе.com">
+                    <button class="action-btn" onclick="analyzeDomain()">分析</button>
+                </div>
+                <div id="inspectorResult" class="analysis-result">
+                    <div id="inspectorVisual" class="big-url"></div>
+                    <p id="inspectorSummary" style="font-weight: bold; color: var(--accent);"></p>
+                    <div id="inspectorBreakdown" class="char-breakdown"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>試試資料集中的這些範例：</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="tab-btn" onclick="fillInspector('аррӏе.com')">Apple (西里爾文)</button>
+                    <button class="tab-btn" onclick="fillInspector('paypaӏ.com')">Paypal (西里爾文 l)</button>
+                    <button class="tab-btn" onclick="fillInspector('adoḅe.com')">Adobe (下方有點的 b)</button>
+                    <button class="tab-btn" onclick="fillInspector('Sρօtifү.com')">Spotify (混合)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="training" class="section">
+            <div class="card scenario-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span id="scoreDisplay" style="font-weight: bold; color: var(--primary);">分數：0</span>
+                    <span id="progressDisplay" style="color: var(--text-muted);">1 / 5</span>
+                </div>
+                <h2>這個網域是安全的還是假的？</h2>
+                <p>仔細看這些字元。</p>
+                <div class="domain-display" id="quizDomain">...</div>
+                <div class="choice-btn-group" id="quizButtons">
+                    <button class="choice-btn btn-safe" onclick="handleQuizAnswer(true)">安全 ✅</button>
+                    <button class="choice-btn btn-fake" onclick="handleQuizAnswer(false)">假的 ❌</button>
+                </div>
+                <div id="quizFeedback" class="feedback-box">
+                    <h3 id="feedbackTitle"></h3>
+                    <p id="feedbackText"></p>
+                    <p><strong>實際網域：</strong> <span id="feedbackPuny" class="punycode-reveal"></span></p>
+                    <button class="action-btn" onclick="nextQuestion()" style="margin-top: 10px;">下一題 ➡️</button>
+                </div>
+                <div id="quizFinal" style="display:none;">
+                    <h2>訓練完成！</h2>
+                    <p id="finalScoreMsg" style="font-size: 1.5rem;"></p>
+                    <button class="action-btn" onclick="restartQuiz()">重新訓練</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const homographData = [
+            { visual: "apple.com", isFake: false, puny: "apple.com", note: "這是合法的網站。" },
+            { visual: "аррӏе.com", isFake: true, puny: "xn--80ak6aa92e.com", note: "西里爾文 'а', 'р', 'е'。著名的 2017 年概念驗證。" },
+            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "合法的網站。" },
+            { visual: "paypaӏ.com", isFake: true, puny: "xn--paypa-ngc.com", note: "使用西里爾文 'ӏ' (palochka) 取代 'l'。" },
+            { visual: "adoḅe.com", isFake: true, puny: "xn--adoe-750a.com", note: "使用下方有點的拉丁文 'ḅ'。曾散播 Betabot 惡意軟體。" },
+            { visual: "micrоsоft.com", isFake: true, puny: "xn--micrsft-wbd9a.com", note: "使用西里爾文 'о' 字元。" },
+            { visual: "akámai.com", isFake: true, puny: "xn--akmai-yqa.com", note: "使用重音符號 'á'。在流量分析中偵測到。" },
+            { visual: "Sρօtifү.com", isFake: true, puny: "xn--stif-qw5b8d9c.com", note: "混合希臘文和切羅基文字元。用於商業電郵詐騙攻擊。" },
+            { visual: "metamask.io", isFake: false, puny: "metamask.io", note: "合法的加密貨幣錢包網站。" },
+            { visual: "mеtаmаsk.io", isFake: true, puny: "xn--mtmsk-p4d2b.io", note: "西里爾文 'е' 和 'а'。針對加密貨幣使用者。" }
+        ];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section, .tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const buttons = document.getElementsByTagName('button');
+            for (let btn of buttons) {
+                if(btn.getAttribute('onclick') === `switchTab('${tabId}')`) btn.classList.add('active');
+            }
+        }
+
+        function fillInspector(text) {
+            document.getElementById('inspectorInput').value = text;
+            analyzeDomain();
+        }
+
+        function analyzeDomain() {
+            const input = document.getElementById('inspectorInput').value.trim();
+            if (!input) return;
+
+            const resultDiv = document.getElementById('inspectorResult');
+            resultDiv.style.display = 'block';
+            document.getElementById('inspectorVisual').textContent = input;
+            const breakdownDiv = document.getElementById('inspectorBreakdown');
+            breakdownDiv.innerHTML = '';
+
+            let suspiciousCount = 0;
+            for (let char of input) {
+                const code = char.codePointAt(0);
+                const isSuspicious = code > 127;
+                if (isSuspicious) suspiciousCount++;
+                const div = document.createElement('div');
+                div.className = isSuspicious ? 'char-box danger' : 'char-box safe';
+                div.innerHTML = `<span style="font-size:1.2rem; font-weight:bold;">${char}</span><span class="char-code">U+${code.toString(16).toUpperCase()}</span><span class="char-code">${isSuspicious ? '非 ASCII' : 'ASCII'}</span>`;
+                breakdownDiv.appendChild(div);
+            }
+            
+            const summaryDiv = document.getElementById('inspectorSummary');
+            if (suspiciousCount > 0) {
+                summaryDiv.innerHTML = `⚠️ 危險：找到 ${suspiciousCount} 個非標準字元。潛在的同形異義字攻擊！`;
+                summaryDiv.style.color = 'var(--danger)';
+            } else {
+                summaryDiv.innerHTML = `✅ 安全：所有字元均為標準 ASCII。`;
+                summaryDiv.style.color = 'var(--success)';
+            }
+        }
+
+        let currentQuizIndex = 0, score = 0, quizPool = [];
+
+        function initQuiz() {
+            quizPool = [...homographData].sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentQuizIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            document.getElementById('quizButtons').style.display = 'flex';
+            document.getElementById('quizFeedback').style.display = 'none';
+            document.getElementById('quizFinal').style.display = 'none';
+            document.getElementById('quizDomain').textContent = quizPool[currentQuizIndex].visual;
+            document.getElementById('scoreDisplay').textContent = `分數：${score}`;
+            document.getElementById('progressDisplay').textContent = `${currentQuizIndex + 1} / ${quizPool.length}`;
+        }
+
+        function handleQuizAnswer(userSaidSafe) {
+            const q = quizPool[currentQuizIndex];
+            const isCorrect = userSaidSafe === !q.isFake;
+            if (isCorrect) score++;
+
+            document.getElementById('quizButtons').style.display = 'none';
+            const feedbackBox = document.getElementById('quizFeedback');
+            feedbackBox.style.display = 'block';
+            feedbackBox.className = `feedback-box ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+            document.getElementById('feedbackTitle').textContent = isCorrect ? "正確！ 🎉" : "錯誤！ 🚫";
+            document.getElementById('feedbackText').innerHTML = `這個網域是 <strong>${q.isFake ? '假的 (同形異義字)' : '真的'}</strong>。<br><em>${q.note}</em>`;
+            document.getElementById('feedbackPuny').textContent = q.puny;
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizPool.length) loadQuestion();
+            else showFinalScore();
+        }
+
+        function showFinalScore() {
+            document.getElementById('quizButtons').style.display = 'none';
+            document.getElementById('quizFeedback').style.display = 'none';
+            document.getElementById('quizDomain').style.display = 'none';
+            document.getElementById('quizFinal').style.display = 'block';
+            document.getElementById('finalScoreMsg').textContent = `您的得分為 ${score} / ${quizPool.length}`;
+        }
+
+        function restartQuiz() {
+            document.getElementById('quizDomain').style.display = 'inline-block';
+            initQuiz();
+        }
+
+        analyzeDomain();
+        initQuiz();
+    </script>
+</body>
+</html>
