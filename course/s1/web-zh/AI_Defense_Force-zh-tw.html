@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 防禦部隊 | 2025 訓練模組</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a; --card-bg: #1e293b; --primary: #3b82f6; --accent: #8b5cf6;
+            --danger: #ef4444; --success: #22c55e; --text: #f8fafc; --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; background-color: var(--bg-dark); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; border-bottom: 2px solid var(--card-bg); padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { font-size: 2.5rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .tagline { color: var(--text-muted); font-size: 1.1rem; }
+        .nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .nav-btn { background: var(--card-bg); border: 1px solid #334155; color: var(--text); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; text-align: left; display: flex; align-items: center; gap: 10px; }
+        .nav-btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .nav-btn.active { background: var(--accent); border-color: var(--accent); }
+        .module { display: none; animation: fadeIn 0.5s ease; }
+        .module.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 1px solid #334155; }
+        .stat-box { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+        .stat { flex: 1; background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); }
+        .stat h3 { margin: 0; font-size: 1.8rem; color: var(--accent); }
+        .stat p { margin: 5px 0 0; color: var(--text-muted); font-size: 0.9rem; }
+        .comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .email-preview { background: #fff; color: #333; padding: 15px; border-radius: 5px; font-family: Arial, sans-serif; font-size: 0.9rem; position: relative; }
+        .email-preview.bad { border: 4px solid var(--danger); }
+        .email-preview.ai { border: 4px solid var(--accent); }
+        .overlay-label { position: absolute; top: -10px; right: 10px; background: #333; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .tool-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid #475569; }
+        .tool-card h4 { color: var(--primary); margin-top: 0; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; background: #334155; margin-right: 5px; }
+        .quiz-option { display: block; width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 2px solid transparent; color: white; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .quiz-option:hover { background: rgba(255,255,255,0.1); }
+        .correct { border-color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        .wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        .btn-action:hover { background: #2563eb; }
+        @media (max-width: 768px) { .comparison-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛡️ AI 防禦部隊</h1>
+        <div class="tagline">互動訓練：在 2025 年的 AI 威脅環境中求生</div>
+    </header>
+
+    <nav class="nav-grid">
+        <button class="nav-btn active" onclick="showModule('phishing', this)">🎣 AI 釣魚</button>
+        <button class="nav-btn" onclick="showModule('ransomware', this)">🔒 勒索軟體 2.0</button>
+        <button class="nav-btn" onclick="showModule('deepfake', this)">🎭 Deepfake 勒索</button>
+        <button class="nav-btn" onclick="showModule('tools', this)">🧰 防禦工具</button>
+        <button class="nav-btn" onclick="showModule('quiz', this)">📝 期末考試</button>
+    </nav>
+
+    <div id="phishing" class="module active">
+        <div class="card">
+            <h2>新型釣魚的現實</h2>
+            <p>忘記那些文法不通和「親愛的先生/女士」吧。在 2025 年，AI 會抓取您的 LinkedIn，模仿您老闆的寫作風格，並創造出高度客製化的電子郵件。</p>
+            <div class="stat-box">
+                <div class="stat"><h3>67.4%</h3><p>的 2024 年攻擊使用 AI</p></div>
+                <div class="stat"><h3>54%</h3><p>AI 魚叉式釣魚的點擊率更高</p></div>
+                <div class="stat"><h3>82.6%</h3><p>的垃圾郵件現在由 AI 生成</p></div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>模擬：找出差異</h3>
+            <p>比較這兩種釣魚嘗試。AI 版本更難以察覺。</p>
+            <div class="comparison-container">
+                <div class="email-preview bad">
+                    <span class="overlay-label" style="background:var(--danger)">舊式 (2015)</span>
+                    <p><strong>寄件人：</strong> ceo.company@gmail.com</p><p><strong>主旨：</strong>緊急付款</p><hr>
+                    <p>親愛的員工，</p><p>我現在正在開會。請立即處理給供應商的緊急付款。我相信你。</p><p>從我的 iPhone 傳送</p>
+                    <div style="color:red; font-size:0.8rem; margin-top:10px;">🚩 破綻：通用的稱呼、糟糕的文法、個人電子郵件地址。</div>
+                </div>
+                <div class="email-preview ai">
+                    <span class="overlay-label" style="background:var(--accent)">AI 驅動 (2025)</span>
+                    <p><strong>寄件人：</strong> sarah.jenkins@compony.com (偽造)</p><p><strong>主旨：</strong>回覆：第三季行銷預算 - 供應商發票 #4402</p><hr>
+                    <p>嗨，麥克，</p><p>昨天的簡報做得很好。根據我們關於第三季擴張的討論，您能否加快處理附加的新數位資產發票？我需要在下午 2 點的董事會會議前結清。</p><p>謝謝，<br>莎拉</p>
+                    <div style="color:var(--accent); font-size:0.8rem; margin-top:10px;">🤖 AI 策略：引用真實事件（「簡報」）、製造特定的緊迫性（「下午 2 點的會議」）、完美的語氣。</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>防禦策略</h3>
+            <ul>
+                <li><strong>驗證情境：</strong>即使細節都正確，也要用已知的號碼打電話給寄件人。</li>
+                <li><strong>檢查網域：</strong>仔細查看寄件人地址（例如，compny.com vs company.com）。</li>
+                <li><strong>使用 AI 過濾器：</strong>像 <em>StrongestLayer</em> 這樣的工具可以分析行為模式來阻止這些郵件。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="ransomware" class="module">
+        <div class="card">
+            <h2>勒索軟體：更快、更聰明</h2>
+            <p>AI 壓縮了攻擊時間線。過去需要數週的時間現在只需幾分鐘。「代理 AI」可以自主繪製網路地圖並找到資料。</p>
+            <div class="stat-box">
+                <div class="stat"><h3>&lt; 25 分鐘</h3><p>AI 入侵所需時間（模擬）</p></div>
+                <div class="stat"><h3>113萬美元</h3><p>平均贖金要求（2025年第二季）</p></div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>互動情境：服務台來電</h3>
+            <p><em>情境：您接到一通自稱「IT 支援」的電話。聲音聽起來完全像您的同事戴夫，連他的地方口音都一樣。他說您的帳戶被盜，需要您立即提供 MFA 驗證碼。</em></p>
+            <div id="scenario-result" style="display:none; padding:15px; margin-top:10px; border-radius:8px;"></div>
+            <button class="quiz-option" onclick="resolveScenario(false)">A) 給他驗證碼。聽起來完全像戴夫。</button>
+            <button class="quiz-option" onclick="resolveScenario(true)">B) 掛斷電話。用他的內部分機號碼回撥給戴夫。</button>
+        </div>
+    </div>
+
+    <div id="deepfake" class="module">
+        <div class="card">
+            <h2>Deepfake：心理武器</h2>
+            <p>攻擊者現在使用「生命證明」影片或偽造的高層會議來勒索金錢。2025 年，Deepfake 檔案數量暴增至 800 萬。</p>
+            <p style="font-style: italic; color: var(--accent);">真實案例 (2025)：一位美國高層主管收到一段其配偶「被綁架」的影片，要求 50 萬美元贖金。這完全是 AI 生成的。</p>
+        </div>
+        <div class="card">
+            <h3>偵測檢查清單</h3>
+            <p>使用這些線索來辨識 AI 影片/音訊：</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong style="color:var(--primary)">影片破綻</strong><ul style="font-size:0.9rem; color:var(--text-muted);"><li>不自然的眨眼模式（太快/太慢）。</li><li>嘴唇同步問題（音訊與嘴形不符）。</li><li>耳朵或髮際線周圍模糊。</li><li>臉部與背景光線不一致。</li></ul></div>
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong style="color:var(--primary)">音訊/流程</strong><ul style="font-size:0.9rem; color:var(--text-muted);"><li>機械式的節奏或缺乏情感。</li><li>背景噪音突然中斷。</li><li><strong>專業提示：</strong>與家人/高層為緊急情況設定一個「秘密代碼」。</li></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tools" class="module">
+        <div class="card">
+            <h2>🧰 2025 防禦工具包</h2>
+            <p>以 AI 對抗 AI。使用這些建議用於 2025 年防禦的工具。</p>
+            <div class="tool-grid">
+                <div class="tool-card"><h4>Intel FakeCatcher</h4><span class="tag">免費</span> <span class="tag">即時</span><p>透過分析影片像素中的「血流量」（光體積變化描記圖）來偵測 deepfake。準確率達 96%。</p></div>
+                <div class="tool-card"><h4>Sensity AI</h4><span class="tag">企業級</span> <span class="tag">多模態</span><p>非常適合在 KYC 流程中偵測身份盜竊和 deepfake。涵蓋影片、圖像和音訊。</p></div>
+                <div class="tool-card"><h4>Reality Defender</h4><span class="tag">企業級</span> <span class="tag">API</span><p>為銀行/政府設計的集成模型。拖放式分析。無需浮水印。</p></div>
+                <div class="tool-card"><h4>Hive AI</h4><span class="tag">開發者</span> <span class="tag">API</span><p>生物辨識分析以發現混合邊界。非常適合內容平台。</p></div>
+                <div class="tool-card"><h4>Resemble AI</h4><span class="tag">音訊焦點</span><p>專門偵測複製語音和音訊 deepfake。對客服中心至關重要。</p></div>
+                <div class="tool-card"><h4>Deepware Scanner</h4><span class="tag">免費</span> <span class="tag">初學者</span><p>簡單的上傳工具，可快速檢查可疑影片。適合個人使用。</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="module">
+        <div class="card">
+            <h2>🎓 期末認證考試</h2>
+            <p>測試您對 2025 年威脅環境的了解。</p>
+            <div id="quiz-container">
+                <div class="quiz-q" data-q="1"><h4>1. 為何 AI 釣魚 (2025) 比傳統釣魚更危險？</h4><button class="quiz-option" onclick="checkAnswer(this, true)">它使用資料抓取來創造高度個人化、無錯誤的訊息。</button><button class="quiz-option" onclick="checkAnswer(this, false)">它每分鐘發送更多郵件，但品質低劣。</button><button class="quiz-option" onclick="checkAnswer(this, false)">它只針對個人 Gmail 帳戶，而非企業。</button></div>
+                <div class="quiz-q" data-q="2" style="display:none;"><h4>2. 在 AI 攻擊的背景下，「語音釣魚」(Vishing) 是什麼？</h4><button class="quiz-option" onclick="checkAnswer(this, false)">使用圖像的視覺釣魚。</button><button class="quiz-option" onclick="checkAnswer(this, true)">使用 AI 複製信任的人的聲音進行語音釣魚。</button><button class="quiz-option" onclick="checkAnswer(this, false)">透過電子郵件附件的病毒釣魚。</button></div>
+                <div class="quiz-q" data-q="3" style="display:none;"><h4>3. 哪個工具透過分析像素中的「血流量」來偵測 deepfake？</h4><button class="quiz-option" onclick="checkAnswer(this, false)">ChatGPT 偵測器</button><button class="quiz-option" onclick="checkAnswer(this, false)">諾頓防毒軟體</button><button class="quiz-option" onclick="checkAnswer(this, true)">Intel FakeCatcher</button></div>
+                <div class="quiz-q" data-q="4" style="display:none;"><h4>4. 對抗 AI「綁架」詐騙電話的最佳非技術性防禦是什麼？</h4><button class="quiz-option" onclick="checkAnswer(this, false)">要求來電者提供其 IP 位址。</button><button class="quiz-option" onclick="checkAnswer(this, true)">使用預先約定的「秘密短語」或代碼字。</button><button class="quiz-option" onclick="checkAnswer(this, false)">為安全起見，立即支付贖金。</button></div>
+                <div id="quiz-finish" style="display:none; text-align:center;"><h3 style="color:var(--success)">訓練完成！</h3><p>您已複習了 AI 驅動攻擊的核心概念。</p><button class="btn-action" onclick="resetQuiz()">重新訓練</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModule(moduleId, btn) {
+        document.querySelectorAll('.module, .nav-btn').forEach(el => el.classList.remove('active'));
+        const targetModule = document.getElementById(moduleId);
+        if (targetModule) targetModule.classList.add('active');
+        if (btn) btn.classList.add('active');
+    }
+
+    function resolveScenario(isCorrect) {
+        const result = document.getElementById('scenario-result');
+        result.style.display = 'block';
+        if(isCorrect) {
+            result.style.background = 'rgba(34, 197, 94, 0.2)';
+            result.style.border = '1px solid var(--success)';
+            result.innerHTML = "<strong>✅ 正確！</strong>這是使用 AI 語音複製的「語音釣魚」(Vishing) 攻擊。60% 的目標會被這些騙局愚弄。務必透過次要頻道進行驗證。";
+        } else {
+            result.style.background = 'rgba(239, 68, 68, 0.2)';
+            result.style.border = '1px solid var(--danger)';
+            result.innerHTML = "<strong>❌ 失敗。</strong>您中了語音複製的圈套。在 2025 年，AI 僅需 3 秒的音訊即可複製聲音。攻擊者以此繞過 MFA。";
+        }
+    }
+
+    let currentQ = 1;
+    const totalQ = 4;
+
+    function checkAnswer(btn, isCorrect) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.quiz-option').forEach(o => o.disabled = true);
+        if(isCorrect) { btn.classList.add('correct'); btn.innerHTML += " ✅"; } 
+        else { btn.classList.add('wrong'); btn.innerHTML += " ❌"; }
+        setTimeout(() => {
+            if(currentQ < totalQ) {
+                parent.style.display = 'none';
+                currentQ++;
+                document.querySelector(`.quiz-q[data-q="${currentQ}"]`).style.display = 'block';
+            } else {
+                parent.style.display = 'none';
+                document.getElementById('quiz-finish').style.display = 'block';
+            }
+        }, 1500);
+    }
+
+    function resetQuiz() {
+        currentQ = 1;
+        document.getElementById('quiz-finish').style.display = 'none';
+        document.querySelectorAll('.quiz-option').forEach(b => {
+            b.classList.remove('correct', 'wrong');
+            b.disabled = false;
+            b.innerHTML = b.innerText.replace(' ✅', '').replace(' ❌', '');
+        });
+        document.querySelectorAll('.quiz-q').forEach(q => q.style.display = 'none');
+        document.querySelector(`.quiz-q[data-q="1"]`).style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
