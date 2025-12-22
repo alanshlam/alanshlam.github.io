@@ -3,31 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>同形異義字攻擊防禦者</title>
+    <title>同形異義字攻擊防禦者 v2.1</title>
     <style>
         :root {
-            --primary: #0ea5e9; /* Sky Blue */
-            --primary-dark: #0284c7;
-            --accent: #f59e0b; /* Amber for warnings */
-            --danger: #ef4444;
-            --success: #22c55e;
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
+            --primary: #0ea5e9; --primary-dark: #0284c7; --accent: #f59e0b; --danger: #ef4444;
+            --success: #22c55e; --dark-bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9;
+            --text-muted: #94a3b8; --info-bg: rgba(14, 165, 233, 0.1);
         }
-
         * { box-sizing: border-box; }
-
         body {
-            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--dark-bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6;
         }
-
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #334155; }
         h1 { margin: 0; font-size: 2.5rem; color: var(--primary); }
@@ -43,7 +30,7 @@
         h2 { margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
         input[type="text"] { flex: 1; padding: 12px; border-radius: 6px; border: 2px solid #475569; background: #0f172a; color: white; font-family: 'Courier New', monospace; font-size: 1.2rem; }
-        button.action-btn { background: var(--primary); color: white; border: none; padding: 0 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        button.action-btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
         button.action-btn:hover { background: var(--primary-dark); }
         .analysis-result { display: none; background: #0f172a; padding: 1.5rem; border-radius: 8px; border: 1px solid #334155; }
         .big-url { font-family: 'Courier New', monospace; font-size: 2rem; letter-spacing: 2px; margin-bottom: 1rem; word-break: break-all; }
@@ -64,6 +51,21 @@
         .feedback-correct { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); }
         .feedback-wrong { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); }
         .punycode-reveal { font-family: monospace; background: #000; color: var(--accent); padding: 2px 6px; border-radius: 4px; }
+        .section-title { color: var(--text); border-bottom: 2px solid #334155; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; text-align: left; }
+        .summary-container { text-align: left; margin-top: 2rem; }
+        .summary-card { background: #0f172a; border: 1px solid #334155; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; border-left: 6px solid #ccc; font-size: 0.95rem; }
+        .summary-win { border-left-color: var(--success); background-color: rgba(34, 197, 94, 0.05); }
+        .summary-loss { border-left-color: var(--danger); background-color: rgba(239, 68, 68, 0.05); }
+        .summary-reference { border-left-color: var(--primary); background-color: var(--info-bg); }
+        .summary-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .summary-visual { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.1rem; }
+        .text-fake { color: var(--danger); }
+        .text-safe { color: var(--success); }
+        .text-puny { color: var(--accent); font-family: monospace; font-size: 0.85rem; }
+        .tag-correct { color: var(--success); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--success); padding: 2px 8px; border-radius: 4px; }
+        .tag-wrong { color: var(--danger); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--danger); padding: 2px 8px; border-radius: 4px; }
+        .tag-info { color: var(--primary); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
+        .summary-details { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-top: 8px; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
         th { color: var(--primary); }
@@ -80,9 +82,9 @@
         </header>
 
         <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('learn')">📖 學習</button>
-            <button class="tab-btn" onclick="switchTab('inspector')">🔍 IDN 檢查器</button>
-            <button class="tab-btn" onclick="switchTab('training')">⚔️ 訓練</button>
+            <button class="tab-btn active" onclick="switchTab(this, 'learn')">📖 學習</button>
+            <button class="tab-btn" onclick="switchTab(this, 'inspector')">🔍 IDN 檢查器</button>
+            <button class="tab-btn" onclick="switchTab(this, 'training')">⚔️ 訓練</button>
         </nav>
 
         <div id="learn" class="section active">
@@ -108,15 +110,6 @@
                         <tr><td>adoḅe.com</td><td>adobe.com</td><td>拉丁文 'ḅ' (下方有點) 取代 'b'</td></tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="card">
-                <h2>🛡️ 預防提示</h2>
-                <ul class="tip-list">
-                    <li><strong>懸停連結：</strong>點擊連結前務必先將滑鼠懸停在上方。在狀態列中尋找 <code>xn--</code> 字首。</li>
-                    <li><strong>瀏覽器設定：</strong>使用設定為顯示 IDN 的 Punycode 的瀏覽器（例如 Firefox 的 <code>network.IDN_show_punycode</code>）。</li>
-                    <li><strong>密碼管理器：</strong>如果底層網域 (Punycode) 與儲存的網域不符，它們不會自動填寫憑證。</li>
-                    <li><strong>提防緊急郵件：</strong>許多同形異義字攻擊都是透過聲稱您的帳戶已被鎖定的郵件發動。</li>
-                </ul>
             </div>
         </div>
 
@@ -166,8 +159,15 @@
                 </div>
                 <div id="quizFinal" style="display:none;">
                     <h2>訓練完成！</h2>
-                    <p id="finalScoreMsg" style="font-size: 1.5rem;"></p>
-                    <button class="action-btn" onclick="restartQuiz()">重新訓練</button>
+                    <p id="finalScoreMsg" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem;"></p>
+                    <button class="action-btn" onclick="restartQuiz()">重新訓練 🔄</button>
+                    <div class="summary-container">
+                        <h3 class="section-title">📊 您的本次結果</h3>
+                        <div id="sessionSummary"></div>
+                        <h3 class="section-title">📚 完整同形異義字資料庫（參考）</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">研究此工具中包含的視覺欺騙攻擊完整列表：</p>
+                        <div id="fullDbRef"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,9 +175,9 @@
 
     <script>
         const homographData = [
-            { visual: "apple.com", isFake: false, puny: "apple.com", note: "這是合法的網站。" },
+            { visual: "apple.com", isFake: false, puny: "apple.com", note: "這是合法的網站 (ASCII)。" },
             { visual: "аррӏе.com", isFake: true, puny: "xn--80ak6aa92e.com", note: "西里爾文 'а', 'р', 'е'。著名的 2017 年概念驗證。" },
-            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "合法的網站。" },
+            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "合法的網站 (ASCII)。" },
             { visual: "paypaӏ.com", isFake: true, puny: "xn--paypa-ngc.com", note: "使用西里爾文 'ӏ' (palochka) 取代 'l'。" },
             { visual: "adoḅe.com", isFake: true, puny: "xn--adoe-750a.com", note: "使用下方有點的拉丁文 'ḅ'。曾散播 Betabot 惡意軟體。" },
             { visual: "micrоsоft.com", isFake: true, puny: "xn--micrsft-wbd9a.com", note: "使用西里爾文 'о' 字元。" },
@@ -187,26 +187,25 @@
             { visual: "mеtаmаsk.io", isFake: true, puny: "xn--mtmsk-p4d2b.io", note: "西里爾文 'е' 和 'а'。針對加密貨幣使用者。" }
         ];
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.section, .tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            const buttons = document.getElementsByTagName('button');
-            for (let btn of buttons) {
-                if(btn.getAttribute('onclick') === `switchTab('${tabId}')`) btn.classList.add('active');
-            }
+        function switchTab(btnElement, tabId) {
+            document.querySelectorAll('.section, .nav-tabs .tab-btn').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active');
+            if(btnElement) btnElement.classList.add('active');
         }
 
         function fillInspector(text) {
             document.getElementById('inspectorInput').value = text;
             analyzeDomain();
+            const inspectorBtn = document.querySelector('.nav-tabs button:nth-child(2)');
+            switchTab(inspectorBtn, 'inspector');
         }
 
         function analyzeDomain() {
             const input = document.getElementById('inspectorInput').value.trim();
             if (!input) return;
 
-            const resultDiv = document.getElementById('inspectorResult');
-            resultDiv.style.display = 'block';
+            document.getElementById('inspectorResult').style.display = 'block';
             document.getElementById('inspectorVisual').textContent = input;
             const breakdownDiv = document.getElementById('inspectorBreakdown');
             breakdownDiv.innerHTML = '';
@@ -235,7 +234,8 @@
         let currentQuizIndex = 0, score = 0, quizPool = [];
 
         function initQuiz() {
-            quizPool = [...homographData].sort(() => 0.5 - Math.random()).slice(0, 5);
+            let deepCopy = JSON.parse(JSON.stringify(homographData));
+            quizPool = deepCopy.sort(() => 0.5 - Math.random()).slice(0, 5);
             currentQuizIndex = 0;
             score = 0;
             loadQuestion();
@@ -253,6 +253,7 @@
         function handleQuizAnswer(userSaidSafe) {
             const q = quizPool[currentQuizIndex];
             const isCorrect = userSaidSafe === !q.isFake;
+            q.userWasCorrect = isCorrect;
             if (isCorrect) score++;
 
             document.getElementById('quizButtons').style.display = 'none';
@@ -276,6 +277,29 @@
             document.getElementById('quizDomain').style.display = 'none';
             document.getElementById('quizFinal').style.display = 'block';
             document.getElementById('finalScoreMsg').textContent = `您的得分為 ${score} / ${quizPool.length}`;
+
+            const sessionDiv = document.getElementById('sessionSummary');
+            sessionDiv.innerHTML = "";
+            quizPool.forEach(item => {
+                const card = document.createElement('div');
+                card.className = item.userWasCorrect ? "summary-card summary-win" : "summary-card summary-loss";
+                const statusTag = item.userWasCorrect ? `<span class="tag-correct">正確</span>` : `<span class="tag-wrong">錯過</span>`;
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+                card.innerHTML = `<div class="summary-head"><span class="summary-visual ${urlClass}">${item.visual}</span>${statusTag}</div><div class="summary-details"><span class="text-puny">實際/Punycode: ${item.puny}</span><br>${item.note}</div>`;
+                sessionDiv.appendChild(card);
+            });
+
+            const dbDiv = document.getElementById('fullDbRef');
+            dbDiv.innerHTML = "";
+            const sortedData = [...homographData].sort((a, b) => a.visual.localeCompare(b.visual));
+            sortedData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "summary-card summary-reference";
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+                const typeTag = item.isFake ? `<span class="tag-wrong">假的</span>` : `<span class="tag-correct">真的</span>`;
+                card.innerHTML = `<div class="summary-head"><span class="summary-visual ${urlClass}">${item.visual}</span>${typeTag}</div><div class="summary-details"><span class="text-puny">實際/Punycode: ${item.puny}</span><br>${item.note}</div>`;
+                dbDiv.appendChild(card);
+            });
         }
 
         function restartQuiz() {
