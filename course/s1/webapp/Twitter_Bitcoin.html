@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Twitter Bitcoin Hack (2020)</title>
+    <style>
+        :root {
+            --primary: #1DA1F2; /* Classic Twitter Blue */
+            --primary-dark: #0d8ddb;
+            --text: #14171a;
+            --bg: #e6ecf0;
+            --white: #ffffff;
+            --gray: #657786;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: var(--white); 
+            box-shadow: var(--shadow); 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 70px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; }
+        .logo span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; margin-left: 8px; }
+
+        .nav-links { display: flex; gap: 5px; }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); background: #f5f8fa; }
+        .nav-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        h2 { color: var(--text); margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; }
+
+        /* Hero */
+        .hero { 
+            background: white;
+            padding: 4rem; border-radius: 10px; box-shadow: var(--shadow); text-align: center; 
+            border-top: 5px solid var(--primary);
+        }
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 30px; font-size: 1.2rem; 
+            border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 20px; font-weight: bold;
+            display: inline-block;
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+        /* Fake Tweet Box */
+        .tweet-card {
+            background: white; border: 1px solid #e1e8ed; border-radius: 10px; padding: 20px;
+            max-width: 600px; margin: 20px auto; text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .tweet-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .tweet-avatar { width: 48px; height: 48px; background: #ddd; border-radius: 50%; margin-right: 10px; }
+        .tweet-name { font-weight: bold; }
+        .tweet-handle { color: var(--gray); margin-left: 5px; }
+        .tweet-body { font-size: 1.2rem; margin-bottom: 15px; }
+        .tweet-blue-check { color: var(--primary); margin-left: 3px; }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 6px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -3px; border-radius: 3px; }
+        .t-container { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+        .t-container::after { content: ''; position: absolute; width: 20px; height: 20px; right: -13px; background-color: white; border: 4px solid var(--primary); top: 20px; border-radius: 50%; z-index: 10; }
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -13px; }
+        .t-content { padding: 20px 30px; background-color: white; position: relative; border-radius: 6px; box-shadow: var(--shadow); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.1rem; }
+        .t-content h4 { color: #657786; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .left::before { content: " "; height: 0; position: absolute; top: 22px; width: 0; z-index: 1; right: 30px; border: medium solid white; border-width: 10px 0 10px 10px; border-color: transparent transparent transparent white; }
+        .right::before { content: " "; height: 0; position: absolute; top: 22px; width: 0; z-index: 1; left: 30px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .info-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        .info-card h3 { color: var(--text); margin-bottom: 10px; }
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 15px; background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: var(--shadow); }
+        .icon-box { font-size: 2rem; min-width: 50px; text-align: center; color: var(--primary); }
+
+        /* Quiz */
+        .quiz-container { background: white; padding: 2rem; border-radius: 10px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; }
+        .progress-bar { width: 100%; background: #ddd; height: 10px; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #e1e8ed; 
+            background: white; border-radius: 20px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #f5f8fa; color: var(--primary); }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        footer { text-align: center; padding: 20px; color: #657786; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #ddd; background: white; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::before { left: 60px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+            .left::after, .right::after { left: 21px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">EDU <span>Twitter Hack</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">Technical</button>
+            <button class="nav-btn" id="btn-defense">Defense</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The 2020 Twitter Bitcoin Scam</h1>
+                <p>When the world's most famous accounts were hijacked by a teenager.</p>
+                <p><strong>130 Accounts</strong> Hacked. <strong>$118,000</strong> Stolen in Hours.</p>
+                
+                <div class="tweet-card">
+                    <div class="tweet-header">
+                        <div class="tweet-avatar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Elon_Musk_Royal_Society.jpg'); background-size: cover;"></div>
+                        <div>
+                            <span class="tweet-name">Elon Musk</span><span class="tweet-blue-check">✔</span>
+                            <span class="tweet-handle">@elonmusk</span>
+                        </div>
+                    </div>
+                    <div class="tweet-body">
+                        I am giving back to the community. All Bitcoin sent to the address below will be sent back doubled! If you send $1,000, I will send back $2,000. Doing this for 30 minutes.
+                    </div>
+                </div>
+                
+                <button class="action-btn" id="jump-story">How Did They Do It?</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🎯 The Targets</h3>
+                    <p>Barack Obama, Joe Biden, Bill Gates, Jeff Bezos, Apple, and Uber. The attackers aimed for maximum trust and visibility.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🕵️ The Mastermind</h3>
+                    <p>Not a nation-state, but a <strong>17-year-old</strong> from Florida named Graham Ivan Clark, using "Vishing" (Voice Phishing).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">The 24-Hour Timeline</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Phase 1: July 14, 2020</h4>
+                        <h3>Social Engineering</h3>
+                        <p>Hackers call Twitter employees posing as "IT Help Desk" (Vishing). They trick employees into logging into a fake VPN portal, stealing credentials and MFA codes.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Phase 2: July 15 (Morning)</h4>
+                        <h3>The "OG" Market</h3>
+                        <p>With access to internal "God Mode" tools, hackers first steal "OG" usernames (short names like @6, @dark) to sell them on underground forums.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Phase 3: July 15 (Afternoon)</h4>
+                        <h3>The Bitcoin Scam</h3>
+                        <p>They switch tactics to mass fraud. Accounts like Elon Musk and Apple start tweeting the "Double Your Money" crypto scam. Money flows in instantly.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Aftermath: July 31, 2020</h4>
+                        <h3>The Arrests</h3>
+                        <p>Twitter locks down the platform. The FBI tracks the Bitcoin trail. 17-year-old Graham Clark is arrested in Florida and later sentenced to 3 years.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>Technical Breakdown</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. Vishing (Voice Phishing)</h3>
+                    <p>No high-tech coding exploit was used. Attackers simply used the phone. They convinced employees they were co-workers to bypass security.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Internal Admin Tools</h3>
+                    <p>Twitter had "God Mode" tools that allowed employees to reset emails and disable 2FA for <em>any</em> user. Over 1,000 employees had access to these tools. Too many!</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. Lack of Hardware MFA</h3>
+                    <p>Twitter used app/SMS-based 2FA for employees, which can be phished. Had they used <strong>Physical Security Keys</strong> (YubiKeys), the hackers could not have logged in.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Consumer Defense: How to Spot a Scam</h2>
+            <p>You can't stop Twitter from being hacked, but you can stop yourself from falling for the tweet.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">🛑</div>
+                <div>
+                    <h3>1. The "Too Good To Be True" Rule</h3>
+                    <p><strong>No legitimate billionaire gives away money for free.</strong> If someone asks you to send $1,000 to get $2,000 back, it is 100% a scam. Every time.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🐦</div>
+                <div>
+                    <h3>2. Don't Trust "Verified" Blindly</h3>
+                    <p>The Blue Checkmark usually means identity is confirmed, but as this hack showed, the <em>account itself</em> can be stolen. Always verify huge news on other news sites (BBC, CNN) before acting.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">💸</div>
+                <div>
+                    <h3>3. Crypto is Irreversible</h3>
+                    <p>Unlike a credit card, you cannot call the "Bitcoin Manager" to reverse a transaction. Once you send crypto to a scammer, it is gone forever. Be hyper-cautious.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔐</div>
+                <div>
+                    <h3>4. Lock Your Own Doors</h3>
+                    <p>Hackers target normal people too. Enable <strong>2-Factor Authentication (MFA)</strong> on all your social accounts. Use an Authenticator App, not SMS (which can be sim-swapped).</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the 10-Question Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Twitter 2020 Breach Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'story': 'btn-story',
+                'tech': 'btn-tech',
+                'defense': 'btn-defense',
+                'quiz': 'btn-quiz'
+            };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        // --- 2. EXPANDED QUIZ DATA (10 Questions) ---
+        const questions = [
+            // FACTUAL / TECHNICAL
+            {
+                q: "1. TECHNICAL: How did the hackers bypass Twitter's internal security?",
+                options: ["Writing complex malware", "Zero-Day exploit in the code", "Social Engineering (Vishing) employees", "Guessing passwords"],
+                a: 2,
+                exp: "Correct. They called employees pretending to be IT support to steal credentials."
+            },
+            {
+                q: "2. FACT: Who was the 'mastermind' behind the attack?",
+                options: ["A Russian nation-state group", "A 17-year-old from Florida", "An employee at Twitter", "A Bitcoin mining company"],
+                a: 1,
+                exp: "Correct. Graham Ivan Clark, a teenager, was the ringleader."
+            },
+            {
+                q: "3. TECHNICAL: What internal tool did the hackers abuse?",
+                options: ["The 'Edit Tweet' button", "Admin tools that managed user accounts", "The email server", "The payroll system"],
+                a: 1,
+                exp: "Correct. They used internal admin panels to reset emails and turn off 2FA for target accounts."
+            },
+            {
+                q: "4. FACT: What was the premise of the scam tweets?",
+                options: ["Click here to see leaked photos", "Vote for this candidate", "Send Bitcoin and I will send back double", "Download this new app"],
+                a: 2,
+                exp: "Correct. It was a classic 'doubling' money scam."
+            },
+            // CONSUMER / DEFENSE
+            {
+                q: "5. CONSUMER: You see a tweet from Apple saying 'We are giving away Bitcoin'. What is the most likely reality?",
+                options: ["Apple is feeling generous", "It is a scam/hack", "Apple has launched a crypto coin", "It is a marketing error"],
+                a: 1,
+                exp: "Correct. Major corporations do not give away money for free on social media. It is a scam."
+            },
+            {
+                q: "6. CONSUMER: Why is the 'Verified' blue checkmark not a guarantee of safety?",
+                options: ["Blue checks are fake", "Verified accounts can be hacked", "Twitter employees post for them", "It only means they pay $8"],
+                a: 1,
+                exp: "Correct. The account is real, but the person controlling it might be a hacker."
+            },
+            {
+                q: "7. CRYPTO: What happens if you send Bitcoin to a scammer's address?",
+                options: ["You can call the bank to cancel it", "The police can refund you immediately", "It is gone forever (Irreversible)", "Twitter will refund you"],
+                a: 2,
+                exp: "Correct. Cryptocurrency transactions are irreversible. There is no central authority to reverse the charge."
+            },
+            {
+                q: "8. BEHAVIOR: What is a major 'Red Flag' in online posts?",
+                options: ["Urgency (e.g., 'Doing this for 30 mins only!')", "Using emojis", "Posting a picture", "Using hashtags"],
+                a: 0,
+                exp: "Correct. Scammers create artificial urgency so you act before thinking."
+            },
+            {
+                q: "9. DEFENSE: Which form of Two-Factor Authentication (2FA) is safest against phishing?",
+                options: ["SMS Text Message", "Email Code", "Physical Security Key (YubiKey)", "Security Questions"],
+                a: 2,
+                exp: "Correct. Physical keys are hardest to phish because you need the physical device."
+            },
+            {
+                q: "10. SCENARIO: A famous YouTuber DMs you saying 'I chose you to win 1 BTC, just pay the tax fee first'. What do you do?",
+                options: ["Pay the fee quickly", "Block and Report (It's a scam)", "Ask for a discount", "Tell your friends"],
+                a: 1,
+                exp: "Correct. This is an 'Advance Fee Fraud'. Never pay money to receive a prize."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        const qText = document.getElementById('question-text');
+        const optsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback-display');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+        const finalScore = document.getElementById('final-score');
+        const scoreMsg = document.getElementById('score-message');
+        const quizBlock = document.getElementById('quiz-block');
+        const scoreBlock = document.getElementById('score-block');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+
+            const pct = ((currentQIndex) / questions.length) * 100;
+            progressBar.style.width = pct + "%";
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = function() { handleAnswer(idx, btn); };
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            const allBtns = optsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d4edda";
+                btnElement.style.borderColor = "#28a745";
+                btnElement.style.color = "#155724";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+            } else {
+                btnElement.style.background = "#f8d7da";
+                btnElement.style.borderColor = "#dc3545";
+                btnElement.style.color = "#721c24";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = function() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        restartBtn.onclick = function() {
+            currentQIndex = 0;
+            score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            
+            if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You won't get scammed.";
+            else if(score > 7) scoreMsg.innerText = "👍 Good Job! You know the red flags.";
+            else scoreMsg.innerText = "📚 Review the lessons and try again.";
+        }
+
+        // Init
+        loadQuestion();
+
+    </script>
+</body>
+</html>
