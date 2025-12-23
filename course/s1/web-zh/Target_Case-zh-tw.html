@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target 資料外洩事件：最終穩定版</title>
+    <style>
+        :root {
+            --primary: #cc0000; --primary-dark: #990000; --text: #333; --bg: #f4f4f4;
+            --white: #ffffff; --gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: var(--white); box-shadow: var(--shadow); padding: 0 2rem; display: flex; 
+            justify-content: space-between; align-items: center; height: 70px;
+            position: sticky; top: 0; z-index: 9999;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); }
+        .logo span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; margin-left: 5px; }
+        .nav-links { display: flex; gap: 5px; }
+        .nav-btn {
+            background: transparent; border: none; padding: 10px 15px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); background: var(--gray); }
+        .nav-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; }
+        .hero { 
+            background: linear-gradient(rgba(255,255,255,0.95), rgba(255,255,255,0.95)), url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?auto=format&fit=crop&w=1000');
+            background-size: cover; padding: 3rem; border-radius: 10px; box-shadow: var(--shadow); text-align: center; 
+        }
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 30px; font-size: 1.2rem; 
+            border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 20px; font-weight: bold; display: inline-block;
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 6px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -3px; border-radius: 3px; }
+        .t-container { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+        .t-container::after { content: ''; position: absolute; width: 20px; height: 20px; right: -13px; background-color: white; border: 4px solid var(--primary); top: 20px; border-radius: 50%; z-index: 10; }
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -13px; }
+        .t-content { padding: 20px 30px; background-color: white; position: relative; border-radius: 6px; box-shadow: var(--shadow); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.1rem; }
+        .t-content h4 { color: #555; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .left::before { content: " "; height: 0; position: absolute; top: 22px; width: 0; z-index: 1; right: 30px; border: medium solid white; border-width: 10px 0 10px 10px; border-color: transparent transparent transparent white; }
+        .right::before { content: " "; height: 0; position: absolute; top: 22px; width: 0; z-index: 1; left: 30px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .info-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        .info-card h3 { color: var(--primary-dark); margin-bottom: 10px; }
+        .defense-tip { display: flex; align-items: flex-start; gap: 15px; background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: var(--shadow); }
+        .icon-box { font-size: 2rem; min-width: 50px; text-align: center; }
+        .quiz-container { background: white; padding: 2rem; border-radius: 10px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; }
+        .progress-bar { width: 100%; background: #ddd; height: 10px; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #eee; 
+            background: white; border-radius: 8px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
+            position: relative; z-index: 2;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #fff5f5; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        footer { text-align: center; padding: 20px; color: #777; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #ddd; background: white; }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::before { left: 60px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+            .left::after, .right::after { left: 21px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">EDU <span>Target 案例</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">故事</button>
+            <button class="nav-btn" id="btn-tech">技術細節</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>2013 年 Target 資料外洩事件</h1>
+                <p>一個關於史上最大零售業網路攻擊之一的互動課程。</p>
+                <p><strong>4000萬</strong>張信用卡被盜。<strong>7000萬</strong>人受影響。</p>
+                <button class="action-btn" id="jump-story">開始學習</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>🔍 發生了什麼？</h3><p>駭客透過一家第三方暖通空調供應商滲透 Target 的網路，並直接從收銀機竊取信用卡資料。</p></div>
+                <div class="info-card"><h3>🛡️ 為何要學習此案例？</h3><p>此案例改變了我們使用信用卡的方式（晶片和密碼），並讓全世界了解到「第三方風險」是一個主要危險。</p></div>
+            </div>
+        </section>
+
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">攻擊時間軸</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2013年11月中</h4><h3>最薄弱的一環</h3><p>駭客向 <strong>Fazio Mechanical Services</strong>（暖通空調供應商）發送釣魚郵件。利用 Citadel 惡意軟體，他們竊取了 Target 供應商入口網站的登入憑證。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2013年11月15日至27日</h4><h3>橫向移動</h3><p>攻擊者存取供應商入口網站。由於網路是「扁平的」（未分段），他們使用「傳遞雜湊」從供應商區域跳到敏感的銷售點 (POS) 網路。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>2013年11月27日至12月15日</h4><h3>RAM 抓取</h3><p>惡意軟體 (Kaptoxa/BlackPOS) 被安裝在收銀機上。它在刷卡瞬間從系統記憶體 (RAM) 中讀取信用卡號碼。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2013年12月19日</h4><h3>揭露</h3><p>在信用卡公司和記者的警報後，Target 確認了外洩事件。4000萬張卡和7000萬筆個人記錄消失。執行長最終辭職。</p></div></div>
+            </div>
+        </section>
+
+        <section id="tech" class="tab-content">
+            <h2>技術剖析</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. 供應鏈攻擊</h3><p>Target 有堅固的城牆，但他們給了一把鑰匙給一個安全性薄弱的供應商（暖通空調）。攻擊者入侵該供應商，從而大搖大擺地走進前門。</p></div>
+                <div class="info-card"><h3>2. 網路分段</h3><p><strong>失敗之處：</strong>暖通空調系統和信用卡系統在同一個網路上。<br><strong>解決方案：</strong>「零信任」架構。將關鍵系統分開，這樣一個系統淪陷，另一個仍然安全。</p></div>
+                <div class="info-card"><h3>3. RAM 抓取</h3><p>PCI-DSS 法規規定不能將信用卡號碼儲存在磁碟上。但電腦必須讀取號碼才能收費。攻擊者編寫了一個腳本，在那個1秒的處理視窗期間從電腦的暫存記憶體 (RAM) 中讀取資料。</p></div>
+            </div>
+        </section>
+
+        <section id="defense" class="tab-content">
+            <h2>消費者防禦：如何保護自己</h2>
+            <p>您無法阻止一家公司被駭，但您可以限制您的損失。以下是從 Target 案例中學到的 4 條黃金法則。</p>
+            <div class="defense-tip"><div class="icon-box">💳</div><div><h3>規則一：信用卡優於簽帳卡</h3><p>如果駭客偷了您的簽帳卡，他們會花掉您的<em>真實現金</em>。如果他們偷了您的信用卡，他們偷的是<em>銀行的錢</em>。您有 0 元責任保護，您的支票帳戶仍然安全。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">❄️</div><div><h3>規則二：信用凍結</h3><p>Target 外洩事件也洩漏了姓名和地址。罪犯可以用這些資料以您的名義開設新的信用卡。一個<strong>免費的信用凍結</strong>（在 Equifax、Experian、TransUnion）讓任何人都無法以您的名義開設帳戶。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">📲</div><div><h3>規則三：行動錢包（代碼化）</h3><p>當您使用 Apple Pay 或 Google Pay 時，您的手機會向店家傳送一個隨機的「代碼」，而不是您的真實卡號。即使 Target 再次被駭，駭客也只會得到一個無用的一次性代碼。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">👀</div><div><h3>規則四：每週監控</h3><p>不要等待郵件通知。在您的手機上為任何超過 1 美元的消費設定<strong>交易提醒</strong>。您越快報告詐欺，解決起來就越容易。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加測驗</button></div>
+        </section>
+
+        <section id="quiz" class="tab-content">
+            <h2>知識測驗</h2>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">正在載入問題...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Target 案例研究教育網路應用程式 | 為提高學生意識而開發</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active', 'active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+            const btnMap = { 'home': 'btn-home', 'story': 'btn-story', 'tech': 'btn-tech', 'defense': 'btn-defense', 'quiz': 'btn-quiz' };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        const questions = [
+            { q: "1. 技術：攻擊者最初是如何進入 Target 的網路的？", options: ["他們駭入了執行長的 Wi-Fi", "他們闖入了一家商店", "他們對一家暖通空調供應商 (Fazio Mechanical) 進行了釣魚攻擊", "他們猜對了密碼"], a: 2, exp: "正確。這是一次透過第三方供應商的供應鏈攻擊。" },
+            { q: "2. 技術：為什麼防火牆無法阻止攻擊者到達收銀機？", options: ["防火牆已關閉", "網路未分段（扁平）", "攻擊者有實體鑰匙", "POS 系統離線"], a: 1, exp: "正確。缺乏網路分段允許在內部自由移動。" },
+            { q: "3. 消費者：哪種支付方式提供最佳的詐欺保護？", options: ["簽帳卡", "信用卡", "支票", "現金"], a: 1, exp: "正確！信用卡保護您的實際銀行餘額並提供責任保護。" },
+            { q: "4. 消費者：「信用凍結」有什麼好處？", options: ["它會降低利率", "它阻止罪犯以您的名義開設新帳戶", "它會凍結您的銀行帳戶", "它阻止您花錢"], a: 1, exp: "正確。它會鎖定您的信用檔案，因此沒有人能以您的名義貸款。" },
+            { q: "5. 消費者：為什麼 Apple Pay/Google Pay 更安全？", options: ["它會掃描您的臉", "它更快", "代碼化：店家永遠不會得到您的真實卡號", "它由 Apple 投保"], a: 2, exp: "正確。代碼化用一個對商家無用的代碼取代您的卡號。" },
+            { q: "6. 技術：「RAM 抓取」是什麼？", options: ["竊取硬碟", "在未加密時從記憶體中竊取資料", "竊取螢幕截圖", "竊取收據"], a: 1, exp: "正確。惡意軟體在資料處理的瞬間從 RAM 中抓取資料。" },
+            { q: "7. 消費者：為什麼每週監控帳戶很重要？", options: ["它可以防止駭客竊取資料", "它有助於及早發現詐欺，以免造成重大損害", "它讓您的網路更快", "它能阻止釣魚郵件"], a: 1, exp: "正確。快速偵測是限制財務損失的關鍵。" }
+        ];
+
+        let currentQIndex = 0, score = 0;
+        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d4edda";
+                btnElement.style.borderColor = "#28a745";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+            } else {
+                btnElement.style.background = "#f8d7da";
+                btnElement.style.borderColor = "#dc3545";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) loadQuestion();
+            else showResults();
+        };
+
+        restartBtn.onclick = () => {
+            currentQIndex = 0; score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！";
+            else if(score > 4) scoreMsg.innerText = "👍 做得好！";
+            else scoreMsg.innerText = "📚 複習課程後再試一次。";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
