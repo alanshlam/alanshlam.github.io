@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGM Resorts 駭客事件：一通價值一億美元的電話</title>
+    <style>
+        :root {
+            --primary: #d4af37; --primary-dark: #b59024; --secondary: #1a1a1a; --card-bg: #2d2d2d;
+            --text: #f4f4f4; --bg: #121212; --white: #ffffff; --shadow: 0 4px 12px rgba(0,0,0,0.5);
+            --success: #28a745; --danger: #dc3545;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: var(--secondary); border-bottom: 2px solid var(--primary); box-shadow: var(--shadow); 
+            padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; 
+            height: 80px; position: sticky; top: 0; z-index: 9999;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: white; margin-left: 10px; font-size: 0.8rem; letter-spacing: 0; border: 1px solid var(--primary); padding: 2px 6px; border-radius: 4px; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent; border: 1px solid transparent; padding: 10px 20px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: #ccc; border-radius: 4px; transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: var(--secondary); font-weight: bold; }
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: #e0e0e0; }
+        .hero { 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1541447237128-f4fa2345f840?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center; padding: 4rem; border-radius: 15px; 
+            box-shadow: var(--shadow); text-align: center; color: white; border: 1px solid var(--primary);
+        }
+        .action-btn { 
+            background: var(--primary); color: var(--secondary); border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 20px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .action-btn:hover { background: white; transform: scale(1.05); }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '🎰'; font-size: 1.2rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--secondary); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: var(--shadow); border-top: 3px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.2rem; }
+        .t-content h4 { color: #888; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid #444; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; }
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 850px; margin: 0 auto; border: 1px solid var(--primary); }
+        .progress-bar { width: 100%; background: #444; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #555; 
+            background: #333; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.05rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #444; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: var(--secondary); }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MGM <span>案例研究</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">技術細節</button>
+            <button class="nav-btn" id="btn-defense">旅客提示</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>MGM Resorts 攻擊事件 (2023)</h1>
+                <p>當老虎機停止轉動，飯店房卡失靈。</p>
+                <p>一通<strong>10 分鐘的電話</strong>造成了<strong>一億美元</strong>的損失。</p>
+                <button class="action-btn" id="jump-story">了解事件始末</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>🎰 混亂</h3><p>十天內，拉斯維加斯陷入癱瘓。客人無法進入房間，電梯手動操作，賭場變成「只收現金」。</p></div>
+                <div class="info-card"><h3>📞 駭客手法</h3><p>沒有高超的程式碼技術。攻擊者（Scattered Spider）僅僅是打電話給服務台，誘騙他們重設密碼（語音釣魚）。</p></div>
+                <div class="info-card"><h3>💰 贖金</h3><p>MGM <strong>拒絕支付</strong>贖金。這讓他們在短期內損失了金錢（一億美元），但避免了資助犯罪份子。</p></div>
+            </div>
+        </section>
+
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">黑暗十日</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2023年9月初</h4><h3>佈局</h3><p>駭客在 LinkedIn 上搜尋 MGM 員工。他們找到一個目標，然後打電話給 IT 服務台，假裝是那名「被鎖在門外」的員工。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2023年9月11日</h4><h3>入侵</h3><p>服務台重設了密碼。駭客獲得了「超級管理員」權限。他們部署了勒索軟體，加密了營運飯店和賭場的伺服器。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>2023年9月12-19日</h4><h3>手動模式</h3><p>全面停擺。飯店員工用紙筆辦理入住。老虎機顯示錯誤訊息。ATM 停用。客人在隊伍中等待數小時。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2023年10月</h4><h3>恢復</h3><p>MGM 未支付贖金，從備份中恢復了系統。然而，憤怒的駭客洩漏了客戶資料（姓名、駕照）。</p></div></div>
+            </div>
+        </section>
+
+        <section id="tech" class="tab-content">
+            <h2>技術剖析</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. 社交工程（語音釣魚）</h3><p>這是操縱人心的藝術。攻擊者很有說服力，並使用真實的員工資料（來自 LinkedIn）讓電話聽起來很合法。</p></div>
+                <div class="info-card"><h3>2. 身份提供者 (IdP) 入侵</h3><p>MGM 使用 Okta 進行登入。一旦駭客騙過服務台，他們就取得了 Okta 的「超級管理員」權限，讓他們可以自己創建通往王國的鑰匙。</p></div>
+                <div class="info-card"><h3>3. ALPHV/BlackCat 勒索軟體</h3><p>這是用來鎖定檔案的軟體。它加密資料讓 MGM 無法使用，並威脅如果不付錢就在暗網上公布資料（雙重勒索）。</p></div>
+            </div>
+        </section>
+
+        <section id="defense" class="tab-content">
+            <h2>旅客防禦：在飯店駭客事件中求生</h2>
+            <p>想像您抵達度假地點，飯店的電腦卻全部癱瘓。以下是如何為現代旅行中的中斷做好準備。</p>
+            <div class="defense-tip"><div class="icon-box">💵</div><div><h3>1. 攜帶備用現金</h3><p>當 MGM 系統癱瘓時，信用卡機和 ATM 都失靈了。現金是購買食物或給小費的唯一方式。旅行時務必攜帶緊急備用金。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">📄</div><div><h3>2. 列印您的預訂</h3><p>如果飯店無法在電腦中查到您的名字，一份列印出來的確認郵件（或手機截圖）是您預訂房間的唯一證明。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">💳</div><div><h3>3. 使用信用卡（而非簽帳卡）</h3><p>在混亂的手動入住過程中刷卡，很容易出錯。信用卡提供詐欺保護和爭議權。簽帳卡會立即從您的銀行扣款。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">❄️</div><div><h3>4. 行程結束後凍結信用</h3><p>由於客戶資料（駕照）被盜，身份盜竊是一個風險。在收到漏洞通知後凍結您的信用檔案，以阻止罪犯以您的名義申請貸款。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加旅客測驗</button></div>
+        </section>
+
+        <section id="quiz" class="tab-content">
+            <h2>知識測驗</h2>
+            <p>測試您對駭客事件及如何在數位時代安全旅行的了解。</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">載入中...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer><p>MGM Resorts 2023 案例研究 | 教育網路應用程式</p></footer>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active', 'active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+            const btnMap = { 'home': 'btn-home', 'story': 'btn-story', 'tech': 'btn-tech', 'defense': 'btn-defense', 'quiz': 'btn-quiz' };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = () => switchTab(id));
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        const questions = [
+            { q: "1. 事實：攻擊者最初是如何進入 MGM 系統的？", options: ["他們打破窗戶", "他們駭入 Wi-Fi", "他們打電話給服務台（語音釣魚）", "他們複製了一張房卡"], a: 2, exp: "正確。一通 10 分鐘的電話誘騙 IT 服務台員工重設密碼。" },
+            { q: "2. 事實：MGM 是否支付了贖金？", options: ["是的，立即支付", "沒有，他們拒絕了", "他們付了一半", "保險公司付了"], a: 1, exp: "正確。MGM 拒絕支付，這就是為什麼停電持續了 10 天並且資料被洩漏的原因。" },
+            { q: "3. 影響：在攻擊期間，哪些系統停止運作？", options: ["游泳池", "數位房卡和老虎機", "空調", "燈光"], a: 1, exp: "正確。數位房卡、老虎機和 ATM 等數位系統離線，迫使手動操作。" },
+            { q: "4. 旅行提示：為什麼去高科技度假村旅行時應該攜帶現金？", options: ["為了炫富", "以防網路攻擊導致信用卡機無法使用", "為了玩撲克", "現金比卡片輕"], a: 1, exp: "正確。在網路中斷時，「現金為王」。當數位系統失靈時，它讓您可以購買食物和必需品。" },
+            { q: "5. 旅行提示：為什麼要列印您的飯店預訂？", options: ["電池會沒電", "如果飯店系統被刪除，它可以證明您有預訂", "紙聞起來很香", "當書籤用"], a: 1, exp: "正確。在 MGM 駭客事件期間，工作人員無法在電腦上查詢預訂。列印出來的證明拯救了一天。" },
+            { q: "6. 付款：為什麼飯店住宿要用信用卡而不是簽帳卡？", options: ["信用卡看起來比較酷", "簽帳卡沒有手續費", "信用卡有較好的詐欺保護和爭議權", "飯店不接受簽帳卡"], a: 2, exp: "正確。如果在混亂的手動入住期間駭客竊取了卡片資訊，信用卡可以保護您的實際銀行餘額。" },
+            { q: "7. 身份：由於駕照資料被盜，住客應該怎麼辦？", options: ["改名", "凍結他們的信用", "停止開車", "報警"], a: 1, exp: "正確。凍結信用可以防止身份竊賊使用您被盜的身份資訊申請新的貸款。" },
+            { q: "8. 概念：「社交工程」是什麼？", options: ["建立社交網路", "用程式碼駭入電腦", "操縱人們交出資訊", "舉辦派對"], a: 2, exp: "正確。攻擊者駭入的是*人*（服務台人員），而不是軟體。" },
+            { q: "9. 防禦：公司如何阻止「語音釣魚」攻擊？", options: ["停止使用電話", "透過回撥官方號碼來驗證來電者身份", "只使用電子郵件", "說話大聲一點"], a: 1, exp: "正確。在重設任何密碼之前，請驗證來電者的身份。" },
+            { q: "10. 情境：您接到一通自稱「飯店保全」的電話，要求您提供卡號。您該怎麼辦？", options: ["給他們", "掛斷電話並親自到前台", "要求折扣", "對他們大吼"], a: 1, exp: "正確。絕不要在來電中提供敏感資訊。親自去核實。" },
+            { q: "11. 財務：這次攻擊大約造成 MGM 多少損失？", options: ["100萬美元", "1億美元", "1萬美元", "10億美元"], a: 1, exp: "正確。在收入損失、IT 維修成本和法律費用之間，成本超過 1 億美元。" },
+            { q: "12. 比較：另一家賭場（Caesars）同時也遭到攻擊。他們採取了什麼不同的做法？", options: ["他們反擊了", "他們支付了贖金", "他們關閉了", "他們叫了軍隊"], a: 1, exp: "正確。Caesars 支付了贖金（約 1500 萬美元）以避免停業，這顯示了不同的策略（儘管仍具爭議性）。" }
+        ];
+
+        let currentQIndex = 0, score = 0;
+        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+        
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d4edda"; btnElement.style.color = "#155724"; btnElement.style.borderColor = "#28a745";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+            } else {
+                btnElement.style.background = "#f8d7da"; btnElement.style.color = "#721c24"; btnElement.style.borderColor = "#dc3545";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) loadQuestion();
+            else showResults();
+        };
+
+        restartBtn.onclick = () => {
+            currentQIndex = 0; score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您是一位精明的旅行者。";
+            else if(score > 8) scoreMsg.innerText = "👍 做得好！您了解風險。";
+            else scoreMsg.innerText = "📚 複習提示後再試一次。";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>

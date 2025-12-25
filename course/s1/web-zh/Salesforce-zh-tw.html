@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce 漏洞 2025：供應鏈與語音釣魚</title>
+    <style>
+        :root {
+            --primary: #00A1E0; --primary-dark: #0076a8; --secondary: #032d60; --text: #333;
+            --bg: #f4f6f9; --white: #ffffff; --gray: #eef4f7; --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: var(--white); box-shadow: var(--shadow); padding: 0 2rem; display: flex; 
+            justify-content: space-between; align-items: center; height: 80px;
+            position: sticky; top: 0; z-index: 9999;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; }
+        .logo span { background: var(--bg); color: var(--secondary); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; margin-left: 10px; border: 1px solid var(--primary); }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent; border: none; padding: 10px 20px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: var(--secondary); border-radius: 20px; transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--gray); color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; }
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--secondary); }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--secondary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: #4a4a4a; }
+        .hero { 
+            background: linear-gradient(135deg, #00A1E0 0%, #032d60 100%);
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; 
+            position: relative; overflow: hidden;
+        }
+        .hero h1 { color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .hero p { color: #f0f0f0 !important; font-weight: 500; }
+        .hero::before { content: "☁️"; font-size: 15rem; position: absolute; right: -20px; top: -50px; opacity: 0.1; }
+        .action-btn { 
+            background: var(--white); color: var(--primary); border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 20px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .action-btn:hover { transform: scale(1.05); background: #f0faff; }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 2px; }
+        .t-container { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+        .t-container::after { content: ''; position: absolute; width: 20px; height: 20px; right: -12px; background-color: white; border: 5px solid var(--primary); top: 20px; border-radius: 50%; z-index: 10; }
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -12px; }
+        .t-content { padding: 25px 30px; background-color: white; position: relative; border-radius: 10px; box-shadow: var(--shadow); }
+        .t-content h3 { color: var(--secondary); margin-bottom: 5px; font-size: 1.2rem; }
+        .t-content h4 { color: var(--primary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); border-top: 5px solid var(--primary); transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); }
+        .info-card h3 { color: var(--secondary); margin-bottom: 15px; }
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: white; padding: 2rem; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); background: var(--gray); border-radius: 50%; padding: 10px; }
+        .quiz-container { background: white; padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 850px; margin: 0 auto; }
+        .progress-bar { width: 100%; background: #e0e0e0; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #e0e0e0; 
+            background: white; border-radius: 10px; cursor: pointer; text-align: left; font-size: 1.05rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #f0faff; color: var(--secondary); }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        footer { text-align: center; padding: 30px; color: #7f8c8d; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #ddd; background: white; }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::before { left: 60px; border: medium solid white; border-width: 10px 10px 10px 0; border-color: transparent white transparent transparent; }
+            .left::after, .right::after { left: 21px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">EDU <span>Salesforce 2025</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">技術細節</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>Salesforce 漏洞事件 (2025)</h1>
+                <p>10 億筆記錄被盜。影響 40 個全球性組織。</p>
+                <p>這次「語音釣魚」攻擊證明了您的資料安全僅與連接到它的第三方應用程式一樣安全。</p>
+                <button class="action-btn" id="jump-story">追蹤攻擊</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>📞「語音釣魚」</h3><p>攻擊者沒有駭入程式碼；他們駭入了人類。他們使用<strong>語音釣魚</strong>，冒充 IT 支援人員誘騙員工放棄存取權限。</p></div>
+                <div class="info-card"><h3>🔗 供應鏈</h3><p>這不是 Salesforce 本身的漏洞。攻擊者駭入了整合到 Salesforce 的第三方應用程式 <strong>Drift</strong>（透過 Salesloft），以竊取鑰匙。</p></div>
+                <div class="info-card"><h3>🌍 影響</h3><p>麥當勞、迪士尼、聯邦快遞和谷歌都受到了衝擊。失敗的不是他們的伺服器，而是相互連接的 SaaS 工具網。</p></div>
+            </div>
+        </section>
+
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">欺騙的時間軸</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2024年10月</h4><h3>佈局</h3><p>UNC6040 集團開始致電員工（語音釣魚），冒充 IT 服務台支援人員。他們竊取登入憑證和 MFA 驗證碼。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2025年3月至6月</h4><h3>GitHub 搶劫案</h3><p>駭客入侵 Salesloft 的 GitHub 儲存庫。他們找到了 Drift 應用程式整合的「王國鑰匙」（OAuth 權杖）。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>2025年8月</h4><h3>大規模資料外洩</h3><p>攻擊者使用竊取的權杖，完全繞過登入畫面。他們查詢了 40 家主要公司的資料庫，竊取了近 10 億筆記錄。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2025年10月</h4><h3>勒索與洩漏</h3><p>駭客啟動一個 TOR 網站並要求贖金。當 Salesforce 拒絕支付時，來自澳洲航空、Gap 等公司的資料開始洩漏。FBI 查封了勒索網站。</p></div></div>
+            </div>
+        </section>
+
+        <section id="tech" class="tab-content">
+            <h2>技術剖析</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. OAuth 權杖</h3><p>把它們想像成「數位飯店房卡」。一旦駭客從 Drift 應用程式中竊取了權杖，他們就可以進入像迪士尼這樣公司的 Salesforce「房間」，而無需密碼。</p></div>
+                <div class="info-card"><h3>2. 非人類身份</h3><p>安全團隊會監視人類登入。他們很少監視「服務帳戶」或應用程式。駭客冒充 Drift 應用程式，因此數週內都未被發現。</p></div>
+                <div class="info-card"><h3>3. 語音釣魚機制</h3><p>攻擊者將受害者引導至偽造的登入入口網站。當受害者輸入他們的 2FA 驗證碼時，攻擊者會即時擷取它以合法登入。</p></div>
+            </div>
+        </section>
+
+        <section id="defense" class="tab-content">
+            <h2>消費者防禦：保護自己</h2>
+            <p>您不執行 Salesforce 實例，但您的資料在其中。以下是在大公司洩漏您的資訊時如何保持安全的方法。</p>
+            <div class="defense-tip"><div class="icon-box">❄️</div><div><h3>1. 凍結您的信用</h3><p>由於姓名、地址和電子郵件被盜，身份盜竊是最大的風險。在 Equifax、Experian 和 TransUnion 凍結您的信用，可以阻止罪犯以您的名義申請貸款。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">📞</div><div><h3>2. 驗證來電者（語音釣魚防禦）</h3><p>如果「IT 支援」或「銀行」打電話給您索取驗證碼，<strong>掛斷電話</strong>。回撥他們網站上列出的官方號碼。絕不相信來電。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🔐</div><div><h3>3. 抗釣魚的 MFA</h3><p>簡訊驗證碼可能被釣魚。改用<strong>基於應用程式的身份驗證</strong>（如 Google Authenticator）或硬體金鑰 (YubiKey)，這些對詐騙者來說更難竊取。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🔍</div><div><h3>4. 數位清理</h3><p>使用「Have I Been Pwned」檢查您的電子郵件是否在 Salesforce 漏洞中洩漏。如果是，請更改您的密碼並注意您的銀行對帳單是否有小額測試費用。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加測驗</button></div>
+        </section>
+
+        <section id="quiz" class="tab-content">
+            <h2>知識測驗</h2>
+            <p>測試您對漏洞的理解以及如何保護自己作為消費者。</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">載入中...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer><p>Salesforce 2025 案例研究 | 教育網路應用程式</p></footer>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active', 'active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
+            const btnMap = { 'home': 'btn-home', 'story': 'btn-story', 'tech': 'btn-tech', 'defense': 'btn-defense', 'quiz': 'btn-quiz' };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = () => switchTab(id));
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        const questions = [
+            { q: "1. 事實：Salesforce 核心平台本身是否被駭？", options: ["是的，他們的伺服器被摧毀了", "不是，是一個被入侵的第三方整合 (Drift)", "是的，一名員工出售了資料", "不是，是一次實體闖入"], a: 1, exp: "正確。Salesforce 自己的程式碼是安全的。攻擊者從一個合作夥伴應用程式 (Drift) 竊取了鑰匙以存取資料。" },
+            { q: "2. 技術：駭客竊取了什麼特定的「鑰匙」來繞過密碼？", options: ["OAuth 權杖", "實體鑰匙", "指紋", "視網膜掃描"], a: 0, exp: "正確。OAuth 權杖允許應用程式之間相互通訊，而無需使用者每次都輸入密碼。" },
+            { q: "3. 消費者：您接到一通自稱「Salesforce 支援」的電話，要求您提供密碼。這是什麼？", options: ["一次合法的安全檢查", "語音釣魚 (Vishing)", "打錯電話了", "一通惡作劇電話"], a: 1, exp: "正確。語音釣魚是攻擊者利用電話誘騙您。合法公司絕不會透過電話詢問您的密碼。" },
+            { q: "4. 行動：如果您的資料在像這樣的大規模洩漏中被發現，阻止身份盜竊最有效的方法是什麼？", options: ["報警", "凍結您的信用", "刪除您的電子郵件", "買把槍"], a: 1, exp: "正確。凍結您的信用可以阻止罪犯以您的名義開設信用卡或貸款。" },
+            { q: "5. 情境：為什麼您應該關心迪士尼或聯邦快遞是否被駭？", options: ["這不影響我", "他們儲存了您的姓名、地址和電子郵件", "我不喜歡電影", "他們的股價會下跌"], a: 1, exp: "正確。即使您不使用 Salesforce，您購買商品的公司會使用。如果他們洩漏，您的資料也會洩漏。" },
+            { q: "6. 防禦：為什麼簡訊 (SMS) 2FA 被認為是弱的？", options: ["它要花錢", "駭客可以交換您的 SIM 卡或攔截簡訊", "它太慢了", "它太耗電了"], a: 1, exp: "正確。語音釣魚和 SIM 卡交換使簡訊驗證碼很容易被盜。基於應用程式的 MFA 安全得多。" },
+            { q: "7. 類比：「供應鏈攻擊」就像...", options: ["打破前門", "偷走管理員的鑰匙打開側門", "挖一條隧道", "飛越圍牆"], a: 1, exp: "正確。他們不是攻擊堅固的前門，而是攻擊一個有存取權限的受信任夥伴（管理員/供應商）。" },
+            { q: "8. 復原：您發現您的電子郵件密碼被洩漏了。您的第一步是什麼？", options: ["立即更改密碼", "打電話給律師", "在 Facebook 上發文", "關閉您的銀行帳戶"], a: 0, exp: "正確。止血。立即將密碼更改為一個強大、獨特的密碼。" },
+            { q: "9. 預防：什麼工具有助於您為每個網站創建和儲存獨特的密碼？", options: ["鍵盤下的便利貼", "密碼管理器", "到處都用同一個密碼", "您的大腦"], a: 1, exp: "正確。密碼管理器會生成無法猜測的密碼，因此如果一個網站被入侵，您的其他帳戶仍然安全。" },
+            { q: "10. 威脅：竊取資料後，攻擊者做了什麼？", options: ["他們刪除了資料", "他們道歉了", "他們要求贖金（勒索）", "他們把資料賣給了政府"], a: 2, exp: "正確。他們威脅說，除非公司支付加密貨幣，否則將公開發布敏感資料。" },
+            { q: "11. 語音釣魚：您如何驗證來電者是否真的來自您的銀行或 IT 部門？", options: ["相信他們的聲音", "問他們的名字", "掛斷電話並撥打您卡片/網站上的官方號碼", "讓他們猜您的生日"], a: 2, exp: "正確。對外驗證是唯一安全的方法。絕不相信來電。" },
+            { q: "12. 範圍：這次漏洞只影響科技公司嗎？", options: ["是的，只有谷歌", "不，它影響了零售、娛樂、物流和科技業", "不，只有銀行", "是的，只有 Salesforce"], a: 1, exp: "正確。它衝擊了麥當勞、迪士尼、聯邦快遞等許多公司，證明了供應鏈風險影響各行各業。" }
+        ];
+
+        let currentQIndex = 0, score = 0;
+        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+        
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.classList.add('correct');
+                feedback.className = "feedback correct";
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+            } else {
+                btnElement.classList.add('wrong');
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) loadQuestion();
+            else showResults();
+        };
+
+        restartBtn.onclick = () => {
+            currentQIndex = 0; score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您對供應鏈威脅很安全。";
+            else if(score > 8) scoreMsg.innerText = "👍 做得好！您了解風險。";
+            else scoreMsg.innerText = "📚 複習課程後再試一次。";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>

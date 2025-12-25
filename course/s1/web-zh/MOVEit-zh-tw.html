@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVEit 漏洞：供應鏈危機</title>
+    <style>
+        :root {
+            --primary: #00ff88; --primary-dark: #00cc6a; --secondary: #0b1c2c; --card-bg: #152a3d;
+            --text: #e0e6ed; --bg: #050f16; --shadow: 0 4px 15px rgba(0, 255, 136, 0.15); --danger: #ff4757;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: var(--secondary); border-bottom: 2px solid var(--primary); box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
+            padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; 
+            height: 80px; position: sticky; top: 0; z-index: 9999;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 1px; }
+        .logo span { color: white; margin-left: 10px; font-size: 0.8rem; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent; border: 1px solid transparent; padding: 10px 20px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: #b0c4de; border-radius: 4px; transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        .nav-btn.active { background: var(--primary); color: var(--secondary); font-weight: bold; }
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; text-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: #b0c4de; }
+        .hero { 
+            background: linear-gradient(rgba(5, 15, 22, 0.85), rgba(5, 15, 22, 0.85)), url('https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center; padding: 4rem; border-radius: 15px; 
+            box-shadow: var(--shadow); text-align: center; color: white; border: 1px solid #333;
+        }
+        .stats-row { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
+        .stat { text-align: center; }
+        .stat-num { font-size: 2.5rem; font-weight: bold; color: var(--primary); display: block; }
+        .stat-label { font-size: 0.9rem; color: #ccc; text-transform: uppercase; letter-spacing: 1px; }
+        .action-btn { 
+            background: var(--primary); color: var(--secondary); border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .action-btn:hover { background: white; transform: scale(1.05); }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '📁'; font-size: 1rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--secondary); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-top: 3px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.2rem; }
+        .t-content h4 { color: #888; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #333; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; }
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-width: 850px; margin: 0 auto; border: 1px solid #333; }
+        .progress-bar { width: 100%; background: #000; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #333; 
+            background: #0d1a26; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.05rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #1a334d; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a; font-weight: 500;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: var(--secondary); }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MOVEit <span>漏洞</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('home', this)">總覽</button>
+            <button class="nav-btn" onclick="switchTab('story', this)">時間軸</button>
+            <button class="nav-btn" onclick="switchTab('tech', this)">技術細節</button>
+            <button class="nav-btn" onclick="switchTab('defense', this)">防禦</button>
+            <button class="nav-btn" onclick="switchTab('quiz', this)">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <div id="home" class="module active">
+            <div class="hero">
+                <h1>MOVEit Transfer 漏洞 (2023)</h1>
+                <p>這起駭客事件竊取了 9300 萬人的資料，而他們甚至從未聽說過「MOVEit」。</p>
+                <div class="stats-row">
+                    <div class="stat"><span class="stat-num">9300萬+</span><span class="stat-label">受影響人數</span></div>
+                    <div class="stat"><span class="stat-num">2700+</span><span class="stat-label">受影響公司</span></div>
+                    <div class="stat"><span class="stat-num">1億+美元</span><span class="stat-label">要求的贖金</span></div>
+                </div>
+                <button class="action-btn" id="jump-story">事件始末</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>🕷️ 供應鏈</h3><p>您沒有使用 MOVEit。但您的航空公司（英國航空）、您的政府（能源部）和您的薪資服務供應商都在使用。當他們被駭時，<strong>您的</strong>資料就被竊取了。</p></div>
+                <div class="info-card"><h3>☠️ 駭客：Cl0p</h3><p>一個與俄羅斯有關的勒索軟體組織。他們不鎖電腦，只竊取資料並威脅在暗網上洩露（勒索）。</p></div>
+                <div class="info-card"><h3>🔓 漏洞：SQL 注入</h3><p>一個「零時差」漏洞允許駭客向資料庫發送特殊命令，完全繞過密碼。</p></div>
+            </div>
+        </div>
+
+        <div id="story" class="module">
+            <h2 style="text-align: center; border:none;">無聲的竊盜時間軸</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2023年5月下旬</h4><h3>秘密利用</h3><p>Cl0p 駭客發現 MOVEit Transfer 中的一個零時差漏洞。他們悄悄地掃描網際網路並在任何人知道軟體有問題之前竊取資料。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2023年5月31日</h4><h3>公開披露</h3><p>Progress Software 宣布了這個錯誤並發布了補丁。但對許多人來說為時已晚。資料在幾天前就已被盜。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>2023年6月</h4><h3>洩漏開始</h3><p>Cl0p 在其暗網網站上列出受害者名單。英國航空、BBC 和殼牌公司都被點名。他們要求贖金以保護資料隱私。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2023年底 - 2025年</h4><h3>後續影響</h3><p>超過 9300 萬人面臨身份盜竊風險。集體訴訟被提起。各國政府對軟體責任展開調查。</p></div></div>
+            </div>
+        </section>
+
+        <div id="tech" class="module">
+            <h2>技術剖析</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. SQL 注入 (SQLi)</h3><p>網站介面未正確檢查使用者輸入。駭客在登入欄位中輸入命令，欺騙資料庫給予他們「系統管理員」權限。</p></div>
+                <div class="info-card"><h3>2. 網站後門 (Web Shells)</h3><p>進入後，駭客安裝了一個名為 <code>human2.aspx</code> 的後門。這讓他們可以隨意進出，隨時竊取檔案。</p></div>
+                <div class="info-card"><h3>3. 零時差漏洞利用</h3><p>這表示該漏洞對軟體製造商來說是未知的。攻擊開始時沒有可用的補丁。</p></div>
+            </div>
+        </section>
+
+        <div id="defense" class="module">
+            <h2>消費者防禦：當「他們」被駭時</h2>
+            <p>您無法修補英國航空的伺服器。但您可以保護自己免受其後續影響。</p>
+            <div class="defense-tip"><div class="icon-box">❄️</div><div><h3>1. 凍結您的信用</h3><p><strong>這是第一道防線。</strong>由於社會安全碼和薪資資料被盜，罪犯可以用您的名義申請貸款。信用凍結（Equifax、Experian、TransUnion）可以徹底阻止他們。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🔎</div><div><h3>2. 「Have I Been Pwned?」</h3><p>使用像 <em>Have I Been Pwned?</em> 或 <em>Mozilla Monitor</em> 這樣的網站。輸入您的電子郵件，查看您的資料是否在 MOVEit 漏洞中洩漏。知識就是力量。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🎣</div><div><h3>3. 預期針對性釣魚</h3><p>詐騙者現在知道您的姓名、地址以及您在哪家銀行開戶。他們會發送令人信服的電子郵件，冒充這些公司。<strong>獨立驗證每個請求。</strong></p></div></div>
+            <div class="defense-tip"><div class="icon-box">🔑</div><div><h3>4. 到處使用 MFA</h3><p>如果您的密碼是洩漏的一部分，駭客會嘗試用它登入您的電子郵件和銀行。多重身份驗證 (MFA) 即使他們有您的密碼也能阻止他們。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加消費者測驗</button></div>
+        </section>
+
+        <div id="quiz" class="module">
+            <h2>知識測驗</h2>
+            <p>測試您對供應鏈攻擊和個人防禦的理解。</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">載入中...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer><p>MOVEit Transfer 2023 案例研究 | 教育網路應用程式</p></footer>
+
+    <script>
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.module, .nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        }
+        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
+        document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+
+        const questions = [
+            { q: "1. 類比：「供應鏈攻擊」最貼切的比喻是什麼？", options: ["打破窗戶闖入房子", "從屋主口袋偷鑰匙", "在源頭對供水下毒", "猜對警報器的密碼"], a: 2, exp: "正確。供應鏈攻擊是入侵受信任的源頭（自來水廠/軟體供應商），以影響下游的每一個人。" },
+            { q: "2. 事實：駭客是如何分發惡意軟體的？", options: ["向每個客戶發送釣魚郵件", "一個合法的軟體更新", "一個留在停車場的 USB 隨身碟", "一個假網站"], a: 1, exp: "正確。他們將惡意軟體隱藏在 Orion 平台的標準軟體更新中。" },
+            { q: "3. 誰：哪家資安公司最先發現這次攻擊？", options: ["SolarWinds 自己", "FireEye", "FBI", "Microsoft"], a: 1, exp: "正確。FireEye 意識到他們被入侵，並將源頭追溯到 SolarWinds。" },
+            { q: "4. 技術：為什麼電腦會信任受感染的軟體？", options: ["駭客關閉了防毒軟體", "軟體有 SolarWinds 的「數位簽章」", "檔案大小非常小", "那時是假日週末"], a: 1, exp: "正確。攻擊者入侵了建構系統，因此惡意軟體擁有有效的數位簽章。" },
+            { q: "5. 時間軸：在被發現之前，攻擊者在網路中潛伏了大約多久（停留時間）？", options: ["24 小時", "1 週", "超過 1 年（14 個月）", "5 年"], a: 2, exp: "正確。這麼長的停留時間讓他們能夠在不被注意的情況下竊取大量資料。" },
+            { q: "6. 歸因：據信是誰發動了這次攻擊？", options: ["佛羅里達州的一名青少年", "Nobelium（俄羅斯情報機構）", "Anonymous 駭客組織", "一家企業競爭對手"], a: 1, exp: "正確。美國情報機構將此次攻擊歸因於 SVR（俄羅斯對外情報局）。" },
+            { q: "7. 消費者：既然更新可能被駭，您應該停止更新您的軟體嗎？", options: ["是的，再也不更新", "不，已知的漏洞比罕見的供應鏈攻擊風險更大", "每 5 年更新一次", "只在星期二更新"], a: 1, exp: "正確。雖然供應鏈攻擊確實發生，但未修補的軟體每天都在被利用。您必須繼續修補。" },
+            { q: "8. 防禦：如果一個受信任的供應商被駭，您的最後一道防線是什麼？", options: ["強密碼", "多重身份驗證 (MFA)", "聽天由命", "刪除您的帳戶"], a: 1, exp: "正確。如果他們透過供應商竊取您的憑證，MFA 會阻止他們實際登入。" },
+            { q: "9. 影響：為什麼一個普通學生應該關心像這樣的企業駭客事件？", options: ["完全不重要", "您的個人資料（如身分證號碼、電子郵件）儲存在這些公司", "SolarWinds 製作電玩遊戲", "網際網路會關閉"], a: 1, exp: "正確。您的資料存放在企業伺服器上。如果他們被入侵，您的身份就處於危險之中。" },
+            { q: "10. 策略：對使用者來說，「劃分區隔」是什麼意思？", options: ["把您的電腦放在一個盒子裡", "為不同網站使用不同密碼", "只與家人分享密碼", "只使用一個電子郵件地址"], a: 1, exp: "正確。不要讓一個網站（如遊戲或商店）的漏洞危及您的主要電子郵件或銀行帳戶。" }
+        ];
+
+        let currentQIndex = 0, score = 0;
+        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+        
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.classList.add('correct');
+                feedback.className = "feedback correct";
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+            } else {
+                btnElement.classList.add('wrong');
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) loadQuestion();
+            else showResults();
+        };
+
+        restartBtn.onclick = () => {
+            currentQIndex = 0; score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您了解供應鏈風險。";
+            else if(score > 7) scoreMsg.innerText = "👍 做得好！您了解風險。";
+            else scoreMsg.innerText = "📚 複習課程後再試一次。";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>

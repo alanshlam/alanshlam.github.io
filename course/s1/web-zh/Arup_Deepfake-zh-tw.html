@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arup Deepfake (高對比)</title>
+    <style>
+        :root {
+            --primary: #ff1f3a; --primary-dark: #d6001c; --secondary: #121212; --card-bg: #1e1e1e;
+            --text: #ffffff; --text-muted: #e0e0e0; --bg: #000000; --shadow: 0 4px 15px rgba(255, 31, 58, 0.2);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: var(--card-bg); border-bottom: 3px solid var(--primary); padding: 0 2rem; 
+            display: flex; justify-content: space-between; align-items: center; height: 80px;
+            position: sticky; top: 0; z-index: 9999;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--text); display: flex; align-items: center; letter-spacing: 1px; }
+        .logo span { background: var(--primary); color: white; padding: 2px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem; text-transform: uppercase; font-weight: bold;}
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent; border: 1px solid transparent; padding: 10px 20px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: var(--text-muted); border-radius: 4px; transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; }
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.7; color: var(--text); }
+        .hero { 
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1633412802994-5c058f151b66?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center; padding: 4rem; border-radius: 15px; 
+            box-shadow: var(--shadow); text-align: center; color: white; border: 1px solid var(--primary);
+        }
+        .stat-box { display: inline-block; background: rgba(255, 31, 58, 0.2); border: 2px solid var(--primary); padding: 15px 25px; border-radius: 8px; margin: 20px 10px; }
+        .stat-number { font-size: 2.2rem; font-weight: bold; color: white; display: block; text-shadow: 0 0 5px var(--primary);}
+        .stat-label { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 10px rgba(255, 31, 58, 0.4);
+        }
+        .action-btn:hover { background: white; color: var(--primary-dark); transform: translateY(-2px); }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '👁️'; font-size: 1rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--white); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.3rem; }
+        .t-content h4 { color: var(--text-muted); margin-bottom: 10px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid #333; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 5px; font-size: 1.3rem; }
+        .info-card p { color: var(--text); }
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); border-left: 6px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 850px; margin: 0 auto; border: 1px solid var(--primary); }
+        .progress-bar { width: 100%; background: #333; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #444; 
+            background: #2a2a2a; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s; 
+            position: relative; z-index: 2; font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #3a3a3a; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a; font-weight: bold;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; background: var(--card-bg); border-top: 1px solid #333; }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">ARUP <span>案例研究</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('home', this)">總覽</button>
+            <button class="nav-btn" onclick="switchTab('story', this)">時間軸</button>
+            <button class="nav-btn" onclick="switchTab('tech', this)">Deepfake 技術</button>
+            <button class="nav-btn" onclick="switchTab('defense', this)">防禦</button>
+            <button class="nav-btn" onclick="switchTab('quiz', this)">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <div id="home" class="module active">
+            <div class="hero">
+                <h1>Arup Deepfake 騙局 (2024)</h1>
+                <p>「眼見為憑」成為謊言的時刻。</p>
+                <p>一名財務員工加入了一場與財務長和同事的視訊通話。但沒有一個是真人。</p>
+                <div class="stat-box"><span class="stat-number">2500萬美元</span><span class="stat-label">被盜</span></div>
+                <div class="stat-box"><span class="stat-number">0</span><span class="stat-label">位真人在通話中</span></div>
+                <br>
+                <button class="action-btn" id="jump-story">追蹤騙局</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>🤖 武器：AI</h3><p>攻擊者使用公開的 Arup 高層主管影片來創建 <strong>Deepfake</strong> 虛擬替身。他們即時完美地模仿了聲音和臉孔。</p></div>
+                <div class="info-card"><h3>🎣 目標：人類</h3><p>沒有防火牆被攻破。沒有密碼被破解。攻擊者透過讓騙局看起來極其逼真，駭入了員工的信任。</p></div>
+                <div class="info-card"><h3>🌍 警示</h3><p>這起事件證明，視訊通話再也不能盲目信任。如果這能發生在全球性的工程公司，它也可能發生在任何人身上。</p></div>
+            </div>
+        </section>
+
+        <section id="story" class="module">
+            <h2 style="text-align: center; border:none;">2500萬美元的視訊通話</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2024年1月</h4><h3>佈局</h3><p>一名香港財務員工收到一封來自「財務長」（英國）的關於「秘密收購」的電子郵件。郵件要求進行一次安全的視訊會議。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2024年2月</h4><h3>通話</h3><p>該員工加入視訊通話。他們看到了財務長和其他同事。每個人看起來都很真實。他們指示該員工緊急轉帳。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>執行</h4><h3>15次轉帳</h3><p>最初持懷疑態度的員工，因為「看到」了他們的老闆而放心。他們進行了 15 次轉帳，總計 2 億港元（2500 萬美元）到詐騙帳戶。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>2024年2月下旬</h4><h3>發現</h3><p>Arup 總部注意到資金不見了。他們確認：<strong>從未有過這樣的視訊通話。</strong>該員工是通話中唯一的真人。</p></div></div>
+            </div>
+        </section>
+
+        <section id="tech" class="module">
+            <h2>Deepfake 的運作機制</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. 來源材料</h3><p>AI 需要資料來學習。詐騙者下載了 Arup 高層主管的 YouTube 影片、會議演講和新聞片段，以訓練 AI 辨識他們的臉孔和聲音。</p></div>
+                <div class="info-card"><h3>2. 即時生成</h3><p>使用像 <strong>Stable Diffusion</strong> 或專門的語音複製軟體等工具，詐騙者在即時的 Zoom/Teams 通話中將這些 AI 臉孔投射到自己身上。</p></div>
+                <div class="info-card"><h3>3. 社交工程</h3><p>技術並非完美。為了隱藏瑕疵，他們可能聲稱「連線不佳」或縮短會議時間。他們利用權威和保密性來阻止受害者進行批判性思考。</p></div>
+            </div>
+        </section>
+
+        <section id="defense" class="module">
+            <h2>消費者防禦：當現實是假象時</h2>
+            <p>您可能不會轉帳 2500 萬美元，但詐騙者使用相同的技術來偽造「祖母有難」的電話。以下是如何驗證現實的方法。</p>
+            <div class="defense-tip"><div class="icon-box">🔐</div><div><h3>1. 「安全詞」</h3><p>與您的家人和親近的同事建立一個秘密代碼字或短語。如果您接到要求匯款的視訊通話，請詢問代碼。AI 不會知道。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">📞</div><div><h3>2. 回撥（跨頻帶）</h3><p>如果您的「老闆」在 Teams 上打電話給您要求匯款，請掛斷。撥打他們實際的手機號碼。透過<strong>第二個頻道</strong>驗證請求。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">⏳</div><div><h3>3. 打破緊迫性</h3><p>詐騙依賴速度（「立即行動！」）。暫停一下。問一個網路上找不到答案的個人問題（例如，「我們昨天午餐吃了什麼？」）。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🕵️</div><div><h3>4. 找出破綻</h3><p>目前的 Deepfake 在眨眼、嘴唇完美同步或光線變化方面仍有困難。如果影片看起來有點「詭異」或機械化，相信您的直覺。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加 Deepfake 測驗</button></div>
+        </section>
+
+        <section id="quiz" class="module">
+            <h2>知識測驗</h2>
+            <p>您能識破 AI 騙局的跡象嗎？測試您的知識。</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">載入中...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer><p>Arup Deepfake 案例研究 | 教育網路應用程式</p></footer>
+
+    <script>
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.module, .nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        }
+        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
+        document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+
+        function toggleCheck(element) { element.classList.toggle('checked'); }
+
+        const simScreen = document.getElementById('sim-container'), simControls = document.getElementById('sim-controls');
+        function simStep(choice) {
+            if (choice === 1) {
+                simScreen.innerHTML = `<p style="color: yellow">> 正在傳送回覆：「請透過電話驗證...」</p><p>...</p><p style="color: white">結果：</p><p>寄件人從未回電。您稍後與總部核對，發現該郵件是假的。</p><br><p style="color: var(--success); font-weight: bold; font-size: 1.2rem;">🏆 成功：您保住了 2560 萬美元。</p><p>教訓：永遠透過次要頻道（「跨頻帶驗證」）進行驗證。</p>`;
+                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">重新啟動模擬</button>`;
+            } 
+            else if (choice === 2) {
+                simScreen.innerHTML = `<p style="color: yellow">> 正在連接至安全視訊會議室...</p><p>...</p><p>視訊饋送已建立。</p><p>您看到財務長和其他 3 位經理。他們看起來很真實。</p><p><strong>財務長 (Deepfake)：</strong>「這件事非常緊急。我們需要在市場收盤前收購這家公司。請將資金匯入所列的 5 個帳戶。」</p><br><p>其他經理點頭同意。</p>`;
+                simControls.innerHTML = `<button class="sim-btn" onclick="simStep(3)">匯款（他們是我的老闆！）</button><button class="sim-btn" onclick="simStep(4)">要求說出「專案秘密代碼」</button>`;
+            }
+            else if (choice === 3) {
+                simScreen.innerHTML += `<br><br><p style="color: red">> 正在啟動轉帳...</p><p>已傳送 15 筆電匯。總計：25,600,000 美元。</p><br><p style="color: var(--primary); font-weight: bold; font-size: 1.2rem;">💀 失敗：您被騙了。</p><p>一週後，您意識到影片是 AI 生成的。錢已經不見了。</p>`;
+                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">再試一次</button>`;
+            }
+            else if (choice === 4) {
+                simScreen.innerHTML += `<br><br><p style="color: cyan">> 您：「本季的秘密授權碼是什麼？」</p><p>...</p><p><strong>財務長 (Deepfake)：</strong>「呃...現在就匯款，我們沒時間搞這個！」</p><p>...</p><p>主機已終止連線。</p><br><p style="color: var(--success); font-weight: bold;">🏆 成功：詐騙者已離線。</p><p>AI 無法提供人類的秘密代碼。</p>`;
+                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">重新啟動模擬</button>`;
+            }
+        }
+        function resetSim() {
+            simScreen.innerHTML = `<p>正在初始化系統...</p><p>收到來自 cfo.office@arup-internal-secure.com 的郵件</p><p>主旨：機密收購案 - 緊急</p><br><p>「我們需要討論一項機密合併案。請立即加入安全視訊會議室。」</p>`;
+            simControls.innerHTML = `<button class="sim-btn" onclick="simStep(1)">回覆「請透過電話驗證」</button><button class="sim-btn" onclick="simStep(2)">加入視訊通話</button>`;
+        }
+
+        const questions = [
+            { q: "1. 事實：Arup 的電腦網路是否被駭？", options: ["是的，攻擊者安裝了病毒", "不是，這純粹是社交工程（人為欺騙）", "是的，他們攻破了防火牆", "不是，是一名員工偷了錢"], a: 1, exp: "正確。沒有程式碼被駭。攻擊者利用 AI 駭入了員工對現實的感知。" },
+            { q: "2. 事實：視訊通話中有多少真人？", options: ["每個人都是真的", "大約一半是真人", "只有受害者（該員工）是真人", "沒有真人"], a: 2, exp: "正確。螢幕上的其他每個面孔都是預先生成或即時生成的 AI 虛擬替身。" },
+            { q: "3. 技術：詐騙者從哪裡取得資料來複製高層主管？", options: ["他們闖入他們的家", "公開的影片（YouTube、新聞、會議）", "他們猜測他們的長相", "他們雇用了演員"], a: 1, exp: "正確。知名高層主管通常在網路上有數小時的影片片段，這對訓練 AI 來說是完美的。" },
+            { q: "4. 情境：您接到一通自稱是您「孫子」的電話，說他進了監獄需要保釋金。聲音聽起來跟他一模一樣。您該怎麼辦？", options: ["立即匯款", "掛斷電話，然後打電話給他的手機或他的父母核實", "問他監獄的伙食如何", "在臉書上發文"], a: 1, exp: "正確。這是常見的 AI 語音詐騙。務必透過已知的號碼回撥給該人以進行驗證。" },
+            { q: "5. 策略：在此情境下，「安全詞」是什麼？", options: ["您電腦的密碼", "您的家人分享的秘密詞語，用於在通話中證明身份", "您害怕時大喊的詞", "銀行密碼"], a: 1, exp: "正確。如果電話中的聲音不知道家庭秘密詞，那就是 AI 或詐騙者。" },
+            { q: "6. 情境：您的老闆發郵件要求您進行一筆「秘密」匯款，並要求您立即加入視訊通話。這是危險信號嗎？", options: ["不是，老闆總是這麼忙", "是的，緊迫 + 保密 + 金錢是典型的詐騙模式", "不是，秘密交易每天都在發生", "是的，因為電子郵件已經過時了"], a: 1, exp: "正確。詐騙者利用緊迫感讓您在思考前就行動。合法的商業行為很少需要恐慌。" },
+            { q: "7. 防禦：「跨頻帶」驗證是什麼意思？", options: ["到戶外接電話", "使用不同的通訊頻道（例如，打電話而不是發郵件）來檢查請求", "檢查頻帶", "問陌生人"], a: 1, exp: "正確。如果請求來自視訊，請透過簡訊或電話進行驗證。不要使用詐騙者正在控制的同一個頻道。" },
+            { q: "8. 技術：在 2025 年，您能相信視訊通話中的眼睛所見嗎？", options: ["是的，影片無法偽造", "不，Deepfake 技術允許即時換臉", "只有在高清畫質下才可信", "只有在 Zoom 上才可信"], a: 1, exp: "正確。眼見不再為憑。即時影片可以被操縱。" },
+            { q: "9. 偵測：以下哪個是 deepfake 影片的跡象？", options: ["完美的光線", "不自然的眨眼或嘴唇同步錯誤", "此人穿著西裝", "音訊清晰"], a: 1, exp: "正確。AI 經常在眼睛、嘴巴或臉部邊緣出現瑕疵。" },
+            { q: "10. 隱私：您如何保護自己不被 AI 複製？", options: ["戴口罩", "將社群媒體個人資料設為私密，並限制公開分享影片", "停止說話", "刪除網際網路"], a: 1, exp: "正確。您公開的音訊/影片越少，AI 就越難複製您。" },
+            { q: "11. 心理學：為什麼 Arup 的員工會匯款？", options: ["他們是騙局的一部分", "他們看到受信任的權威人物（財務長）告訴他們這麼做", "他們不在乎", "他們以為是遊戲"], a: 1, exp: "正確。我們被訓練要服從權威人物。當我們「看到」他們時，我們的大腦會覆蓋懷疑。" },
+            { q: "12. 回應：如果您意識到自己被 Deepfake 詐騙了，您該怎麼辦？", options: ["刪除應用程式", "立即聯繫您的銀行/警察，嘗試凍結資金", "等幾天", "躲起來"], a: 1, exp: "正確。速度是關鍵。銀行可能只有一個很小的窗口可以阻止轉帳。" }
+        ];
+
+        let currentQIndex = 0, score = 0;
+        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+        
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d6001c"; btnElement.style.color = "white"; btnElement.style.borderColor = "#ff1f3a";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+            } else {
+                btnElement.style.background = "#333"; btnElement.style.color = "#888"; btnElement.style.borderColor = "#444";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) loadQuestion();
+            else showResults();
+        };
+
+        restartBtn.onclick = () => {
+            currentQIndex = 0; score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您能識破偽裝。";
+            else if(score > 8) scoreMsg.innerText = "👍 做得好！您保持懷疑態度。";
+            else scoreMsg.innerText = "📚 複習提示後再試一次。";
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
