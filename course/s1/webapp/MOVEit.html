@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVEit Breach: The Supply Chain Crisis</title>
+    <style>
+        :root {
+            --primary: #00ff88; /* Cyber Green */
+            --primary-dark: #00cc6a;
+            --secondary: #0b1c2c; /* Deep Navy */
+            --card-bg: #152a3d;
+            --text: #e0e6ed;
+            --bg: #050f16;
+            --shadow: 0 4px 15px rgba(0, 255, 136, 0.15);
+            --danger: #ff4757;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: var(--secondary); 
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 80px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 1px; }
+        .logo span { color: white; margin-left: 10px; font-size: 0.8rem; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #b0c4de;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        .nav-btn.active { background: var(--primary); color: var(--secondary); font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; text-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: #b0c4de; }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(5, 15, 22, 0.85), rgba(5, 15, 22, 0.85)), url('https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid #333;
+        }
+        .stats-row { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
+        .stat { text-align: center; }
+        .stat-num { font-size: 2.5rem; font-weight: bold; color: var(--primary); display: block; }
+        .stat-label { font-size: 0.9rem; color: #ccc; text-transform: uppercase; letter-spacing: 1px; }
+
+        .action-btn { 
+            background: var(--primary); color: var(--secondary); border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .action-btn:hover { background: white; transform: scale(1.05); }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '📁'; font-size: 1rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--secondary); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-top: 3px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.2rem; }
+        .t-content h4 { color: #888; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #333; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; }
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-width: 850px; margin: 0 auto; border: 1px solid #333; }
+        .progress-bar { width: 100%; background: #000; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #333; 
+            background: #0d1a26; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.05rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #1a334d; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a; font-weight: 500;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: var(--secondary); }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .left::after, .right::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MOVEit <span>BREACH</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">Technical</button>
+            <button class="nav-btn" id="btn-defense">Defense</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The MOVEit Transfer Breach (2023)</h1>
+                <p>The hack that stole data from 93 Million people who had never even heard of "MOVEit".</p>
+                
+                <div class="stats-row">
+                    <div class="stat">
+                        <span class="stat-num">93 Million+</span>
+                        <span class="stat-label">People Affected</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">2,700+</span>
+                        <span class="stat-label">Companies Hit</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">$100 Million+</span>
+                        <span class="stat-label">Ransoms Demanded</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="jump-story">How Did It Happen?</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🕷️ The Supply Chain</h3>
+                    <p>You didn't use MOVEit. But your airline (British Airways), your government (Dept of Energy), and your payroll provider did. When they got hacked, <strong>your</strong> data was stolen.</p>
+                </div>
+                <div class="info-card">
+                    <h3>☠️ The Hacker: Cl0p</h3>
+                    <p>A Russian-linked ransomware group. They didn't lock computers; they simply stole the data and threatened to leak it on the Dark Web (Extortion).</p>
+                </div>
+                <div class="info-card">
+                    <h3>🔓 The Flaw: SQL Injection</h3>
+                    <p>A "Zero-Day" vulnerability allowed hackers to send a special command to the database, bypassing passwords entirely.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">The Silent Theft</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Late May 2023</h4>
+                        <h3>The Secret Exploitation</h3>
+                        <p>Cl0p hackers discover a Zero-Day flaw in MOVEit Transfer. They quietly scan the internet and steal data before anyone knows the software is broken.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>May 31, 2023</h4>
+                        <h3>The Disclosure</h3>
+                        <p>Progress Software announces the bug and issues a patch. But for many, it is too late. The data was stolen days ago.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>June 2023</h4>
+                        <h3>The Leaks Begin</h3>
+                        <p>Cl0p lists victims on their Dark Web site. British Airways, BBC, and Shell are named. They demand ransoms to keep the data private.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Late 2023 - 2025</h4>
+                        <h3>The Fallout</h3>
+                        <p>Over 93 million people face identity theft risks. Class-action lawsuits are filed. Governments launch investigations into software liability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>Technical Breakdown</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. SQL Injection (SQLi)</h3>
+                    <p>The web interface didn't check user input correctly. Hackers typed commands into the login field that tricked the database into giving them "SysAdmin" rights.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Web Shells</h3>
+                    <p>Once inside, hackers installed a backdoor called <code>human2.aspx</code>. This let them come and go as they pleased, stealing files whenever they wanted.</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. Zero-Day Exploit</h3>
+                    <p>This means the vulnerability was unknown to the software maker. There was no patch available when the attacks started.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Consumer Defense: When "They" Get Hacked</h2>
+            <p>You can't patch British Airways' servers. But you can protect yourself from the fallout.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">❄️</div>
+                <div>
+                    <h3>1. Freeze Your Credit</h3>
+                    <p><strong>This is the #1 defense.</strong> Since SSNs and payroll data were stolen, criminals can open loans in your name. A credit freeze (Equifax, Experian, TransUnion) stops them cold.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔎</div>
+                <div>
+                    <h3>2. "Have I Been Pwned?"</h3>
+                    <p>Use sites like <em>Have I Been Pwned?</em> or <em>Mozilla Monitor</em>. Enter your email to see if your data was exposed in the MOVEit breach. Knowledge is power.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🎣</div>
+                <div>
+                    <h3>3. Expect Targeted Phishing</h3>
+                    <p>Scammers now know your name, address, and where you bank. They will send convincing emails pretending to be those companies. <strong>Verify every request independently.</strong></p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔑</div>
+                <div>
+                    <h3>4. MFA Everywhere</h3>
+                    <p>If your password was part of the leak, hackers will try it on your email and bank. Multi-Factor Authentication (MFA) stops them even if they have your password.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the Consumer Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Test your understanding of Supply Chain attacks and personal defense.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>MOVEit Transfer 2023 Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'story': 'btn-story',
+                'tech': 'btn-tech',
+                'defense': 'btn-defense',
+                'quiz': 'btn-quiz'
+            };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        // --- 2. EXPANDED QUIZ DATA (12 Questions) ---
+        const questions = [
+            // FACTUAL
+            {
+                q: "1. FACT: What kind of software is MOVEit?",
+                options: ["A video game", "Managed File Transfer (MFT) tool", "A social media app", "An antivirus"],
+                a: 1,
+                exp: "Correct. Companies use it to securely send large files (like payroll or health records) to each other."
+            },
+            {
+                q: "2. FACT: Who was the threat actor behind the attack?",
+                options: ["Cl0p (Ransomware Group)", "Anonymous", "A bored teenager", "The CIA"],
+                a: 0,
+                exp: "Correct. Cl0p is a Russian-linked group known for exploiting file transfer software."
+            },
+            {
+                q: "3. TECH: How did they break in?",
+                options: ["They guessed the password", "SQL Injection (Zero-Day)", "They stole a keycard", "Phishing emails"],
+                a: 1,
+                exp: "Correct. They used a Zero-Day SQL Injection vulnerability to trick the database."
+            },
+            // CONCEPTUAL
+            {
+                q: "4. CONCEPT: Why is this called a 'Supply Chain' attack?",
+                options: ["It affected shipping trucks", "The hackers attacked a vendor (MOVEit) to get to the customers", "It involved metal chains", "It happened in a supermarket"],
+                a: 1,
+                exp: "Correct. By breaking the tool (MOVEit), they automatically breached everyone using that tool."
+            },
+            // CONSUMER / LAYMAN FOCUS
+            {
+                q: "5. CONSUMER: 'I don't use MOVEit, so I am safe.' Is this true?",
+                options: ["Yes, absolutely", "No, because companies holding your data (Banks, Gov, HR) might use it", "Yes, hackers only target businesses", "No, because MOVEit is a virus"],
+                a: 1,
+                exp: "Correct. 93 Million people were affected, most of whom had never heard of MOVEit before."
+            },
+            {
+                q: "6. ACTION: Since SSNs were stolen, what is the best way to stop someone opening a credit card in your name?",
+                options: ["Call the police", "Freeze your Credit", "Change your name", "Close your bank account"],
+                a: 1,
+                exp: "Correct. A Credit Freeze at Equifax, Experian, and TransUnion prevents new accounts from being opened."
+            },
+            {
+                q: "7. MONITORING: How can you check if your email was involved in this breach?",
+                options: ["Google yourself", "Wait for a letter", "Use 'Have I Been Pwned?'", "Ask your boss"],
+                a: 2,
+                exp: "Correct. 'Have I Been Pwned?' is a trusted resource for checking data breach status."
+            },
+            {
+                q: "8. THREAT: The hackers didn't lock computers; they stole data. What is their main threat now?",
+                options: ["Deleting the internet", "Extortion (Threatening to publish data)", "Mining Bitcoin on your PC", "Turning off the lights"],
+                a: 1,
+                exp: "Correct. They threatened to publish sensitive personal data unless companies paid a ransom."
+            },
+            {
+                q: "9. SCENARIO: You get an email from 'British Airways' saying your data was leaked, click here to fix it. What do you do?",
+                options: ["Click the link immediately", "Ignore it", "Verify it by going to the official website manually", "Reply with your password"],
+                a: 2,
+                exp: "Correct. Scammers use real breaches to send fake emails (Phishing). Never click links in unexpected emails."
+            },
+            {
+                q: "10. HYGIENE: Why is using a Password Manager important after a breach?",
+                options: ["It remembers passwords so you can make them unique and complex", "It stops viruses", "It is required by law", "It speeds up the internet"],
+                a: 0,
+                exp: "Correct. If one site leaks your password, unique passwords ensure your other accounts remain safe."
+            },
+            {
+                q: "11. SCOPE: Did this only affect American companies?",
+                options: ["Yes, only USA", "No, it was global (UK, Europe, USA)", "No, only Russia", "Yes, only Tech companies"],
+                a: 1,
+                exp: "Correct. British Airways, BBC (UK), and Shell (Global) were major victims."
+            },
+            {
+                q: "12. TIMING: When should you freeze your credit?",
+                options: ["Only after money is stolen", "As soon as you hear about a major breach involving PII", "Never", "Once a year"],
+                a: 1,
+                exp: "Correct. Being proactive prevents the theft before it happens."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        const qText = document.getElementById('question-text');
+        const optsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback-display');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+        const finalScore = document.getElementById('final-score');
+        const scoreMsg = document.getElementById('score-message');
+        const quizBlock = document.getElementById('quiz-block');
+        const scoreBlock = document.getElementById('score-block');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+
+            const pct = ((currentQIndex) / questions.length) * 100;
+            progressBar.style.width = pct + "%";
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = function() { handleAnswer(idx, btn); };
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            const allBtns = optsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#00ff88"; /* Primary Green */
+                btnElement.style.color = "#050f16";
+                btnElement.style.borderColor = "#00cc6a";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+            } else {
+                btnElement.style.background = "#ff4757"; /* Danger Red */
+                btnElement.style.color = "white";
+                btnElement.style.borderColor = "#ff6b81";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = function() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        restartBtn.onclick = function() {
+            currentQIndex = 0;
+            score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            
+            if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You understand Supply Chain risks.";
+            else if(score > 8) scoreMsg.innerText = "👍 Good Job! You are cyber-aware.";
+            else scoreMsg.innerText = "📚 Review the lessons and try again.";
+        }
+
+        // Init
+        loadQuestion();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGM Resorts Hack: The $100 Million Phone Call</title>
+    <style>
+        :root {
+            --primary: #d4af37; /* MGM Gold */
+            --primary-dark: #b59024;
+            --secondary: #1a1a1a; /* Dark Black/Grey */
+            --card-bg: #2d2d2d;
+            --text: #f4f4f4;
+            --bg: #121212;
+            --shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: var(--secondary); 
+            border-bottom: 2px solid var(--primary);
+            box-shadow: var(--shadow); 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 80px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; text-transform: uppercase; letter-spacing: 2px; }
+        .logo span { color: white; margin-left: 10px; font-size: 0.8rem; letter-spacing: 0; border: 1px solid var(--primary); padding: 2px 6px; border-radius: 4px; }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ccc;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: var(--secondary); font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: #e0e0e0; }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1541447237128-f4fa2345f840?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        .action-btn { 
+            background: var(--primary); color: var(--secondary); border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 20px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .action-btn:hover { background: white; transform: scale(1.05); }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '🎰'; font-size: 1.2rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--secondary); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: var(--shadow); border-top: 3px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.2rem; }
+        .t-content h4 { color: #888; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid #444; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; }
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 850px; margin: 0 auto; border: 1px solid var(--primary); }
+        .progress-bar { width: 100%; background: #444; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #555; 
+            background: #333; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.05rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #444; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: var(--secondary); }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .left::after, .right::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MGM <span>CASE STUDY</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">Technical</button>
+            <button class="nav-btn" id="btn-defense">Travel Tips</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The MGM Resorts Attack (2023)</h1>
+                <p>When the slot machines stopped spinning and hotel room keys stopped working.</p>
+                <p><strong>$100 Million</strong> in damages started by a <strong>10-minute phone call</strong>.</p>
+                <button class="action-btn" id="jump-story">See What Happened</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🎰 The Chaos</h3>
+                    <p>For 10 days, Las Vegas was paralyzed. Guests couldn't enter rooms, elevators were manual, and casinos became "Cash Only."</p>
+                </div>
+                <div class="info-card">
+                    <h3>📞 The Hack</h3>
+                    <p>No coding wizardry. The attackers (Scattered Spider) simply called the Help Desk and tricked them into resetting a password (Vishing).</p>
+                </div>
+                <div class="info-card">
+                    <h3>💰 The Ransom</h3>
+                    <p>MGM <strong>refused to pay</strong> the ransom. This cost them money in the short term ($100M) but avoided funding the criminals.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">10 Days of Darkness</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Early Sept 2023</h4>
+                        <h3>The Setup</h3>
+                        <p>Hackers scout MGM employees on LinkedIn. They find a target and call the IT Help Desk, pretending to be that employee who "locked themselves out."</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Sept 11, 2023</h4>
+                        <h3>The Breach</h3>
+                        <p>The Help Desk resets the password. Hackers gain "Super Admin" access. They deploy ransomware that encrypts the servers running hotels and casinos.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Sept 12-19, 2023</h4>
+                        <h3>Manual Mode</h3>
+                        <p>Total shutdown. Hotel staff use pen and paper for check-ins. Slot machines display error messages. ATMs go dark. Guests wait hours in lines.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Oct 2023</h4>
+                        <h3>Recovery</h3>
+                        <p>MGM restores systems from backups without paying the ransom. However, guest data (Names, Driver's Licenses) is leaked by angry hackers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>Technical Breakdown</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. Social Engineering (Vishing)</h3>
+                    <p>This is the art of manipulating people. The attackers were persuasive and used real employee data (from LinkedIn) to sound legitimate over the phone.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Identity Provider (IdP) Compromise</h3>
+                    <p>MGM used Okta for logins. Once the hackers tricked the help desk, they got "Super Admin" rights in Okta, letting them create their own keys to the kingdom.</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. ALPHV/BlackCat Ransomware</h3>
+                    <p>This is the software used to lock the files. It encrypts data so MGM couldn't use it, and threatens to publish the data if not paid (Double Extortion).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Traveler Defense: Surviving a Hotel Hack</h2>
+            <p>Imagine arriving at your vacation, and the hotel computers are dead. Here is how to prepare for modern travel disruptions.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">💵</div>
+                <div>
+                    <h3>1. Carry Backup Cash</h3>
+                    <p>When the MGM systems went down, credit card machines and ATMs failed. Cash was the only way to buy food or tip staff. Always travel with an emergency cash fund.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">📄</div>
+                <div>
+                    <h3>2. Print Your Reservation</h3>
+                    <p>If the hotel can't look up your name in the computer, a printed confirmation email (or a screenshot on your phone) is your only proof that you booked a room.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">💳</div>
+                <div>
+                    <h3>3. Use Credit Cards (Not Debit)</h3>
+                    <p>If you swipe your card during a chaotic manual check-in, errors happen. Credit cards offer fraud protection and dispute rights. Debit cards pull money instantly from your bank.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">❄️</div>
+                <div>
+                    <h3>4. Post-Trip Credit Freeze</h3>
+                    <p>Since guest data (Driver's Licenses) was stolen, identity theft is a risk. Freeze your credit files after a breach notification to stop criminals from opening loans in your name.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the Traveler Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Test your knowledge on the hack and how to travel safely in the digital age.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>MGM Resorts 2023 Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'story': 'btn-story',
+                'tech': 'btn-tech',
+                'defense': 'btn-defense',
+                'quiz': 'btn-quiz'
+            };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        // --- 2. EXPANDED QUIZ DATA (12 Questions) ---
+        const questions = [
+            // FACTUAL
+            {
+                q: "1. FACT: How did the attackers initially break into MGM's system?",
+                options: ["They broke a window", "They hacked the Wi-Fi", "They called the Help Desk (Vishing)", "They copied a key card"],
+                a: 2,
+                exp: "Correct. A 10-minute phone call to the IT Help Desk tricked an employee into resetting a password."
+            },
+            {
+                q: "2. FACT: Did MGM pay the ransom?",
+                options: ["Yes, immediately", "No, they refused", "They paid half", "The insurance paid it"],
+                a: 1,
+                exp: "Correct. MGM refused to pay, which is why the outages lasted 10 days and data was leaked."
+            },
+            {
+                q: "3. IMPACT: Which of these systems STOPPED working during the attack?",
+                options: ["The swimming pool", "Digital Room Keys and Slot Machines", "The air conditioning", "The lights"],
+                a: 1,
+                exp: "Correct. Digital systems like room keys, slots, and ATMs went offline, forcing manual operations."
+            },
+            // TRAVEL SAFETY / CONSUMER
+            {
+                q: "4. TRAVEL TIP: Why should you carry cash when traveling to a high-tech resort?",
+                options: ["To look rich", "In case cyberattacks disable credit card machines", "To play poker", "Cash is lighter than cards"],
+                a: 1,
+                exp: "Correct. In a cyber outage, 'Cash is King.' It allows you to buy food and essentials when digital systems fail."
+            },
+            {
+                q: "5. TRAVEL TIP: Why print your hotel reservation?",
+                options: ["Batteries die", "If the hotel system is deleted, it proves you have a booking", "Paper smells nice", "To use as a bookmark"],
+                a: 1,
+                exp: "Correct. During the MGM hack, staff couldn't look up reservations on computers. Printed proof saved the day."
+            },
+            {
+                q: "6. PAYMENT: Why use a Credit Card instead of a Debit Card for hotels?",
+                options: ["Credit Cards look cooler", "Debit cards have no fees", "Credit Cards have better fraud protection and limits", "Debit cards don't work at hotels"],
+                a: 2,
+                exp: "Correct. If a hacker steals card info during a chaotic check-in, Credit Cards protect your actual bank balance."
+            },
+            {
+                q: "7. IDENTITY: Since Driver's Licenses were stolen, what should guests do?",
+                options: ["Change their name", "Freeze their Credit", "Stop driving", "Call the police"],
+                a: 1,
+                exp: "Correct. Freezing credit prevents identity thieves from using your stolen ID info to open new loans."
+            },
+            // SECURITY CONCEPTS
+            {
+                q: "8. CONCEPT: What is 'Social Engineering'?",
+                options: ["Building a social network", "Hacking computers with code", "Manipulating people into giving up information", "Organizing a party"],
+                a: 2,
+                exp: "Correct. The attackers hacked the *human* (Help Desk agent), not the software."
+            },
+            {
+                q: "9. DEFENSE: How can companies stop 'Vishing' attacks?",
+                options: ["Stop using phones", "Verify callers by calling them back on official numbers", "Only use email", "Speak louder"],
+                a: 1,
+                exp: "Correct. Verify the identity of the caller before resetting any passwords."
+            },
+            {
+                q: "10. SCENARIO: You get a call from 'Hotel Security' asking for your card number. What do you do?",
+                options: ["Give it to them", "Hang up and visit the front desk in person", "Ask for a discount", "Yell at them"],
+                a: 1,
+                exp: "Correct. Never give sensitive info over the phone to an incoming call. Go verify in person."
+            },
+            {
+                q: "11. FINANCIAL: How much did this attack cost MGM roughly?",
+                options: ["$1 Million", "$100 Million", "$10,000", "$1 Billion"],
+                a: 1,
+                exp: "Correct. Between lost revenue, IT repair costs, and legal fees, the cost exceeded $100 Million."
+            },
+            {
+                q: "12. COMPARISON: Another casino (Caesars) was attacked at the same time. What did they do differently?",
+                options: ["They fought back", "They paid the ransom", "They shut down", "They called the army"],
+                a: 1,
+                exp: "Correct. Caesars paid the ransom (~$15M) to avoid the shutdown, showing a different strategy (though still controversial)."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        const qText = document.getElementById('question-text');
+        const optsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback-display');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+        const finalScore = document.getElementById('final-score');
+        const scoreMsg = document.getElementById('score-message');
+        const quizBlock = document.getElementById('quiz-block');
+        const scoreBlock = document.getElementById('score-block');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+
+            const pct = ((currentQIndex) / questions.length) * 100;
+            progressBar.style.width = pct + "%";
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = function() { handleAnswer(idx, btn); };
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            const allBtns = optsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d4edda";
+                btnElement.style.color = "#155724";
+                btnElement.style.borderColor = "#28a745";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+            } else {
+                btnElement.style.background = "#f8d7da";
+                btnElement.style.color = "#721c24";
+                btnElement.style.borderColor = "#dc3545";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = function() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        restartBtn.onclick = function() {
+            currentQIndex = 0;
+            score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            
+            if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You are a savvy traveler.";
+            else if(score > 8) scoreMsg.innerText = "👍 Good Job! You know the risks.";
+            else scoreMsg.innerText = "📚 Review the tips and try again.";
+        }
+
+        // Init
+        loadQuestion();
+
+    </script>
+</body>
+</html>

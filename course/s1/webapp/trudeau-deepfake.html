@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Trudeau Deepfake Scam</title>
+    <style>
+        :root {
+            --primary: #FF0000; /* Canadian Red */
+            --primary-dark: #b30000;
+            --secondary: #1f1f1f; /* Dark Grey */
+            --card-bg: #2b2b2b;
+            --text: #f0f0f0;
+            --bg: #121212; /* Deep Black */
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: var(--secondary); 
+            border-bottom: 3px solid var(--primary);
+            box-shadow: var(--shadow); 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 80px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--white); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { color: var(--primary); margin-left: 5px; font-size: 1.8rem; } /* Maple Leaf color */
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ccc;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--white); border-color: var(--primary); background: rgba(255, 0, 0, 0.1); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.8rem; margin-bottom: 1rem; color: var(--white); text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--white); padding-left: 15px; font-size: 1.8rem; }
+        p { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.7; color: #dcdcdc; }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url('https://images.unsplash.com/photo-1531303919131-9df51d087468?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .alert-box {
+            display: inline-block;
+            background: rgba(255, 0, 0, 0.15);
+            border: 2px solid var(--primary);
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .alert-title { font-size: 1.2rem; font-weight: bold; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 5px;}
+        .alert-text { font-size: 1.5rem; font-weight: bold; color: white; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '🍁'; font-size: 1.2rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--secondary); border: 2px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-top: 3px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.3rem; }
+        .t-content h4 { color: #aaa; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #444; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid #555; display:inline-block; padding-bottom: 5px;}
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); max-width: 850px; margin: 0 auto; border: 1px solid #444; }
+        .progress-bar { width: 100%; background: #444; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #555; 
+            background: #222; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #333; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #fff; font-weight: bold;}
+        .feedback.correct { background: rgba(40, 167, 69, 0.2); color: #4ade80; border: 1px solid var(--success); }
+        .feedback.wrong { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid var(--danger); }
+
+        footer { text-align: center; padding: 30px; color: #aaa; font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: var(--secondary); }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .left::after, .right::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">TRUDEAU <span>🇨🇦 DEEPFAKE</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">AI Tech</button>
+            <button class="nav-btn" id="btn-defense">Defense</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The Justin Trudeau Deepfake Scam (2024)</h1>
+                <p>When the Prime Minister "endorses" a scam, who do you trust?</p>
+                <p>AI was used to fake an investment scheme that cost ordinary Canadians thousands.</p>
+                
+                <div class="alert-box">
+                    <span class="alert-title">Victim Loss Reported</span>
+                    <span class="alert-text">$12,000 CAD</span>
+                </div>
+
+                <br>
+                <button class="action-btn" id="jump-story">How It Happened</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>📹 The Fake Ad</h3>
+                    <p>Scammers took real news footage of Trudeau and used AI to change his mouth movements and voice. He appeared to promise "$10,000/month passive income."</p>
+                </div>
+                <div class="info-card">
+                    <h3>📢 The Platform</h3>
+                    <p>This wasn't on the dark web. It was a <strong>sponsored ad on YouTube</strong>. The legitimacy of the platform made people trust the obvious scam.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🤖 The "Robot Trader"</h3>
+                    <p>The scam promoted an automated trading bot. Victims signed up, deposited money, and watched it disappear. No robot existed.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">Anatomy of a Political Scam</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Early 2024</h4>
+                        <h3>The Creation</h3>
+                        <p>Scammers download HD videos of Trudeau's press conferences. They use Voice Cloning AI to generate a script endorsing a crypto scheme.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Mid-March 2024</h4>
+                        <h3>The Victim</h3>
+                        <p>A Toronto resident sees the ad on YouTube. Trusting the "Prime Minister's" advice, they invest $12,000 CAD into the fake platform.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>March 27, 2024</h4>
+                        <h3>The Discovery</h3>
+                        <p>Global News uncovers the ad. It shows Trudeau guaranteeing financial results. The lip-sync is slightly off, but the voice is convincing.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>March 28, 2024</h4>
+                        <h3>The Takedown</h3>
+                        <p>YouTube removes the ad and bans the accounts. The PMO (Prime Minister's Office) issues a warning. The money, however, is gone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>How Political Deepfakes Work</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. High-Res Training Data</h3>
+                    <p>Politicians are the easiest targets for AI. There are thousands of hours of high-quality video/audio of them online. This creates perfect "Training Data" for AI models.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Lip-Sync AI (Wav2Lip)</h3>
+                    <p>Tools like Wav2Lip can take a still photo or video and warp the mouth to match ANY audio track. This makes it look like the person is speaking your script.</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. Voice Cloning</h3>
+                    <p>AI only needs 3 seconds of audio to clone a voice. With Trudeau, they had endless samples. The AI adds pauses and intonation to sound natural.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Consumer Defense: Don't Get Fooled</h2>
+            <p>Political deepfakes manipulate authority. Here is how to verify reality.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">🏛️</div>
+                <div>
+                    <h3>1. Check Official Sources</h3>
+                    <p>If a Prime Minister or CEO announces a "Financial Program," it will be on <strong>canada.ca</strong> or major news networks (CBC/CTV). If it's only on a YouTube ad, it's fake.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">💰</div>
+                <div>
+                    <h3>2. The "Guaranteed Return" Red Flag</h3>
+                    <p>No legitimate investment guarantees returns (e.g., "$10k/month guaranteed"). Any video promising this, even if it features the Pope, is a scam.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔗</div>
+                <div>
+                    <h3>3. Don't Click the Link</h3>
+                    <p>If an ad interests you, do not click. Open a new tab and Google the name of the program + "Scam" or "Review." You will usually find warnings immediately.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">👁️</div>
+                <div>
+                    <h3>4. Spot the Glitch</h3>
+                    <p>Look at the mouth. Does it look blurry? Does it move weirdly compared to the rest of the face? Is the audio slightly robotic? These are AI artifacts.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the Deepfake Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Can you outsmart the AI scammers? Test your media literacy.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Trudeau Deepfake 2024 Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. NAVIGATION LOGIC ---
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'story': 'btn-story',
+                    'tech': 'btn-tech',
+                    'defense': 'btn-defense',
+                    'quiz': 'btn-quiz'
+                };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
+            }
+
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-story').onclick = () => switchTab('story');
+            document.getElementById('btn-tech').onclick = () => switchTab('tech');
+            document.getElementById('btn-defense').onclick = () => switchTab('defense');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-story').onclick = () => switchTab('story');
+            document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+            // --- 2. EXPANDED QUIZ DATA (12 Questions) ---
+            const questions = [
+                // FACTUAL
+                {
+                    q: "1. FACT: Who was impersonated in the 2024 scam?",
+                    options: ["Elon Musk", "Justin Trudeau (Prime Minister)", "The CEO of Apple", "A News Anchor"],
+                    a: 1,
+                    exp: "Correct. The scammers used footage of the Canadian Prime Minister to build trust."
+                },
+                {
+                    q: "2. PLATFORM: Where was the deepfake video distributed?",
+                    options: ["Dark Web", "Email Attachments", "YouTube Advertisements", "TV Commercials"],
+                    a: 2,
+                    exp: "Correct. It ran as a paid advertisement on YouTube, which gave it a false sense of legitimacy."
+                },
+                {
+                    q: "3. TECH: How did they make Trudeau say things he never said?",
+                    options: ["They hired an impersonator", "Voice Cloning AI & Lip-Sync Tech", "They cut and pasted words", "It was real footage"],
+                    a: 1,
+                    exp: "Correct. AI generated the voice and warped the video mouth to match the new audio."
+                },
+                // CONSUMER / SCENARIOS
+                {
+                    q: "4. CONSUMER: You see a video of a Politician telling you to buy a specific Crypto. Is it real?",
+                    options: ["Yes, politicians love crypto", "No, Politicians/Governments do not endorse specific trading apps", "Maybe, check the comments", "Yes, if it's on YouTube it's real"],
+                    a: 1,
+                    exp: "Correct. Government officials never endorse get-rich-quick schemes or specific trading bots."
+                },
+                {
+                    q: "5. RED FLAG: The video promises '$10,000/month Guaranteed'. What is this?",
+                    options: ["A great opportunity", "The classic 'Too Good To Be True' scam sign", "A government grant", "A tax rebate"],
+                    a: 1,
+                    exp: "Correct. There is no such thing as a guaranteed high return in investing. It is always a scam."
+                },
+                {
+                    q: "6. ACTION: You clicked the link and realized it's a scam site. What do you do?",
+                    options: ["Deposit $5 to test it", "Close the tab immediately and scan for malware", "Enter your email to unsubscribe", "Share it with friends"],
+                    a: 1,
+                    exp: "Correct. Do not engage. Close the site. Do not give them any data."
+                },
+                {
+                    q: "7. DETECTION: You are watching a suspicious video. What visual sign suggests a Deepfake?",
+                    options: ["He is wearing a tie", "The mouth looks blurry or doesn't match the words perfectly", "The video is HD", "He blinks normally"],
+                    a: 1,
+                    exp: "Correct. Lip-syncing is the hardest part for AI. Watch the mouth closely for glitches."
+                },
+                {
+                    q: "8. VERIFICATION: How can you check if the Government actually launched this program?",
+                    options: ["Trust the ad", "Go to the official government website (e.g., canada.ca)", "Ask Siri", "Click the link in the ad"],
+                    a: 1,
+                    exp: "Correct. Always verify claims by navigating manually to the official source/website."
+                },
+                {
+                    q: "9. MECHANISM: Why did people fall for this specific scam?",
+                    options: ["They are greedy", "Authority Bias (Trusting a Leader) + Realistic AI", "They wanted to help Trudeau", "They were hacked"],
+                    a: 1,
+                    exp: "Correct. Scammers exploit our natural tendency to trust authority figures like Prime Ministers."
+                },
+                {
+                    q: "10. ACTION: You lost money to this scam. What is step one?",
+                    options: ["Email the scammer", "Contact your Bank and the Anti-Fraud Centre", "Post on Twitter", "Delete your computer"],
+                    a: 1,
+                    exp: "Correct. Contact financial institutions immediately to try and stop the transfer."
+                },
+                {
+                    q: "11. CONCEPT: Why are politicians 'Easy Targets' for Deepfakes?",
+                    options: ["They have weak passwords", "There is unlimited high-quality video of them online for training AI", "They talk too much", "They don't use the internet"],
+                    a: 1,
+                    exp: "Correct. The more video data available of a person, the better the AI can clone them."
+                },
+                {
+                    q: "12. ETHICS: Does YouTube check every ad for Deepfakes?",
+                    options: ["Yes, every second", "No, automated systems miss things, and removal is often reactive (after reporting)", "Yes, humans watch every ad", "No, they allow all scams"],
+                    a: 1,
+                    exp: "Correct. Platforms rely on automation, which isn't perfect. Scams often run for days before being caught."
+                }
+            ];
+
+            let currentQIndex = 0;
+            let score = 0;
+
+            const qText = document.getElementById('question-text');
+            const optsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback-display');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress');
+            const finalScore = document.getElementById('final-score');
+            const scoreMsg = document.getElementById('score-message');
+            const quizBlock = document.getElementById('quiz-block');
+            const scoreBlock = document.getElementById('score-block');
+            const restartBtn = document.getElementById('restart-btn');
+
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+
+                const pct = ((currentQIndex) / questions.length) * 100;
+                progressBar.style.width = pct + "%";
+
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = function() { handleAnswer(idx, btn); };
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                const allBtns = optsContainer.querySelectorAll('button');
+                allBtns.forEach(b => b.disabled = true);
+
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.style.background = "#28a745"; /* Success Green */
+                    btnElement.style.color = "white";
+                    btnElement.style.borderColor = "#1e7e34";
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+                } else {
+                    btnElement.style.background = "#dc3545"; /* Danger Red */
+                    btnElement.style.color = "white";
+                    btnElement.style.borderColor = "#bd2130";
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = function() {
+                currentQIndex++;
+                if (currentQIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            restartBtn.onclick = function() {
+                currentQIndex = 0;
+                score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                
+                if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You can spot a fake news scam.";
+                else if(score > 8) scoreMsg.innerText = "👍 Good Job! You are skeptical.";
+                else scoreMsg.innerText = "📚 Review the tips and try again.";
+            }
+
+            // Init
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arup Deepfake (High Contrast)</title>
+    <style>
+        :root {
+            --primary: #ff1f3a; /* Bright Red for visibility on dark */
+            --primary-dark: #d6001c;
+            --secondary: #121212; /* Deep Black */
+            --card-bg: #1e1e1e; /* Dark Grey Card */
+            --text: #ffffff; /* Pure White Text */
+            --text-muted: #e0e0e0; /* Bright Grey */
+            --bg: #000000; /* Pure Black Background */
+            --shadow: 0 4px 15px rgba(255, 31, 58, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: var(--card-bg); 
+            border-bottom: 3px solid var(--primary);
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 80px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--text); display: flex; align-items: center; letter-spacing: 1px; }
+        .logo span { background: var(--primary); color: white; padding: 2px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem; text-transform: uppercase; font-weight: bold;}
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; }
+        p { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.7; color: var(--text); }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1633412802994-5c058f151b66?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-box {
+            display: inline-block;
+            background: rgba(255, 31, 58, 0.2);
+            border: 2px solid var(--primary);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 20px 10px;
+        }
+        .stat-number { font-size: 2.2rem; font-weight: bold; color: white; display: block; text-shadow: 0 0 5px var(--primary);}
+        .stat-label { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 10px rgba(255, 31, 58, 0.4);
+        }
+        .action-btn:hover { background: white; color: var(--primary-dark); transform: translateY(-2px); }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '👁️'; font-size: 1rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--white); border: 3px solid var(--primary); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        .t-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.3rem; }
+        .t-content h4 { color: var(--text-muted); margin-bottom: 10px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid #333; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 5px; font-size: 1.3rem; }
+        .info-card p { color: var(--text); }
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); border-left: 6px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--primary); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 850px; margin: 0 auto; border: 1px solid var(--primary); }
+        .progress-bar { width: 100%; background: #333; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #444; 
+            background: #2a2a2a; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s; 
+            position: relative; z-index: 2; font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #3a3a3a; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #1a1a1a; font-weight: bold;}
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; background: var(--card-bg); border-top: 1px solid #333; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .left::after, .right::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">ARUP <span>CASE STUDY</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">Deepfake Tech</button>
+            <button class="nav-btn" id="btn-defense">Defense</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The Arup Deepfake Scam (2024)</h1>
+                <p>The moment "Seeing is Believing" became a lie.</p>
+                <p>A finance employee joined a video call with their CFO and coworkers. But none of them were real.</p>
+                
+                <div class="stat-box">
+                    <span class="stat-number">$25 Million</span>
+                    <span class="stat-label">Stolen</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Humans on Call</span>
+                </div>
+
+                <br>
+                <button class="action-btn" id="jump-story">Trace the Deception</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🤖 The Weapon: AI</h3>
+                    <p>Attackers used publicly available videos of Arup executives to create <strong>Deepfake</strong> avatars. They mimicked the voices and faces perfectly in real-time.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎣 The Target: Humans</h3>
+                    <p>No firewalls were breached. No passwords were cracked. The attackers hacked the employee's trust by making the scam look incredibly realistic.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🌍 The Warning</h3>
+                    <p>This incident proves that video calls can no longer be trusted blindly. If it can happen to a global engineering firm, it can happen to anyone.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">The $25 Million Video Call</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>Jan 2024</h4>
+                        <h3>The Setup</h3>
+                        <p>A Hong Kong finance employee receives an email from the "CFO" (UK-based) regarding a "Secret Acquisition." It requests a secure video conference.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Feb 2024</h4>
+                        <h3>The Call</h3>
+                        <p>The employee joins the video call. They see the CFO and other colleagues. Everyone looks real. They instruct the employee to transfer funds urgently.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>The Execution</h4>
+                        <h3>15 Transfers</h3>
+                        <p>The employee, initially suspicious, is reassured because they "saw" their boss. They make 15 transfers totaling HK$200 million ($25M USD) to scam accounts.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>Late Feb 2024</h4>
+                        <h3>The Discovery</h3>
+                        <p>Arup HQ notices the missing money. They confirm: <strong>No such video call ever happened.</strong> The employee was the only real human on the line.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>The Mechanics of a Deepfake</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. Source Material</h3>
+                    <p>AI needs data to learn. The scammers downloaded YouTube videos, conference talks, and news clips of the Arup executives to train the AI on their faces and voices.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Real-Time Generation</h3>
+                    <p>Using tools like <strong>Stable Diffusion</strong> or specialized voice cloning software, the scammers projected these AI faces onto themselves during the live Zoom/Teams call.</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. Social Engineering</h3>
+                    <p>The tech wasn't perfect. To hide glitches, they likely claimed "bad connection" or kept the meeting short. They used authority and secrecy to stop the victim from thinking critically.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Consumer Defense: When Reality is Fake</h2>
+            <p>You might not transfer $25M, but scammers use this same tech to fake "Grandma in trouble" calls. Here is how to verify reality.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">🔐</div>
+                <div>
+                    <h3>1. The "Safe Word"</h3>
+                    <p>Establish a secret code word or phrase with your family and close colleagues. If you get a video call asking for money, ask for the code. AI won't know it.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">📞</div>
+                <div>
+                    <h3>2. Call Them Back (Out-of-Band)</h3>
+                    <p>If your "Boss" calls you on Teams asking for money, hang up. Call their actual mobile number. Verify the request through a <strong>second channel</strong>.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">⏳</div>
+                <div>
+                    <h3>3. Break the Urgency</h3>
+                    <p>Scams rely on speed ("Do it NOW!"). Pause. Ask a personal question that isn't on the internet (e.g., "What did we eat for lunch yesterday?").</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🕵️</div>
+                <div>
+                    <h3>4. Spot the Glitches</h3>
+                    <p>Current Deepfakes struggle with blinking, lip-syncing perfectly, or lighting changes. If the video looks slightly "uncanny" or robotic, trust your gut.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the Deepfake Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Can you spot the signs of an AI scam? Test your knowledge.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Arup Deepfake Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'story': 'btn-story',
+                'tech': 'btn-tech',
+                'defense': 'btn-defense',
+                'quiz': 'btn-quiz'
+            };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+        // --- 2. EXPANDED QUIZ DATA (12 Questions) ---
+        const questions = [
+            // FACTUAL
+            {
+                q: "1. FACT: Was the Arup computer network hacked?",
+                options: ["Yes, attackers installed a virus", "No, it was purely Social Engineering (Human deception)", "Yes, they broke the firewall", "No, an employee stole the money"],
+                a: 1,
+                exp: "Correct. No code was hacked. The attackers hacked the employee's perception of reality using AI."
+            },
+            {
+                q: "2. FACT: How many real people were on the video call?",
+                options: ["Everyone was real", "About half were real", "Only the victim (the employee) was real", "No one was real"],
+                a: 2,
+                exp: "Correct. Every other face on the screen was a pre-generated or real-time AI avatar."
+            },
+            {
+                q: "3. TECH: Where did the scammers get the data to clone the executives?",
+                options: ["They broke into their homes", "Publicly available videos (YouTube, News, Conferences)", "They guessed what they looked like", "They used actors"],
+                a: 1,
+                exp: "Correct. High-profile executives often have hours of video footage online, which is perfect for training AI."
+            },
+            // CONSUMER SCENARIOS (The Grandma/Family Scam)
+            {
+                q: "4. SCENARIO: You get a call from your 'Grandson' saying he is in jail and needs bail money. It sounds exactly like him. What do you do?",
+                options: ["Wire the money immediately", "Hang up and call his cell phone or his parents to verify", "Ask him how the food is", "Post about it on Facebook"],
+                a: 1,
+                exp: "Correct. This is a common AI voice scam. Always verify by calling the person back on a known number."
+            },
+            {
+                q: "5. STRATEGY: What is a 'Safe Word' in this context?",
+                options: ["A password for your computer", "A secret word your family shares to prove identity on calls", "A word you shout when scared", "A banking pin"],
+                a: 1,
+                exp: "Correct. If the voice on the phone doesn't know the family secret word, it's an AI or a scammer."
+            },
+            {
+                q: "6. SCENARIO: Your boss emails you asking for a 'Secret' money transfer and demands you join a video call NOW. Red flag?",
+                options: ["No, bosses are always busy", "Yes, Urgency + Secrecy + Money is the classic scam formula", "No, secret deals happen daily", "Yes, because email is dead"],
+                a: 1,
+                exp: "Correct. Scammers use urgency to make you act before you think. Legitimate business rarely requires panic."
+            },
+            {
+                q: "7. DEFENSE: What is 'Out-of-Band' verification?",
+                options: ["Going outside to take the call", "Using a different communication channel (e.g., Calling instead of Emailing) to check a request", "Checking the frequency band", "Asking a stranger"],
+                a: 1,
+                exp: "Correct. If the request comes via Video, verify via Text or Phone. Don't use the same channel the scammer is controlling."
+            },
+            {
+                q: "8. TECH: Can you trust your eyes on a video call in 2025?",
+                options: ["Yes, video cannot be faked", "No, Deepfake tech allows real-time face swapping", "Only if it is HD quality", "Only if it is on Zoom"],
+                a: 1,
+                exp: "Correct. Seeing is no longer believing. Live video can be manipulated."
+            },
+            {
+                q: "9. DETECTION: Which of these is a sign of a deepfake video?",
+                options: ["Perfect lighting", "Unnatural blinking or lip-sync errors", "The person is wearing a suit", "The audio is clear"],
+                a: 1,
+                exp: "Correct. AI often glitches around the eyes, mouth, or edges of the face."
+            },
+            {
+                q: "10. PRIVACY: How can you protect yourself from being cloned by AI?",
+                options: ["Wear a mask", "Set social media profiles to Private and limit public video sharing", "Stop talking", "Delete the internet"],
+                a: 1,
+                exp: "Correct. The less audio/video of you that exists publicly, the harder it is for AI to clone you."
+            },
+            {
+                q: "11. PSYCHOLOGY: Why did the Arup employee send the money?",
+                options: ["They were part of the scam", "They saw trusted authority figures (CFO) telling them to do it", "They didn't care", "They thought it was a game"],
+                a: 1,
+                exp: "Correct. We are trained to obey authority figures. When we 'see' them, our brain overrides suspicion."
+            },
+            {
+                q: "12. RESPONSE: If you realize you've been scammed by a Deepfake, what do you do?",
+                options: ["Delete the app", "Contact your bank/police immediately to try and freeze funds", "Wait a few days", "Hide"],
+                a: 1,
+                exp: "Correct. Speed is key. There is a tiny window where banks might be able to stop the transfer."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        const qText = document.getElementById('question-text');
+        const optsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback-display');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+        const finalScore = document.getElementById('final-score');
+        const scoreMsg = document.getElementById('score-message');
+        const quizBlock = document.getElementById('quiz-block');
+        const scoreBlock = document.getElementById('score-block');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex];
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+
+            const pct = ((currentQIndex) / questions.length) * 100;
+            progressBar.style.width = pct + "%";
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = function() { handleAnswer(idx, btn); };
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex];
+            const allBtns = optsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#d6001c"; /* Primary Red */
+                btnElement.style.color = "white";
+                btnElement.style.borderColor = "#ff1f3a";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+            } else {
+                btnElement.style.background = "#333";
+                btnElement.style.color = "#888";
+                btnElement.style.borderColor = "#444";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+            }
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = function() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        restartBtn.onclick = function() {
+            currentQIndex = 0;
+            score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            
+            if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You can spot a fake.";
+            else if(score > 8) scoreMsg.innerText = "👍 Good Job! You are skeptical.";
+            else scoreMsg.innerText = "📚 Review the tips and try again.";
+        }
+
+        // Init
+        loadQuestion();
+
+    </script>
+</body>
+</html>
