@@ -83,7 +83,14 @@
         }
         .sim-win { background: #dcfce7; color: #166534; }
         .sim-loss { background: #fee2e2; color: #991b1b; }
-        footer { text-align: center; padding: 2rem; color: var(--secondary); font-size: 0.9rem; }
+        footer {
+            text-align: center; padding: 3rem 1rem; color: var(--secondary);
+            font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 3rem;
+        }
+        .disclaimer {
+            font-size: 0.8rem; opacity: 0.8; max-width: 800px;
+            margin: 1rem auto 0; font-style: italic;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
         th { background-color: #f1f5f9; }
@@ -94,12 +101,12 @@
 
 <header>
     <h1>💾 資料生存指南</h1>
-    <p>了解備份：簡單、有效且能防禦勒索軟體</p>
+    <p>了解備份：簡單、有效且防勒索軟體</p>
 </header>
 
 <nav>
     <button class="nav-btn active" onclick="showTab('learn')">1. 規則</button>
-    <button class="nav-btn" onclick="showTab('choose')">2. 尋找我的解決方案</button>
+    <button class="nav-btn" onclick="showTab('choose')">2. 尋找解決方案</button>
     <button class="nav-btn" onclick="showTab('simulate')">3. 災難模擬</button>
 </nav>
 
@@ -168,7 +175,12 @@
     </div>
 </main>
 
-<footer><p>為提升備份意識而設。請記住：同步不等於備份！</p></footer>
+<footer>
+    <p>為提升備份意識而設。請記住：同步不等於備份！</p>
+    <p class="disclaimer">
+        <strong>免責聲明：</strong>本指南中提及的建議和軟體工具僅供參考。價格、功能和可靠性可能隨時間而變化。使用者在購買任何產品或服務前，應自行研究或尋求專業意見。本指南的創作者對因使用這些策略而導致的資料遺失或損壞不承擔任何責任。
+    </p>
+</footer>
 
 <script>
     function showTab(tabId) {
@@ -198,7 +210,7 @@
             if (budget === 'cheap') {
                 strategyName = "策略：「手動混合」";
                 strategyDesc = "您不需要昂貴的軟體。使用實體硬碟備份大型檔案，並使用免費的雲端帳戶備份文件。";
-                optionsHTML = createRow("外接 USB 硬碟", "一次性成本（約50美元），傳輸速度快", "可能損壞/遺失，需要手動操作") +
+                optionsHTML = createRow("外接 USB 硬碟", "一次性成本（約500港元），傳輸速度快", "可能損壞/遺失，需要手動操作") +
                               createRow("Google Drive / iCloud (免費方案)", "易於使用，隨處同步", "儲存空間小（15GB），同步≠備份") +
                               createRow("免費備份軟體 (例如 Veeam Free)", "企業級可靠性，費用為0美元", "稍有學習曲線");
             } else {
@@ -211,7 +223,7 @@
         } else if (type === 'creator') {
              strategyName = "策略：3-2-1 進階使用者方案";
              strategyDesc = "您的資料量太大（TB+），不適用標準的雲端方案。您需要快速的本地副本和便宜的雲端「冷儲存」。";
-             optionsHTML = createRow("NAS 裝置 (例如 Synology/QNAP)", "本地存取速度快，RAID保護", "前期硬體成本高（300美元以上）") +
+             optionsHTML = createRow("NAS 裝置 (例如 Synology/QNAP)", "本地存取速度快，RAID保護", "前期硬體成本高（3,000港元以上）") +
                            createRow("雲端封存 (例如 AWS S3 / B2)", "每TB成本極低", "設定複雜，還原需付費") +
                            createRow("現成的 12TB+ 硬碟", "每TB成本最低", "故障風險高（單點故障）");
         } else { // SME
@@ -234,7 +246,9 @@
             <p>${strategyDesc}</p>
             <p><strong>比較此策略的熱門工具：</strong></p>
             <table><thead><tr><th>工具/類型</th><th>✅ 優點</th><th>⚠️ 缺點</th></tr></thead><tbody>${optionsHTML}</tbody></table>
-            <p style="margin-top:1rem; font-size:0.9rem; color:var(--secondary);"><em>* 僅為範例。價格和功能會隨時間變化。請務必自行研究。</em></p>`;
+            <div style="margin-top:1.5rem; padding:1rem; background-color:#fff3cd; border:1px solid #ffeeba; border-radius:8px; font-size:0.9rem; color:#856404;">
+                <strong>⚠️ 免責聲明：</strong>以上建議僅供參考。價格和功能會隨時間變化。如有需要，請尋求專業意見。
+            </div>`;
     }
     function runSim(threat) {
         const hdd = document.getElementById('def-hdd').checked, cloudSync = document.getElementById('def-cloud-sync').checked,
