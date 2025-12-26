@@ -194,9 +194,19 @@
         /* Footer */
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 1rem;
             color: var(--secondary);
             font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 3rem;
+        }
+
+        .disclaimer {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 1rem auto 0;
+            font-style: italic;
         }
         
         /* Table Styles */
@@ -327,6 +337,9 @@
 
 <footer>
     <p>Created for Backup Awareness. Remember: Sync is not Backup!</p>
+    <p class="disclaimer">
+        <strong>Disclaimer:</strong> The recommendations and software tools mentioned in this guide are for reference only. Prices, features, and reliability can change over time. Users should conduct their own research or seek professional advice before purchasing any product or service. The creator of this guide accepts no liability for data loss or damage resulting from the use of these strategies.
+    </p>
 </footer>
 
 <script>
@@ -378,7 +391,7 @@
                 strategyName = "Strategy: The 'Manual Hybrid'";
                 strategyDesc = "You don't need expensive software. Use a physical drive for heavy files and free cloud accounts for documents.";
                 optionsHTML = `
-                    ${createRow("External USB HDD", "One-time cost ($50), Fast transfer", "Can break/get lost, Manual work")}
+                    ${createRow("External USB HDD", "One-time cost (HK$500), Fast transfer", "Can break/get lost, Manual work")}
                     ${createRow("Google Drive / iCloud (Free Tier)", "Easy to use, Synced everywhere", "Small storage limit (15GB), Sync ≠ Backup")}
                     ${createRow("Free Backup Software (e.g., Veeam Free)", "Enterprise reliability for $0", "Slight learning curve")}
                 `;
@@ -397,7 +410,7 @@
              strategyName = "Strategy: The 3-2-1 Power User";
              strategyDesc = "You have too much data (TB+) for standard cloud plans. You need local speed + cheap 'Cold Storage' in the cloud.";
              optionsHTML = `
-                ${createRow("NAS Device (e.g., Synology/QNAP)", "Fast local access, RAID protection", "High upfront hardware cost ($300+)")}
+                ${createRow("NAS Device (e.g., Synology/QNAP)", "Fast local access, RAID protection", "High upfront hardware cost (HK$3,000+)")}
                 ${createRow("Cloud Archive (e.g., AWS S3 / B2)", "Extremely cheap per TB", "Complex setup, Restore costs money")}
                 ${createRow("Off-the-shelf 12TB+ HDD", "Cheapest cost per TB", "High failure risk (Single point of failure)")}
             `;
@@ -440,7 +453,9 @@
                     ${optionsHTML}
                 </tbody>
             </table>
-            <p style="margin-top:1rem; font-size:0.9rem; color:var(--secondary);"><em>* Examples only. Prices and features change over time. Always do your own research.</em></p>
+            <div style="margin-top:1.5rem; padding:1rem; background-color:#fff3cd; border:1px solid #ffeeba; border-radius:8px; font-size:0.9rem; color:#856404;">
+                <strong>⚠️ Disclaimer:</strong> The recommendations above are for reference only. Prices and features change over time. Please seek professional advice if needed.
+            </div>
         `;
     }
 
