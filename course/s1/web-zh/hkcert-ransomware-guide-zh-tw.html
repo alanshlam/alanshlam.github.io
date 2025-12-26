@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKCERT 勒索軟體防禦中心</title>
+    <style>
+        :root {
+            --hk-red: #d32f2f; --hk-dark: #212121; --hk-gray: #f5f5f5;
+            --warning: #ffa000; --success: #388e3c; --info: #1976d2;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: #eceff1; margin: 0; padding: 0; color: #333; line-height: 1.6;
+        }
+        header {
+            background: var(--hk-dark); color: white; text-align: center;
+            padding: 2rem 1rem; border-bottom: 5px solid var(--hk-red);
+        }
+        header h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
+        .emergency-bar {
+            background: var(--hk-red); color: white; font-weight: bold;
+            text-align: center; padding: 10px; font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { background-color: #d32f2f; } 50% { background-color: #b71c1c; } 100% { background-color: #d32f2f; }
+        }
+        nav {
+            display: flex; justify-content: center; background: white;
+            padding: 1rem; gap: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-btn {
+            flex: 1; max-width: 200px; padding: 1rem; border: none;
+            background: none; font-weight: 600; cursor: pointer;
+            border-bottom: 3px solid transparent; transition: 0.3s; color: #555;
+        }
+        .nav-btn.active {
+            color: var(--hk-red); border-bottom-color: var(--hk-red); background: #ffebee;
+        }
+        main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .section { display: none; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: white; border-radius: 8px; padding: 1.5rem;
+            margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        h2 { color: var(--hk-dark); border-left: 5px solid var(--hk-red); padding-left: 10px; }
+        .sign-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;
+        }
+        .sign-box {
+            background: #fff3e0; border: 1px solid #ffe0b2;
+            padding: 1rem; border-radius: 5px;
+        }
+        .sign-box h3 { margin-top: 0; color: #e65100; font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; }
+        .protocol-step {
+            display: flex; margin-bottom: 1rem; background: white; padding: 1rem;
+            border-radius: 5px; border-left: 5px solid var(--info);
+        }
+        .step-num {
+            font-size: 2rem; font-weight: bold; color: #ccc; margin-right: 15px;
+        }
+        .response-options { display: flex; gap: 10px; margin-bottom: 20px; }
+        .resp-btn {
+            flex: 1; padding: 15px; border: 2px solid #ddd; background: white;
+            cursor: pointer; font-weight: bold; border-radius: 5px;
+        }
+        .resp-btn.selected { border-color: var(--hk-red); background: #ffebee; color: var(--hk-red); }
+        #response-output {
+            display: none; background: #e8f5e9; border: 1px solid #c8e6c9;
+            padding: 20px; border-radius: 5px;
+        }
+        footer { text-align: center; padding: 2rem; color: #777; font-size: 0.9rem; }
+        .contact-btn {
+            background: var(--hk-red); color: white; text-decoration: none;
+            padding: 5px 10px; border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="emergency-bar">
+    ⚠️ 懷疑感染？請撥打 HKCERT 24/7 熱線：<a href="tel:81056060" style="color:white; text-decoration:underline;">8105 6060</a>
+</div>
+
+<header>
+    <h1>🛡️ HKCERT 勒索軟體防禦</h1>
+    <p>香港偵測與應變指南</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('detect')">🔍 偵測（跡象）</button>
+    <button class="nav-btn" onclick="showTab('respond')">⚡ 應變協議</button>
+    <button class="nav-btn" onclick="showTab('tools')">🛠️ 工具包</button>
+</nav>
+
+<main>
+    <div id="detect" class="section active">
+        <div class="card">
+            <h2>識別跡象</h2>
+            <p>勒索軟體通常在勒索訊息出現前就已悄悄加密。注意這些由 HKCERT 識別的指標：</p>
+            <div class="sign-grid">
+                <div class="sign-box"><h3>📂 檔案變更</h3><p>檔案被重新命名為 <code>.lockbit</code>、<code>.encrypted</code>，或無法開啟。磁碟空間迅速減少。</p></div>
+                <div class="sign-box"><h3>🐢 效能</h3><p>電腦運行極慢。風扇在加密時高速運轉（高 CPU 使用率）。</p></div>
+                <div class="sign-box"><h3>🚫 存取被拒</h3><p>您被登出帳戶。管理員密碼失效。伺服器離線。</p></div>
+                <div class="sign-box"><h3>💀 勒索訊息</h3><p>桌面上出現一個文字檔：「您的檔案已被加密」。桌布變為要求訊息。</p></div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>即時分類</h2>
+            <p><strong>如果您看到這些跡象：</strong></p>
+            <ul>
+                <li>❌ <strong>不要</strong>關閉電腦（需要記憶體證據）。</li>
+                <li>🔌 立即<strong>拔掉</strong> Wi-Fi 和乙太網路線。</li>
+                <li>💾 <strong>拔掉</strong>所有 USB 隨身碟和外接硬碟。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="respond" class="section">
+        <div class="card">
+            <h2>產生應變計畫</h2>
+            <p>選擇您的設定檔以查看 HKCERT 建議的工作流程。</p>
+            <div class="response-options">
+                <button class="resp-btn" onclick="showPlan('ind', this)">👤 個人/家庭</button>
+                <button class="resp-btn" onclick="showPlan('sme', this)">🏢 中小企業/業務</button>
+            </div>
+            <div id="response-output"></div>
+        </div>
+        <div class="card" style="border-left-color: var(--warning);">
+            <h2>⚠️ 黃金法則：不要支付</h2>
+            <p>HKCERT 和警方建議不要支付贖金。</p>
+            <ul>
+                <li>這會資助犯罪集團。</li>
+                <li>您取回所有資料的機會 < 10%。</li>
+                <li>他們經常會要求第二次付款。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tools" class="section">
+        <div class="card">
+            <h2>HKCERT 推薦工具</h2>
+            <p>幫助您偵測和恢復的免費及低成本工具。</p>
+            <table>
+                <thead><tr><th>類別</th><th>工具名稱</th><th>最適用於</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>掃描</strong></td><td>ESET Online Scanner / Malwarebytes</td><td>快速偵測惡意軟體簽章。</td></tr>
+                    <tr><td><strong>分析</strong></td><td>工作管理員 / Process Explorer</td><td>發現高 CPU 使用率（加密過程）。</td></tr>
+                    <tr><td><strong>解密</strong></td><td>NoMoreRansom.org</td><td>免費解密器儲存庫（清除前請先檢查！）。</td></tr>
+                    <tr><td><strong>中小企監控</strong></td><td>Splunk Free / OpenVAS</td><td>日誌分析和漏洞掃描。</td></tr>
+                    <tr><td><strong>備份</strong></td><td>Acronis / Macrium Reflect</td><td>還原乾淨的離線備份。</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>預防清單（3-2-1 規則）</h2>
+            <ul>
+                <li>✅ 總共 <strong>3 份</strong>資料副本。</li>
+                <li>✅ <strong>2 種</strong>不同的媒體類型。</li>
+                <li>✅ <strong>1 份離線</strong>副本（對勒索軟體至關重要 - 進行氣隙隔離！）。</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>基於 HKCERT「中小企事故應變指引」。<br>
+    造訪 <a href="https://www.hkcert.org" target="_blank">HKCERT.org</a> 取得官方警報。</p>
+</footer>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    function showPlan(type, btn) {
+        document.querySelectorAll('.resp-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const output = document.getElementById('response-output');
+        output.style.display = 'block';
+        if (type === 'ind') {
+            output.innerHTML = `
+                <h3 style="margin-top:0">👤 個人協議</h3>
+                <div class="protocol-step"><div class="step-num">1</div><div><strong>斷開連線：</strong>拔掉網路線。關閉 Wi-Fi。拔除 USB 隨身碟。</div></div>
+                <div class="protocol-step"><div class="step-num">2</div><div><strong>證據：</strong>用手機拍下勒索訊息的照片。不要點擊其中的連結。</div></div>
+                <div class="protocol-step"><div class="step-num">3</div><div><strong>識別：</strong>使用 <em>ID Ransomware</em>（透過另一台裝置）識別病毒類型。在 <em>NoMoreRansom.org</em> 上尋找免費修復工具。</div></div>
+                <div class="protocol-step"><div class="step-num">4</div><div><strong>還原：</strong>如果沒有免費修復工具，請清除硬碟（恢復原廠設定）並從您的<strong>離線備份</strong>還原。</div></div>`;
+        } else {
+            output.innerHTML = `
+                <h3 style="margin-top:0">🏢 中小企協議</h3>
+                <div class="protocol-step"><div class="step-num">1</div><div><strong>控制：</strong>立即隔離受感染的網段（VLAN）。如果可能，不要重新啟動伺服器（鑑識需要記憶體日誌）。</div></div>
+                <div class="protocol-step"><div class="step-num">2</div><div><strong>報告：</strong>致電 HKCERT 熱線 (8105 6060)。如果個人資料洩漏，請在5天內通知私隱專員公署 (PCPD)。</div></div>
+                <div class="protocol-step"><div class="step-num">3</div><div><strong>評估：</strong>檢查日誌，了解他們是如何進入的（RDP？釣魚？）。在還原前關閉該漏洞。</div></div>
+                <div class="protocol-step"><div class="step-num">4</div><div><strong>恢復：</strong>從<strong>不可變/離線備份</strong>還原。在重新連接到網路前驗證完整性。</div></div>`;
+        }
+    }
+</script>
+
+</body>
+</html>

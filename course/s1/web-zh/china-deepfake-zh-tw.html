@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>60萬美元換臉騙局</title>
+    <style>
+        :root {
+            --primary: #e74c3c; --primary-dark: #c0392b; --highlight: #f1c40f;
+            --bg-dark: #2c3e50; --card-bg: #34495e; --text-main: #ecf0f1;
+            --text-muted: #bdc3c7; --success: #2ecc71; --danger: #e74c3c;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+        body { background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+        nav { 
+            background: rgba(44, 62, 80, 0.95); border-bottom: 3px solid var(--primary); box-shadow: var(--shadow); 
+            padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; 
+            height: 80px; position: sticky; top: 0; z-index: 9999; backdrop-filter: blur(10px);
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--highlight); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { color: var(--text-main); margin-left: 10px; font-size: 0.8rem; border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px; background: var(--primary); }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent; border: 1px solid transparent; padding: 10px 20px; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: var(--text-muted); border-radius: 4px; transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--highlight); border-color: var(--highlight); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; border-color: var(--primary-dark); }
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 2.8rem; margin-bottom: 1rem; color: var(--highlight); text-align: center; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        h2 { color: var(--primary); margin-bottom: 1.5rem; border-left: 6px solid var(--highlight); padding-left: 15px; font-size: 1.8rem; }
+        p { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.7; color: var(--text-muted); }
+        .hero { 
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1550534791-2677533605ab?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center; padding: 4rem; border-radius: 15px; 
+            box-shadow: var(--shadow); text-align: center; color: white; border: 1px solid var(--primary);
+        }
+        .stats-row { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
+        .stat { text-align: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid var(--highlight); }
+        .stat-num { font-size: 2.5rem; font-weight: bold; color: var(--highlight); display: block; }
+        .stat-label { font-size: 0.9rem; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .action-btn:hover { background: var(--highlight); color: var(--bg-dark); transform: scale(1.05); }
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '¥'; font-size: 1.2rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--bg-dark); border: 2px solid var(--highlight); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center; color: var(--highlight); font-weight: bold;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-top: 3px solid var(--highlight); }
+        .t-content h3 { color: var(--highlight); margin-bottom: 5px; font-size: 1.3rem; }
+        .t-content h4 { color: var(--primary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #444; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--highlight); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--highlight); display:inline-block;}
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--highlight); }
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); max-width: 850px; margin: 0 auto; border: 1px solid var(--highlight); }
+        .progress-bar { width: 100%; background: #222; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #555; 
+            background: #2c3e50; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--highlight); background: #34495e; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #fff; font-weight: bold;}
+        .feedback.correct { background: rgba(46, 204, 113, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .feedback.wrong { background: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; border-top: 1px solid #444; background: var(--bg-dark); }
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">DEEPFAKE <span>詐騙</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">AI 技術</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>430萬人民幣換臉詐騙案</h1>
+                <p>2023年的這起案件證明，視訊通話中你不能相信自己的眼睛。</p>
+                <p>中國一位商人在10分鐘內被一個假扮成他最好朋友的AI機器人騙走了<strong>62.2萬美元</strong>。</p>
+                <div class="stats-row">
+                    <div class="stat"><span class="stat-num">¥4.3M</span><span class="stat-label">被盜金額 (人民幣)</span></div>
+                    <div class="stat"><span class="stat-num">$430</span><span class="stat-label">AI軟體成本</span></div>
+                    <div class="stat"><span class="stat-num">10 分鐘</span><span class="stat-label">詐騙持續時間</span></div>
+                </div>
+                <button class="action-btn" id="jump-story">事件始末</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card"><h3>🎭 面具</h3><p>詐騙者在微信視訊通話中使用AI換臉軟體，將朋友的臉疊加在自己臉上。</p></div>
+                <div class="info-card"><h3>🗣️ 聲音</h3><p>利用語音複製技術，詐騙者的聲音聽起來與受害者信任的朋友完全一樣，製造了完美的幻覺。</p></div>
+                <div class="info-card"><h3>⚡ 速度</h3><p>詐騙依賴於緊迫感。「我現在需要一筆投標保證金。」受害者在腦中還來不及懷疑影片的真實性之前，就轉了帳。</p></div>
+            </div>
+        </section>
+
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">10分鐘的搶劫案</h2>
+            <div class="timeline">
+                <div class="t-container left"><div class="t-content"><h4>2023年4月</h4><h3>好友請求</h3><p>包頭市一位商人收到一則來自「朋友」的微信訊息。個人資料照片和細節完全相符。他接受了請求。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>通話</h4><h3>「真的是我」</h3><p>「朋友」發起視訊通話。商人看到了他朋友的臉，聽到了他的聲音。朋友聲稱他急需430萬元人民幣作為商業投標保證金。</p></div></div>
+                <div class="t-container left"><div class="t-content"><h4>轉帳</h4><h3>錢不見了</h3><p>商人相信自己的眼睛，匯了款。「朋友」掛斷了電話。整個互動只持續了幾分鐘。</p></div></div>
+                <div class="t-container right"><div class="t-content"><h4>恍然大悟</h4><h3>「我沒打電話給你」</h3><p>商人發訊息給他<em>真正的</em>朋友確認收款。朋友回覆：「什麼錢？我從沒打電話給你。」警方接到報案。</p></div></div>
+            </div>
+        </section>
+
+        <section id="tech" class="tab-content">
+            <h2>技術：廉價又嚇人</h2>
+            <div class="grid-container">
+                <div class="info-card"><h3>1. 即時換臉</h3><p>嫌疑人「郭某」僅以430美元在Telegram上購買了AI軟體。該軟體能立即將目標人臉映射到詐騙者的網路攝影機畫面上。</p></div>
+                <div class="info-card"><h3>2. 訓練資料</h3><p>他們從哪裡得到朋友的臉？<strong>社群媒體。</strong>微信朋友圈、抖音或公開照片提供了足夠的資料來建立AI模型。</p></div>
+                <div class="info-card"><h3>3. 「活體」戲法</h3><p>與靜態照片不同，這個deepfake會眨眼、移動和說話。這種「活體感」讓受害者相信這不是錄影。</p></div>
+            </div>
+        </section>
+
+        <section id="defense" class="tab-content">
+            <h2>消費者防禦：別成為下一個</h2>
+            <p>這種騙局針對的是信任。當你的眼睛欺騙你時，以下是如何驗證現實的方法。</p>
+            <div class="defense-tip"><div class="icon-box">🔄</div><div><h3>1. 「回撥」原則</h3><p><strong>黃金法則：</strong>如果有人打電話要求匯款，掛斷電話。用他們<em>原本的</em>電話號碼回撥。如果詐騙者使用的是假帳號，他們不會接到你的真實來電。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🔐</div><div><h3>2. 建立暗號</h3><p>和你的親朋好友約定一個奇怪的詞（例如，「鳳梨」）。如果他們在緊急情況下打電話，問他們暗號。AI猜不到。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">⏳</div><div><h3>3. 質疑緊迫性</h3><p>詐騙者總是說「馬上」。真正的緊急情況通常可以等2分鐘讓你核實。如果他們催促你快點行動，那就是陷阱。</p></div></div>
+            <div class="defense-tip"><div class="icon-box">🙈</div><div><h3>4. 私密個人資料</h3><p>不要餵養AI。如果你的社群媒體是公開的，詐騙者可以下載你的照片來複製<strong>你</strong>，然後去騙你的父母。將個人資料設為「僅限朋友」。</p></div></div>
+            <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加 Deepfake 測驗</button></div>
+        </section>
+
+        <section id="quiz" class="tab-content">
+            <h2>知識測驗</h2>
+            <p>你能識破數位冒名頂替者的跡象嗎？測試你的知識。</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">載入中...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">下一題</button>
+                </div>
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>測驗完成！</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--highlight);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">重考</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer><p>中國 Deepfake 2023 案例研究 | 教育網路應用程式</p></footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active', 'active-tab'));
+                document.getElementById(tabId).classList.add('active-tab');
+                const btnMap = { 'home': 'btn-home', 'story': 'btn-story', 'tech': 'btn-tech', 'defense': 'btn-defense', 'quiz': 'btn-quiz' };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
+            }
+            ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
+            document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
+            document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+
+            const questions = [
+                { q: "1. 事實：詐騙者如何與受害者溝通？", options: ["電子郵件", "視訊通話 (微信)", "親自見面", "傳真"], a: 1, exp: "正確。詐騙者發起視訊通話以視覺上「證明」自己的身份。" },
+                { q: "2. 事實：詐騙者看起來像陌生人嗎？", options: ["是的，他戴著面具", "不，他看起來和受害者的好友一模一樣", "那是一個卡通頭像", "螢幕是黑的"], a: 1, exp: "正確。AI換臉技術讓詐騙者看起來和受害者信任的朋友完全一樣。" },
+                { q: "3. 成本：購買這項技術昂貴嗎？", options: ["是的，數百萬美元", "不，大約430美元（3000元人民幣）", "是免費的", "只有政府擁有"], a: 1, exp: "正確。該軟體是在Telegram上廉價購買的，顯示了詐騙工具的普及性。" },
+                { q: "4. 情境：你的「媽媽」在視訊中打電話給你。她說她掉了錢包，需要你匯錢到一個陌生人的帳戶。你該怎麼辦？", options: ["立刻匯款", "掛斷電話，然後打她個人的手機號碼核實", "問她為什麼這麼不小心", "在TikTok上發文"], a: 1, exp: "正確。即使你看到她的臉，也要總是透過「帶外」方式回撥她信任的電話線路來核實。" },
+                { q: "5. 防禦：「安全詞」是什麼？", options: ["你銀行的密碼", "只有家人知道的秘密詞語，用來證明身份", "你對詐騙者大喊的詞", "你寵物的名字"], a: 1, exp: "正確。AI可以複製聲音，但猜不到線下分享的秘密詞語。" },
+                { q: "6. 隱私：為什麼你應該將你的社交媒體設為「私密」？", options: ["這樣你就不會得到讚", "為了防止詐騙者下載你的照片來建立你的AI複製人", "可以省電", "法律規定"], a: 1, exp: "正確。你公開的照片/影片越多，就越容易被Deepfake。" },
+                { q: "7. 偵測：在視訊通話中，當對方側轉頭時，臉部變得模糊。這是什麼？", options: ["網路連線不佳", "Deepfake的破綻（影像殘影）", "相機濾鏡", "鏡頭髒了"], a: 1, exp: "正確。AI換臉在處理側面或快速移動時經常會出錯，導致破綻。" },
+                { q: "8. 心理學：為什麼那位商人這麼快就匯款了？", options: ["他很有錢", "詐騙者製造了「緊迫感」（投標截止日期）和視覺信任", "他不在乎", "那是一個捐款"], a: 1, exp: "正確。詐騙者利用緊迫感來繞過你的批判性思維。看到臉孔建立了錯誤的信任。" },
+                { q: "9. 技術：Deepfake需要預先錄製嗎？", options: ["是的，總是需要", "不，現代AI可以在通話中即時換臉", "只有好萊塢辦得到", "是的，需要數週製作"], a: 1, exp: "正確。現代工具允許在通話中進行即時、即時的換臉。" },
+                { q: "10. 復原：在這個特定的案例中，警察抓到人了嗎？", options: ["沒有，他們消失了", "是的，他們逮捕了一名姓郭的嫌疑人並追回了部分資金", "銀行退款了", "詐騙者歸還了"], a: 1, exp: "正確。快速報案讓警方得以追蹤銀行轉帳並逮捕操作者。" },
+                { q: "11. 行動：如果視訊通話看起來可疑，你可以要求對方做什麼？", options: ["唱歌", "在臉前揮手", "微笑", "掛斷"], a: 1, exp: "正確。在臉前揮動物件或手常常會讓AI混淆，從而揭露面具。" },
+                { q: "12. 迷思：「只有名人才會被Deepfake。」這是真的還是假的？", options: ["真的", "假的。任何有公開照片的人都可能成為「祖父母騙局」的目標", "真的，對普通人來說太難了", "假的，AI根本不存在"], a: 1, exp: "正確。詐騙者現在鎖定普通人，以欺騙他們的家人來騙取金錢。" }
+            ];
+
+            let currentQIndex = 0, score = 0;
+            const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+                  feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+                  progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+                  scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+                  scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+            
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+                progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = () => handleAnswer(idx, btn);
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.style.background = "#2ecc71"; btnElement.style.color = "#2c3e50"; btnElement.style.borderColor = "#27ae60";
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+                } else {
+                    btnElement.style.background = "#e74c3c"; btnElement.style.color = "white"; btnElement.style.borderColor = "#c0392b";
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = () => {
+                currentQIndex++;
+                if (currentQIndex < questions.length) loadQuestion();
+                else showResults();
+            };
+
+            restartBtn.onclick = () => {
+                currentQIndex = 0; score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                if(score === questions.length) scoreMsg.innerText = "🏆 滿分！你不會被騙。";
+                else if(score > 8) scoreMsg.innerText = "👍 做得好！你保持懷疑態度。";
+                else scoreMsg.innerText = "📚 複習提示後再試一次。";
+            }
+            
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港私隱守護者 (PDPO)</title>
+    <style>
+        :root {
+            --hk-purple: #6c5ce7; --hk-dark: #2d3436; --light: #dfe6e9;
+            --success: #00b894; --warning: #fdcb6e; --danger: #d63031;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: #f5f6fa; color: var(--hk-dark); margin: 0; padding: 0; line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--hk-purple) 0%, #4834d4 100%);
+            color: white; padding: 2rem 1rem; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; }
+        .hotline-badge {
+            background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px;
+            font-weight: bold; display: inline-block; margin-top: 10px;
+        }
+        nav {
+            display: flex; justify-content: center; background: white; padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;
+        }
+        button.nav-btn {
+            background: none; border: none; padding: 0.8rem 1.5rem; font-size: 1rem;
+            font-weight: 600; color: var(--hk-dark); cursor: pointer;
+            border-bottom: 3px solid transparent; transition: 0.3s;
+        }
+        button.nav-btn.active { color: var(--hk-purple); border-bottom-color: var(--hk-purple); }
+        main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: white; border-radius: 12px; padding: 2rem;
+            margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        h2 { border-left: 5px solid var(--hk-purple); padding-left: 15px; color: var(--hk-dark); }
+        .dpp-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .dpp-card {
+            background: #f8f9fa; padding: 1.5rem; border-radius: 8px;
+            border-top: 4px solid var(--hk-purple); transition: transform 0.2s;
+        }
+        .dpp-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .dpp-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--hk-purple); }
+        .wizard-btn {
+            width: 100%; padding: 1.2rem; margin: 0.5rem 0; background: white;
+            border: 2px solid #dfe6e9; border-radius: 8px; text-align: left;
+            font-size: 1.1rem; cursor: pointer; transition: 0.2s;
+        }
+        .wizard-btn:hover { border-color: var(--hk-purple); background: #f1f2f6; }
+        .wizard-btn.selected { background: var(--hk-purple); color: white; border-color: var(--hk-purple); }
+        #checklist-result {
+            display: none; background: #e3f2fd; border: 2px solid #2196f3;
+            padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;
+        }
+        .scenario-box {
+            background: var(--hk-dark); color: white; padding: 1.5rem;
+            border-radius: 8px; margin-bottom: 1rem;
+        }
+        .choice-btn {
+            display: block; width: 100%; padding: 1rem; margin: 0.5rem 0;
+            border: none; border-radius: 5px; cursor: pointer;
+            font-weight: bold; font-size: 1rem;
+        }
+        .btn-a { background: var(--light); color: var(--hk-dark); }
+        .btn-a:hover { background: #b2bec3; }
+        .feedback {
+            padding: 1rem; border-radius: 5px; margin-top: 1rem;
+            display: none; font-weight: bold;
+        }
+        footer { text-align: center; padding: 2rem; color: #636e72; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>⚖️ 香港私隱守護者</h1>
+    <p>《個人資料（私隱）條例》簡明指南</p>
+    <div class="hotline-badge">📞 PCPD 熱線：2827 2827</div>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('learn')">1. 六大原則</button>
+    <button class="nav-btn" onclick="showTab('check')">2. 合規檢查</button>
+    <button class="nav-btn" onclick="showTab('sim')">3. 法律情境</button>
+</nav>
+
+<main>
+    <div id="learn" class="section active">
+        <div class="card">
+            <h2>六項資料保護原則 (DPP)</h2>
+            <p>如果您處理任何人的資料（姓名、身分證、電話），您必須遵守這些規則。</p>
+            <div class="dpp-grid">
+                <div class="dpp-card"><div class="dpp-title">DPP1：收集</div><p><strong>不要貪心。</strong>只收集您嚴格需要的資料。告訴他們原因 (PICS)。</p></div>
+                <div class="dpp-card"><div class="dpp-title">DPP2：準確性</div><p><strong>保持真實。</strong>工作完成後刪除資料（例如，失敗的求職者）。</p></div>
+                <div class="dpp-card"><div class="dpp-title">DPP3：使用</div><p><strong>沒有意外。</strong>僅將資料用於原始目的。需要出售？取得同意。</p></div>
+                <div class="dpp-card"><div class="dpp-title">DPP4：保安</div><p><strong>鎖好它。</strong>加密檔案。培訓員工。不要把USB隨身碟遺留在巴士上。</p></div>
+                <div class="dpp-card"><div class="dpp-title">DPP5：透明度</div><p><strong>保持開放。</strong>制定清楚解釋您規則的私隱政策。</p></div>
+                <div class="dpp-card"><div class="dpp-title">DPP6：查閱</div><p><strong>讓他們看。</strong>如果有人要求查看他們的資料，您必須在40天內回應。</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="check" class="section">
+        <div class="card">
+            <h2>我是否合規？</h2>
+            <p>選擇您的角色以產生特定的待辦事項清單。</p>
+            <button class="wizard-btn" onclick="generateList('individual', this)">👤 <strong>個人/自由工作者</strong>（家教、應用程式開發者、個人）</button>
+            <button class="wizard-btn" onclick="generateList('sme', this)">🏢 <strong>中小企/業務</strong>（商店、新創公司、代理機構）</button>
+            <div id="checklist-result"></div>
+        </div>
+    </div>
+
+    <div id="sim" class="section">
+        <div class="card">
+            <h2>法律模擬器：您會怎麼做？</h2>
+            <p>根據真實的香港法律測試您的知識。</p>
+            <div class="scenario-box" id="sim-text">
+                [情境 1 - 收集]<br>
+                您經營一個會員俱樂部。您要求客戶提供<strong>香港身分證副本</strong>以「驗證身份」。這樣可以嗎？
+            </div>
+            <div id="sim-choices">
+                <button class="choice-btn btn-a" onclick="checkAnswer(true)">A. 可以，我需要知道他們是真人。</button>
+                <button class="choice-btn btn-a" onclick="checkAnswer(false)">B. 不可以，這是過度收集。</button>
+            </div>
+            <div id="sim-feedback" class="feedback"></div>
+            <button id="next-btn" style="display:none; width:100%; padding:10px; margin-top:10px; cursor:pointer;" onclick="nextScenario()">下一個情境 ▶</button>
+        </div>
+    </div>
+</main>
+
+<footer><p>本工具僅供教育用途。如需法律建議，請諮詢 <a href="https://www.pcpd.org.hk" target="_blank">PCPD 網站</a>。</p></footer>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    function generateList(type, btn) {
+        document.querySelectorAll('.wizard-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const output = document.getElementById('checklist-result');
+        output.style.display = 'block';
+        if (type === 'individual') {
+            output.innerHTML = `
+                <h3>👤 個人清單</h3>
+                <ul>
+                    <li><strong>PICS：</strong>在索取資料前，您是否告知對方您需要資料的<em>原因</em>？</li>
+                    <li><strong>保安：</strong>您的檔案是否受密碼保護？（不要只是把Excel表單開著）。</li>
+                    <li><strong>最少化：</strong>除非法律規定，否則不要收集香港身分證號碼。改用電話號碼。</li>
+                    <li><strong>行銷：</strong>未經特定同意（「選擇加入」），您不能向人們大量發送電子郵件。</li>
+                </ul>
+                <p><em>提示：即使您沒有公司，根據PDPO您仍然是「資料使用者」！</em></p>`;
+        } else {
+            output.innerHTML = `
+                <h3>🏢 中小企清單</h3>
+                <ul>
+                    <li><strong>政策：</strong>您的網站上是否有私隱政策聲明（PPS）？</li>
+                    <li><strong>員工：</strong>您是否已培訓您的員工不要分享客戶資料？</li>
+                    <li><strong>資料清除：</strong>您是否有排程刪除舊資料（例如，6個月後的履歷）？</li>
+                    <li><strong>要求：</strong>您是否準備好在40天內處理「查閱資料要求」？</li>
+                </ul>
+                <p><em>提示：從PCPD網站下載「中小企合規工具包」。</em></p>`;
+        }
+    }
+    const scenarios = [
+        { text: "[情境 1 - 收集]<br>您經營一個會員俱樂部。您要求提供<strong>香港身分證副本</strong>以驗證身份。", correct: false, feedbackCorrect: "✅ 正確！收集身分證副本通常是「過度」的（DPP1）。除非絕對必要，否則應親自核實身份，而不是保留副本。", feedbackWrong: "❌ 錯誤。除非法律規定（如銀行業），否則收集身分證副本被視為過度收集（DPP1）。應避免這種做法。" },
+        { text: "[情境 2 - 行銷]<br>您為「訂單更新」收集了電子郵件地址。您可以用它們來為您的新產品線發送廣告嗎？", correct: false, feedbackCorrect: "✅ 正確！未經訂明同意，您不能將資料用於「新目的」（直接行銷）（DPP3）。", feedbackWrong: "❌ 錯誤。您為<em>訂單</em>收集了電子郵件（DPP1）。除非您事先獲得特定同意，否則將其用於<em>行銷</em>違反了DPP3。" },
+        { text: "[情境 3 - 查閱]<br>一位前客戶發郵件要求您提供一份您持有的關於他們的所有資料的副本。您因為他們很煩人而忽略了它。", correct: false, feedbackCorrect: "✅ 正確！您不能忽略它。DPP6要求您在40天內回應查閱資料要求，否則將面臨執法行動。", feedbackWrong: "❌ 危險！忽略查閱資料要求直接違反了DPP6。您必須在40天內作出回應。" }
+    ];
+    let currentSim = 0;
+    function checkAnswer(answer) {
+        const feedback = document.getElementById('sim-feedback'), nextBtn = document.getElementById('next-btn'), scene = scenarios[currentSim];
+        let isRight = (answer !== scene.correct);
+        feedback.style.display = 'block';
+        if (isRight) {
+            feedback.style.backgroundColor = '#dff9fb';
+            feedback.style.color = '#22a6b3';
+            feedback.innerHTML = scene.feedbackCorrect;
+        } else {
+            feedback.style.backgroundColor = '#ff7979';
+            feedback.style.color = 'white';
+            feedback.innerHTML = scene.feedbackWrong;
+        }
+        nextBtn.style.display = 'block';
+    }
+    function nextScenario() {
+        currentSim++;
+        if (currentSim >= scenarios.length) {
+            document.getElementById('sim-text').innerHTML = "🎉 測驗完成！請記住：公平、透明、安全。";
+            document.getElementById('sim-choices').style.display = 'none';
+            document.getElementById('sim-feedback').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            return;
+        }
+        document.getElementById('sim-text').innerHTML = scenarios[currentSim].text;
+        document.getElementById('sim-feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

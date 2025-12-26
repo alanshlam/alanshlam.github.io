@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料生存指南</title>
+    <style>
+        :root {
+            --primary: #2563eb; --secondary: #64748b; --success: #22c55e;
+            --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc; --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg); color: #334155; margin: 0; padding: 0; line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white; padding: 2rem 1rem; text-align: center;
+        }
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { opacity: 0.8; font-size: 1.1rem; }
+        nav {
+            background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; gap: 1rem; padding: 1rem;
+            position: sticky; top: 0; z-index: 100;
+        }
+        button.nav-btn {
+            background: none; border: none; padding: 0.5rem 1.5rem; font-size: 1rem;
+            font-weight: 600; color: var(--secondary); cursor: pointer;
+            border-bottom: 3px solid transparent; transition: all 0.3s;
+        }
+        button.nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem;
+        }
+        h2 { color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        .rule-container {
+            display: flex; justify-content: space-around; flex-wrap: wrap;
+            gap: 1rem; margin-top: 2rem;
+        }
+        .rule-box {
+            background: #f1f5f9; padding: 1.5rem; border-radius: 8px; text-align: center;
+            flex: 1; min-width: 200px; border: 2px solid transparent;
+        }
+        .rule-box.highlight { border-color: var(--primary); background: #e0e7ff; }
+        .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        .quiz-option {
+            display: block; width: 100%; padding: 1rem; margin: 0.5rem 0;
+            background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+            cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--primary); background: #eff6ff; }
+        .quiz-option.selected { border-color: var(--primary); background: #dbeafe; }
+        #recommendation-result {
+            display: none; background: #f0fdf4; border: 2px solid var(--success);
+            padding: 2rem; border-radius: 12px; margin-top: 2rem;
+        }
+        .sim-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .defense-toggle {
+            display: flex; align-items: center; gap: 10px; background: #fff;
+            padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .threat-btn {
+            background: var(--danger); color: white; border: none; padding: 1rem 2rem;
+            border-radius: 8px; font-size: 1.2rem; cursor: pointer; width: 100%;
+            margin-top: 1rem; transition: transform 0.1s;
+        }
+        .threat-btn:active { transform: scale(0.98); }
+        #sim-result {
+            margin-top: 1.5rem; padding: 1.5rem; border-radius: 8px; font-weight: bold;
+            text-align: center; font-size: 1.2rem; display: none;
+        }
+        .sim-win { background: #dcfce7; color: #166534; }
+        .sim-loss { background: #fee2e2; color: #991b1b; }
+        footer { text-align: center; padding: 2rem; color: var(--secondary); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f1f5f9; }
+        tr:hover { background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>💾 資料生存指南</h1>
+    <p>了解備份：簡單、有效且能防禦勒索軟體</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('learn')">1. 規則</button>
+    <button class="nav-btn" onclick="showTab('choose')">2. 尋找我的解決方案</button>
+    <button class="nav-btn" onclick="showTab('simulate')">3. 災難模擬</button>
+</nav>
+
+<main>
+    <div id="learn" class="section active">
+        <div class="card">
+            <h2>黃金法則：3-2-1</h2>
+            <p>不要把所有雞蛋放在同一個籃子裡。為了確保您的資料能在現代威脅中存活下來，請遵循此公式：</p>
+            <div class="rule-container">
+                <div class="rule-box"><span class="icon">📂</span><h3>3 份副本</h3><p>您資料的總副本數。（1份原始檔 + 2份備份）</p></div>
+                <div class="rule-box"><span class="icon">💿☁️</span><h3>2 種媒體類型</h3><p>不同的媒體類型。（例如，硬碟 + 雲端）</p></div>
+                <div class="rule-box"><span class="icon">🏠</span><h3>1 份異地儲存</h3><p>遠離您的住家/辦公室。（例如，雲端）</p></div>
+            </div>
+        </div>
+        <div class="card" style="border-left: 5px solid var(--danger);">
+            <h2>⚠️ 新威脅：勒索軟體</h2>
+            <p>如今，3-2-1規則已不足夠，因為駭客可以鎖定您的電腦<strong>和</strong>您連接的備份磁碟。</p>
+            <p><strong>我們需要兩個額外的數字：</strong></p>
+            <ul>
+                <li><strong>1 份不可變/離線副本：</strong>一份無法更改（唯讀）或實體拔除（氣隙）的備份。</li>
+                <li><strong>0 個錯誤：</strong>您必須測試您的備份以確保零錯誤。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="choose" class="section">
+        <div class="card">
+            <h2>找到您完美的備份策略</h2>
+            <p>回答兩個問題以獲得量身定制的建議。</p>
+            <div style="margin-bottom: 2rem;">
+                <h3>1. 您是誰？</h3>
+                <button class="quiz-option" onclick="selectOption('type', 'student', this)">🎓 <strong>學生/個人</strong>（個人照片、作業，< 2TB）</button>
+                <button class="quiz-option" onclick="selectOption('type', 'creator', this)">🎨 <strong>創作者/進階使用者</strong>（大型影片檔案，5TB+，精通科技）</button>
+                <button class="quiz-option" onclick="selectOption('type', 'sme', this)">🏢 <strong>小型企業</strong>（團隊資料、客戶檔案、關鍵業務持續運作）</button>
+            </div>
+            <div style="margin-bottom: 2rem;">
+                <h3>2. 您的預算優先考量是什麼？</h3>
+                <button class="quiz-option" onclick="selectOption('budget', 'cheap', this)">💰 <strong>低成本</strong>（我願意自己動手做一些工作）</button>
+                <button class="quiz-option" onclick="selectOption('budget', 'easy', this)">⚡ <strong>方便</strong>（我希望它自動化且簡單）</button>
+            </div>
+            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">顯示建議</button>
+        </div>
+        <div id="recommendation-result"></div>
+    </div>
+
+    <div id="simulate" class="section">
+        <div class="card">
+            <h2>🔥 災難模擬器</h2>
+            <p>建立您的防禦，看看它是否能在災難中倖存。</p>
+            <h3>步驟 1：建立您的備份策略</h3>
+            <div class="sim-grid">
+                <label class="defense-toggle"><input type="checkbox" id="def-local" checked disabled> <span>💻 原始檔案（在個人電腦上）</span></label>
+                <label class="defense-toggle"><input type="checkbox" id="def-hdd"> <span>💾 外接 USB 硬碟（一直插著）</span></label>
+                <label class="defense-toggle"><input type="checkbox" id="def-cloud-sync"> <span>☁️ 雲端同步（Google Drive/Dropbox）</span></label>
+                <label class="defense-toggle"><input type="checkbox" id="def-cloud-backup"> <span>🛡️ 雲端備份（具有歷史記錄的 Backblaze/IDrive）</span></label>
+                <label class="defense-toggle"><input type="checkbox" id="def-offline"> <span>🔌 離線/拔除的硬碟（氣隙）</span></label>
+            </div>
+            <h3>步驟 2：觸發一場災難</h3>
+            <div class="sim-grid">
+                <button class="threat-btn" style="background:#f59e0b" onclick="runSim('delete')">🗑️ 意外刪除</button>
+                <button class="threat-btn" style="background:#ef4444" onclick="runSim('ransom')">💀 勒索軟體攻擊</button>
+                <button class="threat-btn" style="background:#b91c1c" onclick="runSim('fire')">🔥 房屋火災/竊盜</button>
+            </div>
+            <div id="sim-result"></div>
+        </div>
+    </div>
+</main>
+
+<footer><p>為提升備份意識而設。請記住：同步不等於備份！</p></footer>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    let userSelections = { type: null, budget: null };
+    function selectOption(category, value, element) {
+        userSelections[category] = value;
+        element.parentNode.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+    function getRecommendation() {
+        const resDiv = document.getElementById('recommendation-result');
+        const { type, budget } = userSelections;
+        if (!type || !budget) {
+            alert("請選擇一個身份和一個預算選項。");
+            return;
+        }
+        let strategyName = "", strategyDesc = "", optionsHTML = "";
+        function createRow(name, pros, cons) {
+            return `<tr><td style="font-weight:bold;">${name}</td><td style="color:var(--success);">${pros}</td><td style="color:var(--secondary); font-size:0.9em;">${cons}</td></tr>`;
+        }
+        if (type === 'student') {
+            if (budget === 'cheap') {
+                strategyName = "策略：「手動混合」";
+                strategyDesc = "您不需要昂貴的軟體。使用實體硬碟備份大型檔案，並使用免費的雲端帳戶備份文件。";
+                optionsHTML = createRow("外接 USB 硬碟", "一次性成本（約50美元），傳輸速度快", "可能損壞/遺失，需要手動操作") +
+                              createRow("Google Drive / iCloud (免費方案)", "易於使用，隨處同步", "儲存空間小（15GB），同步≠備份") +
+                              createRow("免費備份軟體 (例如 Veeam Free)", "企業級可靠性，費用為0美元", "稍有學習曲線");
+            } else {
+                strategyName = "策略：自動化雲端備份";
+                strategyDesc = "最好的保護是您不必多想的保護。支付訂閱費用，讓您的電腦自動備份。";
+                optionsHTML = createRow("Backblaze Personal", "無限儲存空間，非常簡單", "無法選擇資料夾（備份所有內容），30天歷史記錄限制") +
+                              createRow("IDrive Personal", "可備份手機和電腦，歷史記錄良好", "儲存空間有限制（例如5TB），介面複雜") +
+                              createRow("Acronis Cyber Protect", "包含防毒軟體和備份", "較昂貴，系統資源佔用較多");
+            }
+        } else if (type === 'creator') {
+             strategyName = "策略：3-2-1 進階使用者方案";
+             strategyDesc = "您的資料量太大（TB+），不適用標準的雲端方案。您需要快速的本地副本和便宜的雲端「冷儲存」。";
+             optionsHTML = createRow("NAS 裝置 (例如 Synology/QNAP)", "本地存取速度快，RAID保護", "前期硬體成本高（300美元以上）") +
+                           createRow("雲端封存 (例如 AWS S3 / B2)", "每TB成本極低", "設定複雜，還原需付費") +
+                           createRow("現成的 12TB+ 硬碟", "每TB成本最低", "故障風險高（單點故障）");
+        } else { // SME
+            if (budget === 'cheap') {
+                strategyName = "策略：「拉取式」網路備份";
+                strategyDesc = "將資料集中到安全的辦公室伺服器（NAS）上，該伺服器從員工筆記型電腦「拉取」資料，然後同步到雲端。";
+                optionsHTML = createRow("Synology Active Backup", "硬體免費附贈，自動化", "需要硬體維護") +
+                              createRow("Wasabi 雲端儲存", "比亞馬遜/谷歌便宜，速度快", "沒有原生備份應用（僅儲存）");
+            } else {
+                strategyName = "策略：託管機群備份";
+                strategyDesc = "使用集中式儀表板遠端管理所有員工的筆記型電腦。對合規性和勒索軟體保護至關重要。";
+                optionsHTML = createRow("CrashPlan for Business", "無限儲存，刪除檔案保留", "基於Java的應用程式可能很慢") +
+                              createRow("Veeam Data Platform", "行業標準，即時還原", "昂貴，需要IT知識") +
+                              createRow("Microsoft 365 備份 (第三方)", "保護電子郵件/Teams (AFI.ai, Dropsuite)", "每位使用者需額外付費");
+            }
+        }
+        resDiv.style.display = 'block';
+        resDiv.innerHTML = `
+            <h3 style="margin-top:0; color:var(--primary);">${strategyName}</h3>
+            <p>${strategyDesc}</p>
+            <p><strong>比較此策略的熱門工具：</strong></p>
+            <table><thead><tr><th>工具/類型</th><th>✅ 優點</th><th>⚠️ 缺點</th></tr></thead><tbody>${optionsHTML}</tbody></table>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--secondary);"><em>* 僅為範例。價格和功能會隨時間變化。請務必自行研究。</em></p>`;
+    }
+    function runSim(threat) {
+        const hdd = document.getElementById('def-hdd').checked, cloudSync = document.getElementById('def-cloud-sync').checked,
+              cloudBackup = document.getElementById('def-cloud-backup').checked, offline = document.getElementById('def-offline').checked;
+        const resultBox = document.getElementById('sim-result');
+        let survived = false, message = "";
+        if (threat === 'delete') {
+            if (cloudBackup || hdd || offline) {
+                survived = true;
+                message = "安全！您從備份歷史記錄或本地磁碟恢復了檔案。";
+            } else if (cloudSync) {
+                survived = false;
+                message = "遺失！您刪除了檔案，雲端同步立即將其刪除。同步≠備份。";
+            } else {
+                survived = false;
+                message = "遺失！您沒有任何備份副本。";
+            }
+        }
+        if (threat === 'ransom') {
+            if (offline) {
+                survived = true;
+                message = "安全！您的離線磁碟已拔下，病毒無法接觸到它。";
+            } else if (cloudBackup) {
+                survived = true;
+                message = "安全！好的雲端備份服務具有「時間點」恢復（歷史記錄）功能，可以還原病毒的破壞。";
+            } else {
+                survived = false;
+                message = "遺失！病毒加密了您的電腦、插入的USB磁碟，並將損壞的檔案同步到雲端同步。";
+            }
+        }
+        if (threat === 'fire') {
+            if (cloudSync || cloudBackup) {
+                survived = true;
+                message = "安全！您的房子沒了，但您的資料在雲端是安全的。";
+            } else {
+                survived = false;
+                message = "遺失！您的電腦和外接磁碟都在火災中熔毀了。3-2-1規則說：要有一份異地備份。";
+            }
+        }
+        resultBox.style.display = 'block';
+        resultBox.className = survived ? 'sim-win' : 'sim-loss';
+        resultBox.innerHTML = (survived ? "🎉 " : "☠️ ") + message;
+    }
+</script>
+
+</body>
+</html>
