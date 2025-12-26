@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Voice Clone Heist (2019)</title>
+    <style>
+        :root {
+            --primary: #3b82f6; /* Electric Blue */
+            --primary-dark: #1d4ed8;
+            --highlight: #f59e0b; /* Energy Amber */
+            --bg-dark: #0f172a; /* Deep Slate */
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 2px solid var(--primary);
+            box-shadow: var(--shadow); 
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 80px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--highlight); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { color: var(--text-main); margin-left: 10px; font-size: 0.8rem; border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px; }
+
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--highlight); border-color: var(--highlight); box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; border-color: var(--primary-dark); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.8rem; margin-bottom: 1rem; color: var(--primary); text-align: center; text-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        h2 { color: var(--highlight); margin-bottom: 1.5rem; border-left: 6px solid var(--primary); padding-left: 15px; font-size: 1.8rem; }
+        p { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.7; color: var(--text-muted); }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
+        .stat { text-align: center; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; border: 1px solid var(--primary); }
+        .stat-num { font-size: 2.5rem; font-weight: bold; color: var(--highlight); display: block; }
+        .stat-label { font-size: 0.9rem; color: white; text-transform: uppercase; letter-spacing: 1px; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 35px; font-size: 1.2rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+        .action-btn:hover { background: var(--highlight); color: var(--bg-dark); transform: scale(1.05); }
+
+        /* --- TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--primary); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .t-container { padding: 10px 40px; position: relative; width: 50%; }
+        .t-container::after { content: '🎙️'; font-size: 1.2rem; position: absolute; width: 40px; height: 40px; right: -22px; background-color: var(--bg-dark); border: 2px solid var(--highlight); top: 15px; border-radius: 50%; z-index: 10; display:flex; align-items:center; justify-content:center;}
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .right::after { left: -22px; }
+        .t-content { padding: 25px 30px; background-color: var(--card-bg); position: relative; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-top: 3px solid var(--highlight); }
+        .t-content h3 { color: var(--highlight); margin-bottom: 5px; font-size: 1.3rem; }
+        .t-content h4 { color: var(--primary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #333; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--highlight); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
+
+        /* Defense */
+        .defense-tip { display: flex; align-items: flex-start; gap: 20px; background: var(--card-bg); padding: 2rem; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-left: 5px solid var(--primary); }
+        .icon-box { font-size: 2.5rem; min-width: 60px; text-align: center; color: var(--highlight); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); max-width: 850px; margin: 0 auto; border: 1px solid var(--primary); }
+        .progress-bar { width: 100%; background: #000; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--highlight); width: 0%; transition: 0.3s; }
+        
+        .option-btn { 
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #444; 
+            background: #1e293b; color: white; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--highlight); background: #334155; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; color: #fff; font-weight: bold;}
+        .feedback.correct { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .feedback.wrong { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; border-top: 1px solid #333; background: #0b1120; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .timeline::after { left: 31px; }
+            .t-container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .t-container::after { left: 11px; }
+            .left::after, .right::after { left: 11px; }
+            .right { left: 0%; }
+            .left { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">AUDIO <span>FRAUD</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-story">Timeline</button>
+            <button class="nav-btn" id="btn-tech">Audio AI</button>
+            <button class="nav-btn" id="btn-defense">Defense</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>The UK Energy Firm Voice Clone (2019)</h1>
+                <p>The phone call that cost a company €220,000. No hackers, just an AI voice.</p>
+                
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-num">$243,000</span>
+                        <span class="stat-label">Total Loss (USD)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">AI</span>
+                        <span class="stat-label">German CEO Voice</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">0</span>
+                        <span class="stat-label">Funds Recovered</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="jump-story">Hear How It Happened</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🗣️ The Mimic</h3>
+                    <p>Scammers used AI to clone the voice of the German Parent Company CEO. It copied his accent, tone, and mannerisms perfectly.</p>
+                </div>
+                <div class="info-card">
+                    <h3>⚡ The Target</h3>
+                    <p>The Managing Director of the UK subsidiary received the call. Recognizing his "Boss's" voice, he obeyed the instructions immediately.</p>
+                </div>
+                <div class="info-card">
+                    <h3>📉 The Result</h3>
+                    <p>€220,000 was wired to a Hungarian bank account and then vanished into Mexico. It was one of the first major AI voice crimes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STORY (Timeline) -->
+        <section id="story" class="tab-content">
+            <h2 style="text-align: center; border:none;">The Invisible Heist</h2>
+            <div class="timeline">
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>March 2019</h4>
+                        <h3>The Phone Call</h3>
+                        <p>The UK Director's phone rings. It is the German CEO. He sounds stressed and demands an urgent payment for a secret acquisition.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>The Transfer</h4>
+                        <h3>Trust & Obey</h3>
+                        <p>Believing the voice, the Director bypasses standard checks due to the "urgency." He wires €220,000 to the supplied bank details.</p>
+                    </div>
+                </div>
+                <div class="t-container left">
+                    <div class="t-content">
+                        <h4>The Dispersion</h4>
+                        <h3>Gone in Minutes</h3>
+                        <p>The money lands in Hungary and is immediately split and moved to accounts in Mexico and other locations to avoid tracking.</p>
+                    </div>
+                </div>
+                <div class="t-container right">
+                    <div class="t-content">
+                        <h4>The Realization</h4>
+                        <h3>The Second Call</h3>
+                        <p>The scammers call *again* for more money. The Director grows suspicious, calls the real CEO's office, and realizes he was talking to a robot.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECHNICAL -->
+        <section id="tech" class="tab-content">
+            <h2>How Voice Cloning Works</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>1. Training Data</h3>
+                    <p>AI needs to "hear" the target first. Scammers likely downloaded earnings call recordings or YouTube interviews of the German CEO.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Synthesis (TTS)</h3>
+                    <p>Text-to-Speech engines take the training data and create a model. The scammer types text, and the AI speaks it in the CEO's voice.</p>
+                </div>
+                <div class="info-card">
+                    <h3>3. Real-Time Conversion</h3>
+                    <p>Modern tools allow "Speech-to-Speech." The scammer speaks into a mic, and the computer changes their voice to sound like the CEO instantly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DEFENSE (Consumer) -->
+        <section id="defense" class="tab-content">
+            <h2>Consumer Defense: When Your Ears Lie</h2>
+            <p>This tech is now used to scam grandparents and families. Here is how to verify a voice.</p>
+            
+            <div class="defense-tip">
+                <div class="icon-box">📞</div>
+                <div>
+                    <h3>1. The Hang Up Rule</h3>
+                    <p>If you get a distressed call from a loved one asking for money, <strong>Hang Up immediately</strong>. Call them back on their known mobile number. Scammers cannot answer their real phone.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔐</div>
+                <div>
+                    <h3>2. Family Safe Word</h3>
+                    <p>Pick a random word (e.g., "Purple Elephant"). If a family member calls in an emergency, ask for the word. AI clones don't know the password.</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">⏳</div>
+                <div>
+                    <h3>3. Question Urgency</h3>
+                    <p>AI scams rely on panic. "I'm in jail," "I'm in the hospital." Pause. Breathe. Ask a question only they would know (e.g., "What did we get Dad for his birthday?").</p>
+                </div>
+            </div>
+
+            <div class="defense-tip">
+                <div class="icon-box">🔇</div>
+                <div>
+                    <h3>4. Limit Public Audio</h3>
+                    <p>Be careful with public TikToks or Instagram stories featuring your voice. Scammers can scrape this audio to clone you and scam your parents.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="action-btn" id="jump-quiz">Take the Audio Quiz</button>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Can you beat the AI voice imposters? Test your skills.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:10px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--highlight);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>UK Voice Clone 2019 Case Study | Educational Web App</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. NAVIGATION LOGIC ---
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'story': 'btn-story',
+                    'tech': 'btn-tech',
+                    'defense': 'btn-defense',
+                    'quiz': 'btn-quiz'
+                };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
+            }
+
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-story').onclick = () => switchTab('story');
+            document.getElementById('btn-tech').onclick = () => switchTab('tech');
+            document.getElementById('btn-defense').onclick = () => switchTab('defense');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-story').onclick = () => switchTab('story');
+            document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
+
+            // --- 2. EXPANDED QUIZ DATA (12 Questions) ---
+            const questions = [
+                // FACTUAL
+                {
+                    q: "1. FACT: What technology was used to trick the UK Managing Director?",
+                    options: ["A simple actor", "AI Voice Cloning / Deepfake Audio", "Email hacking", "A stolen phone"],
+                    a: 1,
+                    exp: "Correct. AI software mimicked the German CEO's voice and accent perfectly."
+                },
+                {
+                    q: "2. FACT: Why did the Director transfer the money?",
+                    options: ["He recognized the voice and trusted the authority", "He was bribed", "He wanted to buy the company", "He was hacked"],
+                    a: 0,
+                    exp: "Correct. The familiarity of the voice and the rank of the 'CEO' bypassed his suspicion."
+                },
+                {
+                    q: "3. TECH: What does an AI need to clone a voice?",
+                    options: ["A drop of blood", "Audio samples (Recordings/Videos)", "A picture of the face", "The person's fingerprint"],
+                    a: 1,
+                    exp: "Correct. AI analyzes audio waves from recordings to learn how to speak like the target."
+                },
+                // CONSUMER SCENARIOS (Grandparent Scam)
+                {
+                    q: "4. SCENARIO: You get a call from an unknown number. It's your daughter, crying, saying she's in a car accident and needs money. What do you do?",
+                    options: ["Transfer the money immediately", "Hang up and call her personal cell phone", "Ask her about the weather", "Panic"],
+                    a: 1,
+                    exp: "Correct. This is a classic AI scam. Verify 'Out-of-Band' by calling her real number."
+                },
+                {
+                    q: "5. DEFENSE: What is a 'Safe Word'?",
+                    options: ["A password for your computer", "A secret word your family shares to prove identity on calls", "A banking pin", "Your address"],
+                    a: 1,
+                    exp: "Correct. If the voice on the phone doesn't know the secret word, it is an AI."
+                },
+                {
+                    q: "6. SCENARIO: Your boss calls you on a Saturday demanding you buy Gift Cards for a client urgently. Is this real?",
+                    options: ["Yes, bosses love gift cards", "No, this is a very common Vishing/AI Scam", "Do it to get a promotion", "Ask for a raise"],
+                    a: 1,
+                    exp: "Correct. Executives rarely ask employees to buy gift cards personally. It is a scam indicator."
+                },
+                {
+                    q: "7. TECH: Can AI clone an accent?",
+                    options: ["No, everyone sounds American", "Yes, AI captures accents, cadence, and tone", "Only if it speaks English", "No, it sounds robotic"],
+                    a: 1,
+                    exp: "Correct. In this case, the AI successfully mimicked the German accent of the CEO."
+                },
+                {
+                    q: "8. PRIVACY: How do scammers get your voice to clone it?",
+                    options: ["They guess", "From public social media videos (TikTok, Instagram, YouTube)", "They record you while you sleep", "They hack your brain"],
+                    a: 1,
+                    exp: "Correct. Public videos provide excellent training data for voice cloning tools."
+                },
+                {
+                    q: "9. VERIFICATION: If you suspect a call is fake, what question should you ask?",
+                    options: ["What time is it?", "A personal question only the real person would know (not on the internet)", "What is your name?", "How are you?"],
+                    a: 1,
+                    exp: "Correct. AI knows facts found online. It doesn't know personal family memories."
+                },
+                {
+                    q: "10. PSYCHOLOGY: What emotion do scammers use to make you act fast?",
+                    options: ["Happiness", "Urgency and Fear", "Boredom", "Hunger"],
+                    a: 1,
+                    exp: "Correct. 'Urgent Acquisition' or 'I'm in jail' creates panic so you don't think clearly."
+                },
+                {
+                    q: "11. ACTION: You realize you sent money to a scammer. What do you do?",
+                    options: ["Go to sleep", "Contact your bank immediately to try and freeze funds", "Email the scammer", "Delete your phone"],
+                    a: 1,
+                    exp: "Correct. Speed is critical. Banks may be able to stop the transfer if notified instantly."
+                },
+                {
+                    q: "12. MYTH: 'I would never fall for this, I know my mom's voice.' True or False?",
+                    options: ["True, I am smart", "False, AI is now indistinguishable from reality to the human ear", "True, AI sounds like a robot", "False, mom has no voice"],
+                    a: 1,
+                    exp: "Correct. Current technology is so good that even mothers cannot distinguish their child's AI voice from the real one."
+                }
+            ];
+
+            let currentQIndex = 0;
+            let score = 0;
+
+            const qText = document.getElementById('question-text');
+            const optsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback-display');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress');
+            const finalScore = document.getElementById('final-score');
+            const scoreMsg = document.getElementById('score-message');
+            const quizBlock = document.getElementById('quiz-block');
+            const scoreBlock = document.getElementById('score-block');
+            const restartBtn = document.getElementById('restart-btn');
+
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+
+                const pct = ((currentQIndex) / questions.length) * 100;
+                progressBar.style.width = pct + "%";
+
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = function() { handleAnswer(idx, btn); };
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                const allBtns = optsContainer.querySelectorAll('button');
+                allBtns.forEach(b => b.disabled = true);
+
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.style.background = "#10b981"; /* Success Green */
+                    btnElement.style.color = "#0f172a";
+                    btnElement.style.borderColor = "#059669";
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+                } else {
+                    btnElement.style.background = "#ef4444"; /* Danger Red */
+                    btnElement.style.color = "white";
+                    btnElement.style.borderColor = "#b91c1c";
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = function() {
+                currentQIndex++;
+                if (currentQIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            restartBtn.onclick = function() {
+                currentQIndex = 0;
+                score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                
+                if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You have ears of steel.";
+                else if(score > 8) scoreMsg.innerText = "👍 Good Job! You are skeptical.";
+                else scoreMsg.innerText = "📚 Review the lessons and try again.";
+            }
+
+            // Init
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>

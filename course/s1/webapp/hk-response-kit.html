@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK Cyber Rescue: Incident Response Kit</title>
+    <style>
+        :root {
+            --emergency: #e74c3c;
+            --safe: #27ae60;
+            --info: #2980b9;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --bg: #f4f6f7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--emergency);
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; }
+        .hotline-banner {
+            background: var(--emergency);
+            color: white;
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 1rem;
+            gap: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        button.nav-btn {
+            background: none;
+            border: 2px solid transparent;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        button.nav-btn.active {
+            background: var(--info);
+            color: white;
+        }
+
+        /* Main Content */
+        main { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        h2 { color: var(--dark); border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+
+        /* Step List */
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--info);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .step-number {
+            background: var(--dark);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Wizard Buttons */
+        .wizard-options { display: flex; gap: 1rem; margin-top: 1rem; }
+        .wizard-btn {
+            flex: 1;
+            padding: 1.5rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .wizard-btn:hover { border-color: var(--info); background: #f0f8ff; }
+
+        /* Results Area */
+        #plan-output {
+            display: none;
+            background: #e8f6f3;
+            border: 2px solid var(--safe);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+
+        /* Simulator Styles */
+        .scenario-box {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+
+        .sim-btn {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn-safe { background: var(--safe); color: white; }
+        .btn-risk { background: var(--emergency); color: white; }
+
+        .result-feedback {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🚨 HK Cyber Rescue</h1>
+    <p>Incident Response Guide for Hong Kong</p>
+    <div class="hotline-banner">📞 HKCERT Hotline: 8105 6060</div>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('panic')">⚡ Immediate Action</button>
+    <button class="nav-btn" onclick="showTab('wizard')">📋 Recovery Plan</button>
+    <button class="nav-btn" onclick="showTab('sim')">🎮 Response Sim</button>
+</nav>
+
+<main>
+
+    <!-- SECTION 1: PANIC BUTTON / IMMEDIATE ACTIONS -->
+    <div id="panic" class="section active">
+        <div class="card" style="border-top: 5px solid var(--emergency);">
+            <h2 style="color:var(--emergency)">STOP! Read this first (First 24 Hours)</h2>
+            <p>If you suspect you've been hacked, follow these universal steps immediately.</p>
+            
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Isolate but Don't Power Off</strong><br>
+                    Disconnect the internet (Wi-Fi/Cable). Do not turn off the PC (you might lose evidence).
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Secure Credentials</strong><br>
+                    Use a <em>different</em> device to change passwords immediately. Enable 2FA.
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Call for Help</strong><br>
+                    Contact <strong>HKCERT (8105 6060)</strong> for confidential advice.
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Scan & Backup</strong><br>
+                    Run an antivirus scan. Backup <em>clean</em> files only. Do not backup infected files.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: RECOVERY WIZARD -->
+    <div id="wizard" class="section">
+        <div class="card">
+            <h2>Create Your Recovery Plan</h2>
+            <p>Are you an Individual or representing a Company?</p>
+            
+            <div class="wizard-options">
+                <button class="wizard-btn" onclick="generatePlan('ind')">👤 <strong>Individual</strong><br><small>Identity Theft, Personal Accounts</small></button>
+                <button class="wizard-btn" onclick="generatePlan('sme')">🏢 <strong>SME / Business</strong><br><small>Customer Data, Legal Compliance</small></button>
+            </div>
+
+            <div id="plan-output">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: SIMULATOR -->
+    <div id="sim" class="section">
+        <div class="card">
+            <h2>Crisis Simulator</h2>
+            <p>Test your decision making. What would you do?</p>
+            
+            <div class="scenario-box" id="sim-text">
+                [SCENARIO 1] <br>
+                A red screen appears on your office computer: <br>
+                "YOUR FILES ARE ENCRYPTED. PAY 5 BITCOIN OR LOSE EVERYTHING."
+            </div>
+
+            <div id="sim-choices">
+                <button class="sim-btn btn-risk" onclick="resolveSim(false)">💸 Pay the ransom immediately (Get data back fast)</button>
+                <button class="sim-btn btn-safe" onclick="resolveSim(true)">🔌 Disconnect network & Call HKCERT (Don't pay)</button>
+            </div>
+
+            <div id="sim-feedback" class="result-feedback"></div>
+            
+            <button id="next-sim-btn" style="display:none; margin-top:1rem; padding:10px; width:100%; cursor:pointer;" onclick="nextSim()">Next Scenario ▶</button>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <p>Guidance based on HKCERT, PCPD, and HK Police standards.<br>
+    <strong>Remember: 70% of businesses survive if they respond correctly.</strong></p>
+</footer>
+
+<script>
+    // --- Navigation Logic ---
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // --- Recovery Plan Wizard Logic ---
+    function generatePlan(type) {
+        const output = document.getElementById('plan-output');
+        output.style.display = 'block';
+        
+        if (type === 'ind') {
+            output.innerHTML = `
+                <h3>👤 Individual Recovery Checklist</h3>
+                <ul>
+                    <li><strong>Check Leaks:</strong> Visit <em>Have I Been Pwned</em> to see what was stolen.</li>
+                    <li><strong>Protect Finance:</strong> Notify <strong>HKMA</strong> or your bank via app immediately. Freeze credit cards.</li>
+                    <li><strong>Report:</strong> If ID theft is suspected, file a report with <strong>HK Police (2527 7111)</strong>.</li>
+                    <li><strong>Watch:</strong> Enable transaction alerts on your phone for the next 90 days.</li>
+                </ul>
+            `;
+        } else {
+            output.innerHTML = `
+                <h3>🏢 SME Business Recovery Checklist</h3>
+                <ul>
+                    <li><strong>Containment:</strong> Isolate the infected segment. Do not reboot servers if possible (Forensics need memory logs).</li>
+                    <li><strong>Legal Duty (Crucial):</strong> If personal data is leaked, you must notify the <strong>PCPD</strong> (Privacy Commissioner).
+                        <br><em>Time limit: As soon as practicable (Guideline: < 5 days).</em></li>
+                    <li><strong>Notification:</strong> Inform affected customers clearly. Hiding it destroys trust.</li>
+                    <li><strong>Experts:</strong> Call HKCERT hotline for vendor recommendations if you don't have an IT team.</li>
+                </ul>
+            `;
+        }
+    }
+
+    // --- Simulator Logic ---
+    const scenarios = [
+        {
+            text: "[SCENARIO 1] Ransomware Attack.<br>Screen says: 'Pay 1 Bitcoin to unlock files'.",
+            safeBtn: "Disconnect Network & Call HKCERT",
+            riskBtn: "Pay the Ransom",
+            feedbackSafe: "✅ Correct! Never pay. Paying fuels crime and doesn't guarantee data recovery. Isolate and restore from backup.",
+            feedbackRisk: "❌ Wrong. Paying funds criminals and they often ask for more money later. You should have isolated the machine."
+        },
+        {
+            text: "[SCENARIO 2] Customer Database Leak.<br>You found out 500 customer emails were stolen.",
+            safeBtn: "Notify PCPD & Customers",
+            riskBtn: "Fix the hole and tell no one",
+            feedbackSafe: "✅ Correct! Transparency builds trust. In HK, notifying the Privacy Commissioner (PCPD) is standard practice.",
+            feedbackRisk: "❌ Wrong. Covering it up can lead to massive fines and permanent reputation damage when it leaks later."
+        },
+        {
+            text: "[SCENARIO 3] Phishing Click.<br>You accidentally clicked a link and entered your password.",
+            safeBtn: "Change Password & Enable 2FA",
+            riskBtn: "Close browser and hope it's fine",
+            feedbackSafe: "✅ Correct! Hackers act fast. Changing credentials and turning on Multi-Factor Auth (MFA) stops them.",
+            feedbackRisk: "❌ Wrong. They already have your password. By doing nothing, they will log in and steal data within minutes."
+        }
+    ];
+
+    let currentSim = 0;
+
+    function resolveSim(isSafe) {
+        const feedback = document.getElementById('sim-feedback');
+        const nextBtn = document.getElementById('next-sim-btn');
+        const choices = document.getElementById('sim-choices');
+
+        feedback.style.display = 'block';
+        choices.style.display = 'none'; // Hide buttons
+
+        if (isSafe) {
+            feedback.style.backgroundColor = '#d4edda'; // Green
+            feedback.style.color = '#155724';
+            feedback.innerHTML = scenarios[currentSim].feedbackSafe;
+        } else {
+            feedback.style.backgroundColor = '#f8d7da'; // Red
+            feedback.style.color = '#721c24';
+            feedback.innerHTML = scenarios[currentSim].feedbackRisk;
+        }
+
+        if (currentSim < scenarios.length - 1) {
+            nextBtn.style.display = 'block';
+        } else {
+            nextBtn.style.display = 'block';
+            nextBtn.innerText = "Simulation Complete (Reset)";
+            nextBtn.onclick = function() { location.reload(); };
+        }
+    }
+
+    function nextSim() {
+        currentSim++;
+        document.getElementById('sim-text').innerHTML = scenarios[currentSim].text;
+        
+        // Reset UI
+        document.getElementById('sim-feedback').style.display = 'none';
+        document.getElementById('next-sim-btn').style.display = 'none';
+        document.getElementById('sim-choices').style.display = 'block';
+        
+        // Update button text
+        const buttons = document.querySelectorAll('.sim-btn');
+        buttons[0].innerText = "⚠️ " + scenarios[currentSim].riskBtn;
+        buttons[1].innerText = "🛡️ " + scenarios[currentSim].safeBtn;
+    }
+    
+    // Initialize first button text
+    window.onload = function() {
+        const buttons = document.querySelectorAll('.sim-btn');
+        buttons[0].innerText = "💸 Pay the ransom"; // risk
+        buttons[1].innerText = "🔌 Disconnect & Call HKCERT"; // safe
+    };
+</script>
+
+</body>
+</html>

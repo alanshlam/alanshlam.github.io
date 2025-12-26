@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Data Survival Guide</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #334155;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { opacity: 0.8; font-size: 1.1rem; }
+
+        /* Navigation */
+        nav {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        button.nav-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        button.nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h2 { color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        
+        /* 3-2-1 Visualizer */
+        .rule-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .rule-box {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            border: 2px solid transparent;
+        }
+
+        .rule-box.highlight { border-color: var(--primary); background: #e0e7ff; }
+        .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        .quiz-option:hover { border-color: var(--primary); background: #eff6ff; }
+        .quiz-option.selected { border-color: var(--primary); background: #dbeafe; }
+
+        #recommendation-result {
+            display: none;
+            background: #f0fdf4;
+            border: 2px solid var(--success);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        /* Simulator Styles */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .defense-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .threat-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: transform 0.1s;
+        }
+
+        .threat-btn:active { transform: scale(0.98); }
+
+        #sim-result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2rem;
+            display: none;
+        }
+        
+        .sim-win { background: #dcfce7; color: #166534; }
+        .sim-loss { background: #fee2e2; color: #991b1b; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f1f5f9; }
+        tr:hover { background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>💾 Data Survival Guide</h1>
+    <p>Understanding Backups: Simple, Effective, & Ransomware-Proof</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('learn')">1. The Rules</button>
+    <button class="nav-btn" onclick="showTab('choose')">2. Find My Solution</button>
+    <button class="nav-btn" onclick="showTab('simulate')">3. Disaster Sim</button>
+</nav>
+
+<main>
+    <!-- SECTION 1: THE RULES -->
+    <div id="learn" class="section active">
+        <div class="card">
+            <h2>The Golden Rule: 3-2-1</h2>
+            <p>Don't put all your eggs in one basket. To guarantee your data survives modern threats, follow this formula:</p>
+            
+            <div class="rule-container">
+                <div class="rule-box">
+                    <span class="icon">📂</span>
+                    <h3>3 Copies</h3>
+                    <p>Total copies of your data. (1 Original + 2 Backups)</p>
+                </div>
+                <div class="rule-box">
+                    <span class="icon">💿☁️</span>
+                    <h3>2 Types</h3>
+                    <p>Different media types. (e.g., Hard Drive + Cloud)</p>
+                </div>
+                <div class="rule-box">
+                    <span class="icon">🏠</span>
+                    <h3>1 Offsite</h3>
+                    <p>Far away from your house/office. (e.g., The Cloud)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid var(--danger);">
+            <h2>⚠️ The New Threat: Ransomware</h2>
+            <p>Today, the 3-2-1 rule isn't enough because hackers can lock your computer <strong>AND</strong> your attached backup drive.</p>
+            <p><strong>We need two extra numbers:</strong></p>
+            <ul>
+                <li><strong>1 Immutable/Offline Copy:</strong> A backup that cannot be changed (Read-Only) or is physically unplugged (Air-Gapped).</li>
+                <li><strong>0 Errors:</strong> You must TEST your backups to ensure there are zero errors.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 2: SOLUTION FINDER -->
+    <div id="choose" class="section">
+        <div class="card">
+            <h2>Find Your Perfect Backup Strategy</h2>
+            <p>Answer two questions to get a tailored recommendation.</p>
+
+            <div style="margin-bottom: 2rem;">
+                <h3>1. Who are you?</h3>
+                <button class="quiz-option" onclick="selectOption('type', 'student', this)">🎓 <strong>Student / Individual</strong> (Personal photos, homework, < 2TB)</button>
+                <button class="quiz-option" onclick="selectOption('type', 'creator', this)">🎨 <strong>Creator / Power User</strong> (Large video files, 5TB+, Tech-savvy)</button>
+                <button class="quiz-option" onclick="selectOption('type', 'sme', this)">🏢 <strong>Small Business (SME)</strong> (Team data, customer files, critical uptime)</button>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3>2. What is your budget priority?</h3>
+                <button class="quiz-option" onclick="selectOption('budget', 'cheap', this)">💰 <strong>Low Cost</strong> (I'm willing to do some manual work)</button>
+                <button class="quiz-option" onclick="selectOption('budget', 'easy', this)">⚡ <strong>Convenience</strong> (I want it automated and simple)</button>
+            </div>
+
+            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">Show Recommendation</button>
+        </div>
+
+        <div id="recommendation-result">
+            <!-- Result injected here via JS -->
+        </div>
+    </div>
+
+    <!-- SECTION 3: SIMULATOR -->
+    <div id="simulate" class="section">
+        <div class="card">
+            <h2>🔥 The Disaster Simulator</h2>
+            <p>Build your defense and see if it survives a disaster.</p>
+            
+            <h3>Step 1: Build your Backup Strategy</h3>
+            <div class="sim-grid">
+                <label class="defense-toggle">
+                    <input type="checkbox" id="def-local" checked disabled> 
+                    <span>💻 Original Files (On PC)</span>
+                </label>
+                <label class="defense-toggle">
+                    <input type="checkbox" id="def-hdd"> 
+                    <span>💾 External USB Drive (Always Plugged In)</span>
+                </label>
+                <label class="defense-toggle">
+                    <input type="checkbox" id="def-cloud-sync"> 
+                    <span>☁️ Cloud Sync (Google Drive/Dropbox)</span>
+                </label>
+                <label class="defense-toggle">
+                    <input type="checkbox" id="def-cloud-backup"> 
+                    <span>🛡️ Cloud Backup (Backblaze/IDrive with History)</span>
+                </label>
+                <label class="defense-toggle">
+                    <input type="checkbox" id="def-offline"> 
+                    <span>🔌 Offline/Unplugged Drive (Air Gap)</span>
+                </label>
+            </div>
+
+            <h3>Step 2: Trigger a Disaster</h3>
+            <div class="sim-grid">
+                <button class="threat-btn" style="background:#f59e0b" onclick="runSim('delete')">🗑️ Accidental Deletion</button>
+                <button class="threat-btn" style="background:#ef4444" onclick="runSim('ransom')">💀 Ransomware Attack</button>
+                <button class="threat-btn" style="background:#b91c1c" onclick="runSim('fire')">🔥 House Fire / Theft</button>
+            </div>
+
+            <div id="sim-result"></div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>Created for Backup Awareness. Remember: Sync is not Backup!</p>
+</footer>
+
+<script>
+    // Tab Navigation
+    function showTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Quiz Logic
+    let userSelections = { type: null, budget: null };
+
+    function selectOption(category, value, element) {
+        userSelections[category] = value;
+        // Visual feedback
+        element.parentNode.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function getRecommendation() {
+        const resDiv = document.getElementById('recommendation-result');
+        const { type, budget } = userSelections;
+
+        if (!type || !budget) {
+            alert("Please select both an Identity and a Budget option.");
+            return;
+        }
+
+        let strategyName = "";
+        let strategyDesc = "";
+        let optionsHTML = "";
+
+        // HELPER: Function to generate rows for the comparison table
+        function createRow(name, pros, cons) {
+            return `
+                <tr>
+                    <td style="font-weight:bold;">${name}</td>
+                    <td style="color:var(--success);">${pros}</td>
+                    <td style="color:var(--secondary); font-size:0.9em;">${cons}</td>
+                </tr>
+            `;
+        }
+
+        // 1. STUDENT / INDIVIDUAL
+        if (type === 'student') {
+            if (budget === 'cheap') {
+                strategyName = "Strategy: The 'Manual Hybrid'";
+                strategyDesc = "You don't need expensive software. Use a physical drive for heavy files and free cloud accounts for documents.";
+                optionsHTML = `
+                    ${createRow("External USB HDD", "One-time cost ($50), Fast transfer", "Can break/get lost, Manual work")}
+                    ${createRow("Google Drive / iCloud (Free Tier)", "Easy to use, Synced everywhere", "Small storage limit (15GB), Sync ≠ Backup")}
+                    ${createRow("Free Backup Software (e.g., Veeam Free)", "Enterprise reliability for $0", "Slight learning curve")}
+                `;
+            } else {
+                strategyName = "Strategy: Automated Cloud Backup";
+                strategyDesc = "The best protection is one you don't have to think about. Pay a subscription to have your computer back up automatically.";
+                optionsHTML = `
+                    ${createRow("Backblaze Personal", "Unlimited storage, Very simple", "No folder selection (backs up everything), 30-day history limit")}
+                    ${createRow("IDrive Personal", "Backs up Phones + PCs, Good history", "Storage limit (e.g., 5TB), Interface is complex")}
+                    ${createRow("Acronis Cyber Protect", "Includes Antivirus + Backup", "More expensive, Heavy on system resources")}
+                `;
+            }
+        
+        // 2. CREATOR / POWER USER
+        } else if (type === 'creator') {
+             strategyName = "Strategy: The 3-2-1 Power User";
+             strategyDesc = "You have too much data (TB+) for standard cloud plans. You need local speed + cheap 'Cold Storage' in the cloud.";
+             optionsHTML = `
+                ${createRow("NAS Device (e.g., Synology/QNAP)", "Fast local access, RAID protection", "High upfront hardware cost ($300+)")}
+                ${createRow("Cloud Archive (e.g., AWS S3 / B2)", "Extremely cheap per TB", "Complex setup, Restore costs money")}
+                ${createRow("Off-the-shelf 12TB+ HDD", "Cheapest cost per TB", "High failure risk (Single point of failure)")}
+            `;
+
+        // 3. SME / BUSINESS
+        } else { 
+            if (budget === 'cheap') {
+                strategyName = "Strategy: The 'Pull' Network Backup";
+                strategyDesc = "Centralize data on a secure office server (NAS) that 'pulls' data from employee laptops, then syncs to cloud.";
+                optionsHTML = `
+                    ${createRow("Synology Active Backup", "Free with hardware, Automated", "Requires hardware maintenance")}
+                    ${createRow("Wasabi Cloud Storage", "Cheaper than Amazon/Google, Fast", "No native backup app (storage only)")}
+                `;
+            } else {
+                strategyName = "Strategy: Managed Fleet Backup";
+                strategyDesc = "Use a centralized dashboard to manage all employee laptops remotely. Essential for compliance and ransomware protection.";
+                optionsHTML = `
+                    ${createRow("CrashPlan for Business", "Unlimited storage, deleted file retention", "Java-based app can be slow")}
+                    ${createRow("Veeam Data Platform", "Industry standard, Instant Recovery", "Expensive, Requires IT knowledge")}
+                    ${createRow("Microsoft 365 Backup (Third Party)", "Protects Emails/Teams (AFI.ai, Dropsuite)", "Extra cost per user")}
+                `;
+            }
+        }
+
+        resDiv.style.display = 'block';
+        resDiv.innerHTML = `
+            <h3 style="margin-top:0; color:var(--primary);">${strategyName}</h3>
+            <p>${strategyDesc}</p>
+            
+            <p><strong>Compare Popular Tools for this Strategy:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool / Type</th>
+                        <th>✅ Pros</th>
+                        <th>⚠️ Cons</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${optionsHTML}
+                </tbody>
+            </table>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--secondary);"><em>* Examples only. Prices and features change over time. Always do your own research.</em></p>
+        `;
+    }
+
+    // Simulator Logic
+    function runSim(threat) {
+        const hdd = document.getElementById('def-hdd').checked;
+        const cloudSync = document.getElementById('def-cloud-sync').checked;
+        const cloudBackup = document.getElementById('def-cloud-backup').checked;
+        const offline = document.getElementById('def-offline').checked;
+        
+        const resultBox = document.getElementById('sim-result');
+        let survived = false;
+        let message = "";
+
+        if (threat === 'delete') {
+            if (cloudBackup || hdd || offline) {
+                survived = true;
+                message = "SAFE! You recovered the file from your Backup History or Local Drive.";
+            } else if (cloudSync) {
+                survived = false;
+                message = "LOST! You deleted the file, and Cloud Sync deleted it everywhere instantly. Sync ≠ Backup.";
+            } else {
+                survived = false;
+                message = "LOST! You had no backup copies.";
+            }
+        }
+
+        if (threat === 'ransom') {
+            if (offline) {
+                survived = true;
+                message = "SAFE! Your Offline Drive was unplugged, so the virus couldn't touch it.";
+            } else if (cloudBackup) {
+                survived = true;
+                message = "SAFE! Good Cloud Backup services have 'Point-in-Time' recovery (History) to undo the virus.";
+            } else {
+                survived = false;
+                message = "LOST! The virus encrypted your PC, your plugged-in USB drive, and synced the corrupted files to Cloud Sync.";
+            }
+        }
+
+        if (threat === 'fire') {
+            if (cloudSync || cloudBackup) {
+                survived = true;
+                message = "SAFE! Your house is gone, but your data is safe in the Cloud.";
+            } else {
+                survived = false;
+                message = "LOST! Your PC and your External Drive both melted in the fire. 3-2-1 Rule says: Get one copy OFFSITE.";
+            }
+        }
+
+        resultBox.style.display = 'block';
+        resultBox.className = survived ? 'sim-win' : 'sim-loss';
+        resultBox.innerHTML = (survived ? "🎉 " : "☠️ ") + message;
+    }
+</script>
+
+</body>
+</html>

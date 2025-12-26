@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hong Kong Privacy Guardian (PDPO)</title>
+    <style>
+        :root {
+            --hk-purple: #6c5ce7; /* Inspired by PCPD branding tones */
+            --hk-dark: #2d3436;
+            --light: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            color: var(--hk-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--hk-purple) 0%, #4834d4 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; }
+        .hotline-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        button.nav-btn {
+            background: none;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--hk-dark);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        button.nav-btn.active {
+            color: var(--hk-purple);
+            border-bottom-color: var(--hk-purple);
+        }
+
+        /* Main Content */
+        main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        h2 { border-left: 5px solid var(--hk-purple); padding-left: 15px; color: var(--hk-dark); }
+
+        /* Principle Grid */
+        .dpp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dpp-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 4px solid var(--hk-purple);
+            transition: transform 0.2s;
+        }
+        .dpp-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .dpp-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--hk-purple); }
+
+        /* Checklist Wizard */
+        .wizard-btn {
+            width: 100%;
+            padding: 1.2rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .wizard-btn:hover { border-color: var(--hk-purple); background: #f1f2f6; }
+        .wizard-btn.selected { background: var(--hk-purple); color: white; border-color: var(--hk-purple); }
+
+        #checklist-result {
+            display: none;
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        /* Simulator */
+        .scenario-box {
+            background: var(--hk-dark);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .choice-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn-a { background: var(--light); color: var(--hk-dark); }
+        .btn-a:hover { background: #b2bec3; }
+
+        .feedback {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>⚖️ Hong Kong Privacy Guardian</h1>
+    <p>Simplified Guide to the Personal Data (Privacy) Ordinance</p>
+    <div class="hotline-badge">📞 PCPD Hotline: 2827 2827</div>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('learn')">1. The 6 Rules</button>
+    <button class="nav-btn" onclick="showTab('check')">2. Compliance Check</button>
+    <button class="nav-btn" onclick="showTab('sim')">3. Legal Scenario</button>
+</nav>
+
+<main>
+
+    <!-- SECTION 1: THE 6 PRINCIPLES -->
+    <div id="learn" class="section active">
+        <div class="card">
+            <h2>The 6 Data Protection Principles (DPPs)</h2>
+            <p>If you handle anyone's data (Names, IDs, Phones), you must follow these rules.</p>
+            
+            <div class="dpp-grid">
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP1: Collection</div>
+                    <p><strong>Don't be greedy.</strong> Only collect what you strictly need. Tell them why (PICS).</p>
+                </div>
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP2: Accuracy</div>
+                    <p><strong>Keep it true.</strong> Delete data when the job is done (e.g., failed job applicants).</p>
+                </div>
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP3: Use</div>
+                    <p><strong>No surprises.</strong> Use data only for the original purpose. Need to sell it? Get consent.</p>
+                </div>
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP4: Security</div>
+                    <p><strong>Lock it up.</strong> Encrypt files. Train staff. Don't leave USB drives on the bus.</p>
+                </div>
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP5: Transparency</div>
+                    <p><strong>Be open.</strong> Have a Privacy Policy that explains your rules clearly.</p>
+                </div>
+                <div class="dpp-card">
+                    <div class="dpp-title">DPP6: Access</div>
+                    <p><strong>Let them see.</strong> If someone asks to see their data, you must respond within 40 days.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: COMPLIANCE CHECKER -->
+    <div id="check" class="section">
+        <div class="card">
+            <h2>Am I Compliant?</h2>
+            <p>Select your role to generate a specific To-Do list.</p>
+
+            <button class="wizard-btn" onclick="generateList('individual', this)">👤 <strong>Individual / Freelancer</strong> (Tutor, App Dev, Personal)</button>
+            <button class="wizard-btn" onclick="generateList('sme', this)">🏢 <strong>SME / Business</strong> (Shop, Startup, Agency)</button>
+
+            <div id="checklist-result"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: SCENARIO SIMULATOR -->
+    <div id="sim" class="section">
+        <div class="card">
+            <h2>Legal Simulator: What would you do?</h2>
+            <p>Test your knowledge against real Hong Kong law.</p>
+            
+            <div class="scenario-box" id="sim-text">
+                [SCENARIO 1] <br>
+                You run a loyalty club. To sign up, you ask customers for their <strong>Hong Kong ID Card Number</strong> copy to "verify identity". Is this okay?
+            </div>
+
+            <div id="sim-choices">
+                <button class="choice-btn btn-a" onclick="checkAnswer(true)">A. Yes, I need to know they are real.</button>
+                <button class="choice-btn btn-a" onclick="checkAnswer(false)">B. No, that is excessive collection.</button>
+            </div>
+
+            <div id="sim-feedback" class="feedback"></div>
+            
+            <button id="next-btn" style="display:none; width:100%; padding:10px; margin-top:10px; cursor:pointer;" onclick="nextScenario()">Next Scenario ▶</button>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <p>This tool is for educational purposes. For legal advice, consult the <a href="https://www.pcpd.org.hk" target="_blank">PCPD Website</a>.</p>
+</footer>
+
+<script>
+    // --- Navigation ---
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // --- Compliance Logic ---
+    function generateList(type, btn) {
+        document.querySelectorAll('.wizard-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        const output = document.getElementById('checklist-result');
+        output.style.display = 'block';
+
+        if (type === 'individual') {
+            output.innerHTML = `
+                <h3>👤 Checklist for Individuals</h3>
+                <ul>
+                    <li><strong>PICS:</strong> Do you tell people <em>why</em> you need their data before you take it?</li>
+                    <li><strong>Security:</strong> Are your files password protected? (Don't just leave Excel sheets open).</li>
+                    <li><strong>Minimization:</strong> Do NOT collect HKID numbers unless legally required. Use a phone number instead.</li>
+                    <li><strong>Marketing:</strong> You cannot email blast people without their specific consent ("Opt-in").</li>
+                </ul>
+                <p><em>Tip: You are still a "Data User" under PDPO even if you don't have a company!</em></p>
+            `;
+        } else {
+            output.innerHTML = `
+                <h3>🏢 Checklist for SMEs</h3>
+                <ul>
+                    <li><strong>Policy:</strong> Do you have a Privacy Policy Statement (PPS) on your website?</li>
+                    <li><strong>Staff:</strong> Have you trained your staff not to share customer data?</li>
+                    <li><strong>Data Purge:</strong> Do you have a schedule to delete old data (e.g., resumes after 6 months)?</li>
+                    <li><strong>Requests:</strong> Are you ready to handle a "Data Access Request" within 40 days?</li>
+                </ul>
+                <p><em>Tip: Download the "SME Compliance Kit" from the PCPD website.</em></p>
+            `;
+        }
+    }
+
+    // --- Simulator Logic ---
+    const scenarios = [
+        {
+            text: "[SCENARIO 1 - Collection]<br>You run a membership club. You ask for a <strong>copy of the HKID card</strong> to verify identity.",
+            correct: false, // B is correct (No)
+            feedbackCorrect: "✅ Correct! Collecting HKID copies is usually 'Excessive' (DPP1). Verification should be done in person without keeping a copy, unless strictly necessary.",
+            feedbackWrong: "❌ Incorrect. Collecting ID copies is considered excessive collection under DPP1 unless legally required (like banking). Avoid it."
+        },
+        {
+            text: "[SCENARIO 2 - Marketing]<br>You collected email addresses for 'Order Updates'. Can you use them to send ads for your new product line?",
+            correct: false, // B is correct (No)
+            feedbackCorrect: "✅ Correct! You cannot use data for a 'New Purpose' (Direct Marketing) without prescribed consent (DPP3).",
+            feedbackWrong: "❌ Incorrect. You collected emails for <em>orders</em> (DPP1). Using them for <em>marketing</em> violates DPP3 unless you got specific consent first."
+        },
+        {
+            text: "[SCENARIO 3 - Access]<br>A former customer emails asking for a copy of all data you hold on them. You ignore it because they are annoying.",
+            correct: false, // B is correct (No)
+            feedbackCorrect: "✅ Correct! You CANNOT ignore it. DPP6 requires you to respond to a Data Access Request within 40 days, or face enforcement.",
+            feedbackWrong: "❌ Dangerous! Ignoring a Data Access Request is a direct violation of DPP6. You must respond within 40 days."
+        }
+    ];
+
+    let currentSim = 0;
+
+    function checkAnswer(answer) {
+        const feedback = document.getElementById('sim-feedback');
+        const nextBtn = document.getElementById('next-btn');
+        const scene = scenarios[currentSim];
+
+        // Logic: specific to the buttons provided in HTML
+        // Button A = true (Yes/Active action), Button B = false (No/Stop action)
+        // In Scenario 1: A (Yes) is Wrong. B (No) is Right. 
+        
+        let isRight = (answer === scene.correct);
+
+        feedback.style.display = 'block';
+        if (isRight) {
+            feedback.style.backgroundColor = '#dff9fb';
+            feedback.style.color = '#22a6b3';
+            feedback.innerHTML = scene.feedbackCorrect;
+        } else {
+            feedback.style.backgroundColor = '#ff7979';
+            feedback.style.color = 'white';
+            feedback.innerHTML = scene.feedbackWrong;
+        }
+        nextBtn.style.display = 'block';
+    }
+
+    function nextScenario() {
+        currentSim++;
+        if (currentSim >= scenarios.length) {
+            document.getElementById('sim-text').innerHTML = "🎉 Quiz Complete! Remember: Fairness, Transparency, Security.";
+            document.getElementById('sim-choices').style.display = 'none';
+            document.getElementById('sim-feedback').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('sim-text').innerHTML = scenarios[currentSim].text;
+        document.getElementById('sim-feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

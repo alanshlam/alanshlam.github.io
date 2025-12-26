@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKCERT Ransomware Defense Center</title>
+    <style>
+        :root {
+            --hk-red: #d32f2f;
+            --hk-dark: #212121;
+            --hk-gray: #f5f5f5;
+            --warning: #ffa000;
+            --success: #388e3c;
+            --info: #1976d2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eceff1;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: var(--hk-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            border-bottom: 5px solid var(--hk-red);
+        }
+
+        header h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; }
+        .emergency-bar {
+            background: var(--hk-red);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { background-color: #d32f2f; }
+            50% { background-color: #b71c1c; }
+            100% { background-color: #d32f2f; }
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 1rem;
+            border: none;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+            color: #555;
+        }
+
+        .nav-btn.active {
+            color: var(--hk-red);
+            border-bottom-color: var(--hk-red);
+            background: #ffebee;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & Grids */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: var(--hk-dark); border-left: 5px solid var(--hk-red); padding-left: 10px; }
+
+        .sign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .sign-box {
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .sign-box h3 { margin-top: 0; color: #e65100; font-size: 1.1rem; }
+
+        /* Tools Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #f5f5f5; }
+
+        /* Protocol Steps */
+        .protocol-step {
+            display: flex;
+            margin-bottom: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 5px solid var(--info);
+        }
+        .step-num {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ccc;
+            margin-right: 15px;
+        }
+
+        /* Response Tool */
+        .response-options { display: flex; gap: 10px; margin-bottom: 20px; }
+        .resp-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .resp-btn.selected { border-color: var(--hk-red); background: #ffebee; color: var(--hk-red); }
+
+        #response-output {
+            display: none;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .contact-btn {
+            background: var(--hk-red);
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="emergency-bar">
+    ⚠️ Suspect Infection? Call HKCERT 24/7 Hotline: <a href="tel:81056060" style="color:white; text-decoration:underline;">8105 6060</a>
+</div>
+
+<header>
+    <h1>🛡️ HKCERT Ransomware Defense</h1>
+    <p>Detection & Response Guide for Hong Kong</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('detect')">🔍 Detection (Signs)</button>
+    <button class="nav-btn" onclick="showTab('respond')">⚡ Response Protocol</button>
+    <button class="nav-btn" onclick="showTab('tools')">🛠️ Tool Kit</button>
+</nav>
+
+<main>
+
+    <!-- SECTION 1: DETECTION -->
+    <div id="detect" class="section active">
+        <div class="card">
+            <h2>Recognize the Signs</h2>
+            <p>Ransomware often encrypts silently before the ransom note appears. Watch for these HKCERT-identified indicators:</p>
+            
+            <div class="sign-grid">
+                <div class="sign-box">
+                    <h3>📂 File Changes</h3>
+                    <p>Files renamed to <code>.lockbit</code>, <code>.encrypted</code>, or cannot be opened. Disk space shrinks rapidly.</p>
+                </div>
+                <div class="sign-box">
+                    <h3>🐢 Performance</h3>
+                    <p>PC runs extremely slow. Fan spins loud (high CPU usage) while encryption happens.</p>
+                </div>
+                <div class="sign-box">
+                    <h3>🚫 Access Denied</h3>
+                    <p>You are logged out of accounts. Admin passwords stop working. Servers go offline.</p>
+                </div>
+                <div class="sign-box">
+                    <h3>💀 The Note</h3>
+                    <p>A text file appears on Desktop: "YOUR FILES ARE ENCRYPTED". Wallpaper changes to a demand message.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Immediate Triage</h2>
+            <p><strong>If you see these signs:</strong></p>
+            <ul>
+                <li>❌ <strong>DO NOT</strong> turn off the PC (Memory evidence is needed).</li>
+                <li>🔌 <strong>DISCONNECT</strong> Wi-Fi and Ethernet cables immediately.</li>
+                <li>💾 <strong>UNPLUG</strong> all USB drives and External Hard Drives.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 2: RESPONSE PROTOCOL -->
+    <div id="respond" class="section">
+        <div class="card">
+            <h2>Generate Response Plan</h2>
+            <p>Select your profile to see the HKCERT-recommended workflow.</p>
+            
+            <div class="response-options">
+                <button class="resp-btn" onclick="showPlan('ind', this)">👤 Individual / Home</button>
+                <button class="resp-btn" onclick="showPlan('sme', this)">🏢 SME / Business</button>
+            </div>
+
+            <div id="response-output">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <div class="card" style="border-left-color: var(--warning);">
+            <h2>⚠️ The Golden Rule: DO NOT PAY</h2>
+            <p>HKCERT and Police advise against paying ransoms.</p>
+            <ul>
+                <li>It funds criminal gangs.</li>
+                <li>There is < 10% chance you get all data back.</li>
+                <li>They often demand a second payment.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 3: TOOLS -->
+    <div id="tools" class="section">
+        <div class="card">
+            <h2>HKCERT Recommended Tools</h2>
+            <p>Free and low-cost tools to help you Detect and Recover.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Tool Name</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Scanning</strong></td>
+                        <td>ESET Online Scanner / Malwarebytes</td>
+                        <td>Quick detection of malware signatures.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analysis</strong></td>
+                        <td>Task Manager / Process Explorer</td>
+                        <td>Spotting high CPU usage (Encryption process).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decryption</strong></td>
+                        <td>NoMoreRansom.org</td>
+                        <td>Repository of free decryptors (Check before wiping!).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SME Monitor</strong></td>
+                        <td>Splunk Free / OpenVAS</td>
+                        <td>Log analysis and vulnerability scanning.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backup</strong></td>
+                        <td>Acronis / Macrium Reflect</td>
+                        <td>Restoring clean offline backups.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>Prevention Checklist (3-2-1 Rule)</h2>
+            <ul>
+                <li>✅ <strong>3 Copies</strong> of data total.</li>
+                <li>✅ <strong>2 Different Media</strong> types.</li>
+                <li>✅ <strong>1 Offline Copy</strong> (Critical for Ransomware - air gap it!).</li>
+            </ul>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <p>Based on HKCERT "Incident Response Guideline for SMEs".<br>
+    Visit <a href="https://www.hkcert.org" target="_blank">HKCERT.org</a> for official alerts.</p>
+</footer>
+
+<script>
+    // Navigation
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Response Plan Logic
+    function showPlan(type, btn) {
+        // Style Buttons
+        document.querySelectorAll('.resp-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        const output = document.getElementById('response-output');
+        output.style.display = 'block';
+
+        if (type === 'ind') {
+            output.innerHTML = `
+                <h3 style="margin-top:0">👤 Individual Protocol</h3>
+                <div class="protocol-step">
+                    <div class="step-num">1</div>
+                    <div><strong>Disconnect:</strong> Pull the internet cable. Turn off Wi-Fi. Unplug USB drives.</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">2</div>
+                    <div><strong>Evidence:</strong> Take a photo of the ransom note with your phone. Do not click links in it.</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">3</div>
+                    <div><strong>Identify:</strong> Use <em>ID Ransomware</em> (via another device) to identify the virus type. Check <em>NoMoreRansom.org</em> for a free fix.</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">4</div>
+                    <div><strong>Restore:</strong> If no free fix exists, wipe the drive (Factory Reset) and restore from your <strong>Offline Backup</strong>.</div>
+                </div>
+            `;
+        } else {
+            output.innerHTML = `
+                <h3 style="margin-top:0">🏢 SME Protocol</h3>
+                <div class="protocol-step">
+                    <div class="step-num">1</div>
+                    <div><strong>Containment:</strong> Isolate the infected segment (VLAN) immediately. Do NOT reboot servers (Ram forensics needed).</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">2</div>
+                    <div><strong>Report:</strong> Call HKCERT Hotline (8105 6060). If personal data is leaked, notify PCPD within 5 days.</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">3</div>
+                    <div><strong>Assessment:</strong> Check logs to see how they got in (RDP? Phishing?). Close that hole before restoring.</div>
+                </div>
+                <div class="protocol-step">
+                    <div class="step-num">4</div>
+                    <div><strong>Recovery:</strong> Restore from <strong>Immutable/Offline Backups</strong>. Verify integrity before reconnecting to network.</div>
+                </div>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>
