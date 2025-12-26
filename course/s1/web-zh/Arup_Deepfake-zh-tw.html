@@ -93,16 +93,16 @@
     <nav>
         <div class="logo">ARUP <span>案例研究</span></div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('home', this)">總覽</button>
-            <button class="nav-btn" onclick="switchTab('story', this)">時間軸</button>
-            <button class="nav-btn" onclick="switchTab('tech', this)">Deepfake 技術</button>
-            <button class="nav-btn" onclick="switchTab('defense', this)">防禦</button>
-            <button class="nav-btn" onclick="switchTab('quiz', this)">測驗</button>
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">Deepfake 技術</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
         </div>
     </nav>
 
     <main>
-        <div id="home" class="module active">
+        <section id="home" class="tab-content active-tab">
             <div class="hero">
                 <h1>Arup Deepfake 騙局 (2024)</h1>
                 <p>「眼見為憑」成為謊言的時刻。</p>
@@ -120,7 +120,7 @@
             </div>
         </section>
 
-        <section id="story" class="module">
+        <section id="story" class="tab-content">
             <h2 style="text-align: center; border:none;">2500萬美元的視訊通話</h2>
             <div class="timeline">
                 <div class="t-container left"><div class="t-content"><h4>2024年1月</h4><h3>佈局</h3><p>一名香港財務員工收到一封來自「財務長」（英國）的關於「秘密收購」的電子郵件。郵件要求進行一次安全的視訊會議。</p></div></div>
@@ -130,7 +130,7 @@
             </div>
         </section>
 
-        <section id="tech" class="module">
+        <section id="tech" class="tab-content">
             <h2>Deepfake 的運作機制</h2>
             <div class="grid-container">
                 <div class="info-card"><h3>1. 來源材料</h3><p>AI 需要資料來學習。詐騙者下載了 Arup 高層主管的 YouTube 影片、會議演講和新聞片段，以訓練 AI 辨識他們的臉孔和聲音。</p></div>
@@ -139,7 +139,7 @@
             </div>
         </section>
 
-        <section id="defense" class="module">
+        <section id="defense" class="tab-content">
             <h2>消費者防禦：當現實是假象時</h2>
             <p>您可能不會轉帳 2500 萬美元，但詐騙者使用相同的技術來偽造「祖母有難」的電話。以下是如何驗證現實的方法。</p>
             <div class="defense-tip"><div class="icon-box">🔐</div><div><h3>1. 「安全詞」</h3><p>與您的家人和親近的同事建立一個秘密代碼字或短語。如果您接到要求匯款的視訊通話，請詢問代碼。AI 不會知道。</p></div></div>
@@ -149,7 +149,7 @@
             <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加 Deepfake 測驗</button></div>
         </section>
 
-        <section id="quiz" class="module">
+        <section id="quiz" class="tab-content">
             <h2>知識測驗</h2>
             <p>您能識破 AI 騙局的跡象嗎？測試您的知識。</p>
             <div class="quiz-container">
@@ -173,40 +173,34 @@
     <footer><p>Arup Deepfake 案例研究 | 教育網路應用程式</p></footer>
 
     <script>
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.module, .nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(btn) btn.classList.add('active');
-        }
-        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
-        document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
-        document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
 
-        function toggleCheck(element) { element.classList.toggle('checked'); }
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'story': 'btn-story',
+                'tech': 'btn-tech',
+                'defense': 'btn-defense',
+                'quiz': 'btn-quiz'
+            };
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
 
-        const simScreen = document.getElementById('sim-container'), simControls = document.getElementById('sim-controls');
-        function simStep(choice) {
-            if (choice === 1) {
-                simScreen.innerHTML = `<p style="color: yellow">> 正在傳送回覆：「請透過電話驗證...」</p><p>...</p><p style="color: white">結果：</p><p>寄件人從未回電。您稍後與總部核對，發現該郵件是假的。</p><br><p style="color: var(--success); font-weight: bold; font-size: 1.2rem;">🏆 成功：您保住了 2560 萬美元。</p><p>教訓：永遠透過次要頻道（「跨頻帶驗證」）進行驗證。</p>`;
-                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">重新啟動模擬</button>`;
-            } 
-            else if (choice === 2) {
-                simScreen.innerHTML = `<p style="color: yellow">> 正在連接至安全視訊會議室...</p><p>...</p><p>視訊饋送已建立。</p><p>您看到財務長和其他 3 位經理。他們看起來很真實。</p><p><strong>財務長 (Deepfake)：</strong>「這件事非常緊急。我們需要在市場收盤前收購這家公司。請將資金匯入所列的 5 個帳戶。」</p><br><p>其他經理點頭同意。</p>`;
-                simControls.innerHTML = `<button class="sim-btn" onclick="simStep(3)">匯款（他們是我的老闆！）</button><button class="sim-btn" onclick="simStep(4)">要求說出「專案秘密代碼」</button>`;
-            }
-            else if (choice === 3) {
-                simScreen.innerHTML += `<br><br><p style="color: red">> 正在啟動轉帳...</p><p>已傳送 15 筆電匯。總計：25,600,000 美元。</p><br><p style="color: var(--primary); font-weight: bold; font-size: 1.2rem;">💀 失敗：您被騙了。</p><p>一週後，您意識到影片是 AI 生成的。錢已經不見了。</p>`;
-                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">再試一次</button>`;
-            }
-            else if (choice === 4) {
-                simScreen.innerHTML += `<br><br><p style="color: cyan">> 您：「本季的秘密授權碼是什麼？」</p><p>...</p><p><strong>財務長 (Deepfake)：</strong>「呃...現在就匯款，我們沒時間搞這個！」</p><p>...</p><p>主機已終止連線。</p><br><p style="color: var(--success); font-weight: bold;">🏆 成功：詐騙者已離線。</p><p>AI 無法提供人類的秘密代碼。</p>`;
-                simControls.innerHTML = `<button class="sim-btn secondary" onclick="resetSim()">重新啟動模擬</button>`;
-            }
-        }
-        function resetSim() {
-            simScreen.innerHTML = `<p>正在初始化系統...</p><p>收到來自 cfo.office@arup-internal-secure.com 的郵件</p><p>主旨：機密收購案 - 緊急</p><br><p>「我們需要討論一項機密合併案。請立即加入安全視訊會議室。」</p>`;
-            simControls.innerHTML = `<button class="sim-btn" onclick="simStep(1)">回覆「請透過電話驗證」</button><button class="sim-btn" onclick="simStep(2)">加入視訊通話</button>`;
-        }
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-story').onclick = () => switchTab('story');
+        document.getElementById('btn-tech').onclick = () => switchTab('tech');
+        document.getElementById('btn-defense').onclick = () => switchTab('defense');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-story').onclick = () => switchTab('story');
+        document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
 
         const questions = [
             { q: "1. 事實：Arup 的電腦網路是否被駭？", options: ["是的，攻擊者安裝了病毒", "不是，這純粹是社交工程（人為欺騙）", "是的，他們攻破了防火牆", "不是，是一名員工偷了錢"], a: 1, exp: "正確。沒有程式碼被駭。攻擊者利用 AI 駭入了員工對現實的感知。" },
