@@ -6,7 +6,7 @@
     <title>Hong Kong Privacy Guardian (PDPO)</title>
     <style>
         :root {
-            --hk-purple: #6c5ce7; /* Inspired by PCPD branding tones */
+            --hk-purple: #6c5ce7;
             --hk-dark: #2d3436;
             --light: #dfe6e9;
             --success: #00b894;
@@ -155,6 +155,7 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 1rem;
+            transition: 0.2s;
         }
         .btn-a { background: var(--light); color: var(--hk-dark); }
         .btn-a:hover { background: #b2bec3; }
@@ -246,13 +247,12 @@
             <p>Test your knowledge against real Hong Kong law.</p>
             
             <div class="scenario-box" id="sim-text">
-                [SCENARIO 1] <br>
-                You run a loyalty club. To sign up, you ask customers for their <strong>Hong Kong ID Card Number</strong> copy to "verify identity". Is this okay?
+                <!-- Text injected via JS -->
             </div>
 
             <div id="sim-choices">
-                <button class="choice-btn btn-a" onclick="checkAnswer(true)">A. Yes, I need to know they are real.</button>
-                <button class="choice-btn btn-a" onclick="checkAnswer(false)">B. No, that is excessive collection.</button>
+                <button id="btn-choice-a" class="choice-btn btn-a" onclick="checkAnswer(true)">Option A</button>
+                <button id="btn-choice-b" class="choice-btn btn-a" onclick="checkAnswer(false)">Option B</button>
             </div>
 
             <div id="sim-feedback" class="feedback"></div>
@@ -312,20 +312,26 @@
     // --- Simulator Logic ---
     const scenarios = [
         {
-            text: "[SCENARIO 1 - Collection]<br>You run a membership club. You ask for a <strong>copy of the HKID card</strong> to verify identity.",
-            correct: false, // B is correct (No)
+            text: "[SCENARIO 1 - Collection]<br>You run a membership club. To verify identity, you ask customers for a <strong>copy of their HKID card</strong>. Is this okay?",
+            optA: "A. Yes, I need to know they are real.",
+            optB: "B. No, that is excessive collection.",
+            correct: false, // False corresponds to Button B (The second button)
             feedbackCorrect: "✅ Correct! Collecting HKID copies is usually 'Excessive' (DPP1). Verification should be done in person without keeping a copy, unless strictly necessary.",
             feedbackWrong: "❌ Incorrect. Collecting ID copies is considered excessive collection under DPP1 unless legally required (like banking). Avoid it."
         },
         {
             text: "[SCENARIO 2 - Marketing]<br>You collected email addresses for 'Order Updates'. Can you use them to send ads for your new product line?",
-            correct: false, // B is correct (No)
+            optA: "A. Yes, they are already my customers.",
+            optB: "B. No, I need specific consent first.",
+            correct: false, // False corresponds to Button B
             feedbackCorrect: "✅ Correct! You cannot use data for a 'New Purpose' (Direct Marketing) without prescribed consent (DPP3).",
             feedbackWrong: "❌ Incorrect. You collected emails for <em>orders</em> (DPP1). Using them for <em>marketing</em> violates DPP3 unless you got specific consent first."
         },
         {
-            text: "[SCENARIO 3 - Access]<br>A former customer emails asking for a copy of all data you hold on them. You ignore it because they are annoying.",
-            correct: false, // B is correct (No)
+            text: "[SCENARIO 3 - Access]<br>A former customer emails asking for a copy of all data you hold on them. You think they are just being annoying. What do you do?",
+            optA: "A. Ignore the email.",
+            optB: "B. Respond within 40 days.",
+            correct: false, // False corresponds to Button B
             feedbackCorrect: "✅ Correct! You CANNOT ignore it. DPP6 requires you to respond to a Data Access Request within 40 days, or face enforcement.",
             feedbackWrong: "❌ Dangerous! Ignoring a Data Access Request is a direct violation of DPP6. You must respond within 40 days."
         }
@@ -333,14 +339,26 @@
 
     let currentSim = 0;
 
+    // Initialize first scenario text
+    function loadScenario() {
+        const scene = scenarios[currentSim];
+        document.getElementById('sim-text').innerHTML = scene.text;
+        document.getElementById('btn-choice-a').innerHTML = scene.optA;
+        document.getElementById('btn-choice-b').innerHTML = scene.optB;
+    }
+
+    // Run once on load
+    loadScenario();
+
     function checkAnswer(answer) {
         const feedback = document.getElementById('sim-feedback');
         const nextBtn = document.getElementById('next-btn');
         const scene = scenarios[currentSim];
 
-        // Logic: specific to the buttons provided in HTML
-        // Button A = true (Yes/Active action), Button B = false (No/Stop action)
-        // In Scenario 1: A (Yes) is Wrong. B (No) is Right. 
+        // Logic: 
+        // answer == true means User clicked Option A
+        // answer == false means User clicked Option B
+        // scene.correct stores which button (True/A or False/B) is the right answer.
         
         let isRight = (answer === scene.correct);
 
@@ -367,7 +385,9 @@
             return;
         }
 
-        document.getElementById('sim-text').innerHTML = scenarios[currentSim].text;
+        loadScenario();
+        
+        // Reset UI
         document.getElementById('sim-feedback').style.display = 'none';
         document.getElementById('next-btn').style.display = 'none';
     }
