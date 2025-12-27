@@ -74,7 +74,7 @@
         .choice-btn {
             display: block; width: 100%; padding: 1rem; margin: 0.5rem 0;
             border: none; border-radius: 5px; cursor: pointer;
-            font-weight: bold; font-size: 1rem;
+            font-weight: bold; font-size: 1rem; transition: 0.2s;
         }
         .btn-a { background: var(--light); color: var(--hk-dark); }
         .btn-a:hover { background: #b2bec3; }
@@ -129,13 +129,10 @@
         <div class="card">
             <h2>法律模擬器：您會怎麼做？</h2>
             <p>根據真實的香港法律測試您的知識。</p>
-            <div class="scenario-box" id="sim-text">
-                [情境 1 - 收集]<br>
-                您經營一個會員俱樂部。您要求客戶提供<strong>香港身分證副本</strong>以「驗證身份」。這樣可以嗎？
-            </div>
+            <div class="scenario-box" id="sim-text"></div>
             <div id="sim-choices">
-                <button class="choice-btn btn-a" onclick="checkAnswer(true)">A. 可以，我需要知道他們是真人。</button>
-                <button class="choice-btn btn-a" onclick="checkAnswer(false)">B. 不可以，這是過度收集。</button>
+                <button id="btn-choice-a" class="choice-btn btn-a" onclick="checkAnswer(true)">選項 A</button>
+                <button id="btn-choice-b" class="choice-btn btn-a" onclick="checkAnswer(false)">選項 B</button>
             </div>
             <div id="sim-feedback" class="feedback"></div>
             <button id="next-btn" style="display:none; width:100%; padding:10px; margin-top:10px; cursor:pointer;" onclick="nextScenario()">下一個情境 ▶</button>
@@ -180,11 +177,18 @@
         }
     }
     const scenarios = [
-        { text: "[情境 1 - 收集]<br>您經營一個會員俱樂部。您要求提供<strong>香港身分證副本</strong>以驗證身份。", correct: false, feedbackCorrect: "✅ 正確！收集身分證副本通常是「過度」的（DPP1）。除非絕對必要，否則應親自核實身份，而不是保留副本。", feedbackWrong: "❌ 錯誤。除非法律規定（如銀行業），否則收集身分證副本被視為過度收集（DPP1）。應避免這種做法。" },
-        { text: "[情境 2 - 行銷]<br>您為「訂單更新」收集了電子郵件地址。您可以用它們來為您的新產品線發送廣告嗎？", correct: false, feedbackCorrect: "✅ 正確！未經訂明同意，您不能將資料用於「新目的」（直接行銷）（DPP3）。", feedbackWrong: "❌ 錯誤。您為<em>訂單</em>收集了電子郵件（DPP1）。除非您事先獲得特定同意，否則將其用於<em>行銷</em>違反了DPP3。" },
-        { text: "[情境 3 - 查閱]<br>一位前客戶發郵件要求您提供一份您持有的關於他們的所有資料的副本。您因為他們很煩人而忽略了它。", correct: false, feedbackCorrect: "✅ 正確！您不能忽略它。DPP6要求您在40天內回應查閱資料要求，否則將面臨執法行動。", feedbackWrong: "❌ 危險！忽略查閱資料要求直接違反了DPP6。您必須在40天內作出回應。" }
+        { text: "[情境 1 - 收集]<br>您經營一個會員俱樂部。您要求客戶提供<strong>香港身分證副本</strong>以「驗證身份」。這樣可以嗎？", optA: "A. 可以，我需要知道他們是真人。", optB: "B. 不可以，這是過度收集。", correct: false, feedbackCorrect: "✅ 正確！收集身分證副本通常是「過度」的（DPP1）。除非絕對必要，否則應親自核實身份，而不是保留副本。", feedbackWrong: "❌ 錯誤。除非法律規定（如銀行業），否則收集身分證副本被視為過度收集（DPP1）。應避免這種做法。" },
+        { text: "[情境 2 - 行銷]<br>您為「訂單更新」收集了電子郵件地址。您可以用它們來為您的新產品線發送廣告嗎？", optA: "A. 可以，他們已經是我的客戶了。", optB: "B. 不可以，我需要先取得特定同意。", correct: false, feedbackCorrect: "✅ 正確！未經訂明同意，您不能將資料用於「新目的」（直接行銷）（DPP3）。", feedbackWrong: "❌ 錯誤。您為<em>訂單</em>收集了電子郵件（DPP1）。除非您事先獲得特定同意，否則將其用於<em>行銷</em>違反了DPP3。" },
+        { text: "[情境 3 - 查閱]<br>一位前客戶發郵件要求您提供一份您持有的關於他們的所有資料的副本。您覺得他們只是在找麻煩。您該怎麼辦？", optA: "A. 忽略該郵件。", optB: "B. 在40天內回應。", correct: false, feedbackCorrect: "✅ 正確！您不能忽略它。DPP6要求您在40天內回應查閱資料要求，否則將面臨執法行動。", feedbackWrong: "❌ 危險！忽略查閱資料要求直接違反了DPP6。您必須在40天內作出回應。" }
     ];
     let currentSim = 0;
+    function loadScenario() {
+        const scene = scenarios[currentSim];
+        document.getElementById('sim-text').innerHTML = scene.text;
+        document.getElementById('btn-choice-a').innerHTML = scene.optA;
+        document.getElementById('btn-choice-b').innerHTML = scene.optB;
+    }
+    loadScenario();
     function checkAnswer(answer) {
         const feedback = document.getElementById('sim-feedback'), nextBtn = document.getElementById('next-btn'), scene = scenarios[currentSim];
         let isRight = (answer === scene.correct);
@@ -209,7 +213,7 @@
             document.getElementById('next-btn').style.display = 'none';
             return;
         }
-        document.getElementById('sim-text').innerHTML = scenarios[currentSim].text;
+        loadScenario();
         document.getElementById('sim-feedback').style.display = 'none';
         document.getElementById('next-btn').style.display = 'none';
     }
