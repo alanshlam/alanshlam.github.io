@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港資料外洩應變中心</title>
+    <style>
+        :root {
+            --primary: #c0392b; --primary-dark: #a93226; --secondary: #2c3e50;
+            --accent: #f1c40f; --bg: #ecf0f1; --white: #ffffff;
+            --success: #27ae60; --text: #34495e;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: var(--white); padding: 2rem 1rem; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; margin-top: 0.5rem; }
+        .emergency-banner {
+            background: var(--accent); color: var(--secondary); font-weight: bold;
+            padding: 0.5rem; text-align: center; font-size: 0.9rem;
+        }
+        nav {
+            display: flex; justify-content: center; background: var(--white); padding: 1rem;
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-wrap: wrap; gap: 10px;
+        }
+        .nav-btn {
+            background: none; border: 2px solid transparent; padding: 0.6rem 1.2rem;
+            font-size: 1rem; font-weight: 600; color: var(--secondary); cursor: pointer;
+            border-radius: 50px; transition: all 0.3s;
+        }
+        .nav-btn:hover { background: #f8f9fa; }
+        .nav-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; min-height: 60vh; }
+        .section { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: var(--white); border-radius: 10px; padding: 2rem;
+            margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--secondary);
+        }
+        h2 { color: var(--primary); margin-top: 0; }
+        h3 { color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 1.5rem; }
+        .step-container { display: flex; flex-direction: column; gap: 1rem; }
+        .step-box {
+            background: #fdfefe; border: 1px solid #ddd; padding: 1rem; border-radius: 8px;
+            display: flex; align-items: flex-start; gap: 15px;
+        }
+        .step-icon {
+            background: var(--primary); color: white; width: 30px; height: 30px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: bold; flex-shrink: 0;
+        }
+        .quiz-container { max-width: 800px; margin: 0 auto; }
+        .quiz-question {
+            font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;
+            background: #f8f9fa; padding: 1rem; border-left: 5px solid var(--primary);
+        }
+        .quiz-options button {
+            display: block; width: 100%; text-align: left; padding: 1rem;
+            margin-bottom: 0.5rem; background: var(--white); border: 2px solid #ddd;
+            border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .quiz-options button:hover { border-color: var(--secondary); background: #f1f2f6; }
+        .quiz-feedback {
+            margin-top: 1rem; padding: 1rem; border-radius: 8px;
+            font-weight: bold; display: none;
+        }
+        .feedback-correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback-wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .btn-next {
+            background: var(--primary); color: white; border: none; padding: 0.8rem 2rem;
+            border-radius: 5px; cursor: pointer; font-size: 1rem; margin-top: 1rem; display: none;
+        }
+        .liability-box {
+            background: #fff3cd; border: 1px solid #ffeeba; color: #856404;
+            padding: 1rem; border-radius: 8px; margin-top: 1rem;
+        }
+        footer {
+            text-align: center; padding: 2rem; background: var(--secondary);
+            color: #bdc3c7; margin-top: auto;
+        }
+        .contact-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-top: 1rem; text-align: center;
+        }
+        .contact-card { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="emergency-banner">
+    ⚠️ 懷疑資料外洩？立即隔離裝置。不要關閉電源。致電 HKCERT：8105 6060。
+</div>
+
+<header>
+    <h1>資料外洩應變</h1>
+    <p>為個人及中小企提供的指引（2025年12月更新）</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('individual')">👤 個人指引</button>
+    <button class="nav-btn" onclick="showTab('sme')">🏢 中小企指引</button>
+    <button class="nav-btn" onclick="showTab('legal')">⚖️ 法律責任</button>
+    <button class="nav-btn" onclick="showTab('quiz')">🎓 知識測驗</button>
+</nav>
+
+<main>
+    <div id="individual" class="section active">
+        <div class="card">
+            <h2>個人用戶：保護您的身份</h2>
+            <p>如果您遺失手機、筆記型電腦或懷疑被駭，請立即（首24小時內）遵循以下步驟。</p>
+            <div class="step-container">
+                <div class="step-box"><div class="step-icon">1</div><div><strong>偵測與分析</strong><p>注意跡象：效能緩慢、勒索訊息、奇怪的銀行交易。<br><em>工具：</em>檢查日誌，執行 <strong>ESET Online Scanner</strong>。</p></div></div>
+                <div class="step-box"><div class="step-icon">2</div><div><strong>控制</strong><p>隔離裝置：斷開 Wi-Fi/區域網路。<strong>不要</strong>關閉電源（鑑識用途）。<br>使用乾淨的裝置立即更改所有密碼。</p></div></div>
+                <div class="step-box"><div class="step-icon">3</div><div><strong>保護</strong><p>凍結信用卡。通知銀行。若遺失香港身分證，請向入境事務處報告。<br><em>資源：</em>使用<strong>香港警察防騙視伏器+</strong>進行詐騙檢查。</p></div></div>
+                <div class="step-box"><div class="step-icon">4</div><div><strong>自願通報</strong><p>若個人資料面臨風險（身份盜竊），自願通知PCPD。若涉及盜竊，請向警方報案。</p></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sme" class="section">
+        <div class="card">
+            <h2>中小企：保護業務與客戶</h2>
+            <p>中小企（5-50名員工）必須迅速行動，以保護客戶信任並將PDPO風險降至最低。</p>
+            <h3>階段一：即時應變（0-24小時）</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 10px;">🔴 <strong>隔離：</strong>將受感染的部分與網路斷開。不要重新啟動伺服器。</li>
+                <li style="margin-bottom: 10px;">🔍 <strong>評估：</strong>盤點外洩的資料（信用卡？客戶香港身分證？）。使用日誌。</li>
+                <li style="margin-bottom: 10px;">📞 <strong>分流：</strong>致電 HKCERT 熱線 (8105 6060) 尋求技術協助。</li>
+            </ul>
+            <h3>階段二：通知與合規</h3>
+            <div class="liability-box" style="background: #e8f8f5; color: #0e6655; border-color: #a2d9ce;">
+                <strong>💡 通知策略：</strong>
+                <ul>
+                    <li><strong>客戶：</strong>若風險高（例如，信用卡外洩），立即通知。保持透明。</li>
+                    <li><strong>PCPD：</strong>自願但強烈建議「在切实可行的情况下尽快」（目標：< 5天）。</li>
+                    <li><strong>警方：</strong>若懷疑涉及駭客/犯罪行為，向網路安全及科技罪案調查科 (CSTCB) 報案。</li>
+                </ul>
+            </div>
+            <h3>階段三：恢復</h3>
+            <p>從乾淨的<strong>離線備份</strong>中還原（3-2-1規則）。修補漏洞。根據2025年PCPD指引將資料匿名化。</p>
+        </div>
+    </div>
+
+    <div id="legal" class="section">
+        <div class="card">
+            <h2>⚖️ 我有法律責任嗎？（2025年12月狀況）</h2>
+            <p>了解在香港不通報資料外洩的後果。</p>
+            <div class="step-container">
+                <div class="step-box" style="border-left: 5px solid #f39c12;"><div class="step-icon" style="background: #f39c12;">!</div><div><strong>向PCPD（私隱專員公署）通報</strong><p><strong>狀況：</strong>自願（尚非強制性）。</p><p><strong>風險：</strong>如果您不通報且PCPD發現（例如，客戶投訴），您將面臨更嚴格的審查。違反DPP4（保安）可能導致執行通知。不遵守通知 = <strong>罰款5萬港元 + 2年監禁</strong>。</p></div></div>
+                <div class="step-box" style="border-left: 5px solid #2980b9;"><div class="step-icon" style="background: #2980b9;">!</div><div><strong>向警方（HKPF）報案</strong><p><strong>狀況：</strong>對意外遺失沒有一般性義務。</p><p><strong>風險：</strong>若涉及犯罪（駭客/盜竊），強烈建議報案。有助於民事辯護。若涉及「嚴重罪行」，隱瞞資訊理論上可能構成妨礙司法公正（對中小企而言罕見）。</p></div></div>
+                <div class="step-box" style="border-left: 5px solid #c0392b;"><div class="step-icon" style="background: #c0392b;">!</div><div><strong>民事責任</strong><p>根據PDPO第66條，客戶可就損害（例如，因外洩造成的詐騙損失）提起訴訟。及時通知有助於減輕這些索賠。</p></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz" class="section">
+        <div class="card quiz-container">
+            <h2>🎓 知識測驗：個人與中小企</h2>
+            <p>測試您對2025年指引的理解。</p>
+            <div id="quiz-area">
+                <div class="quiz-question" id="q-text">載入問題中...</div>
+                <div class="quiz-options" id="q-options"></div>
+                <div id="q-feedback" class="quiz-feedback"></div>
+                <button id="btn-next" class="btn-next" onclick="nextQuestion()">下一題</button>
+            </div>
+            <div id="quiz-result" style="display:none; text-align: center;">
+                <h3>測驗完成！</h3>
+                <p id="score-text" style="font-size: 1.5rem; font-weight: bold;"></p>
+                <button class="nav-btn" onclick="resetQuiz()" style="background:var(--primary); color:white;">重新測驗</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="contact-grid">
+        <div class="contact-card"><strong>HKCERT 熱線</strong><br>8105 6060</div>
+        <div class="contact-card"><strong>香港警務處 CSTCB</strong><br>2527 7887</div>
+        <div class="contact-card"><strong>PCPD 電郵</strong><br>dbn@pcpd.org.hk</div>
+    </div>
+    <p style="margin-top: 2rem; font-size: 0.8rem;">內容根據 HKCERT、PCPD 和香港警務處2025年指引。僅供教育用途。</p>
+</footer>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const buttons = document.getElementsByTagName('button');
+        for (let btn of buttons) {
+            if(btn.getAttribute('onclick') === `showTab('${id}')`) {
+                btn.classList.add('active');
+            }
+        }
+    }
+    const questions = [
+        { q: "[個人] 您懷疑存有個人資料的筆記型電腦被盜。您應該做的第一件事是什麼？", opts: ["立即致電PCPD", "向警方報失以取得失物證明", "等待看資料是否出現在網路上", "刪除您的備份"], ans: 1, expl: "正確！對於盜竊/遺失，立即向警方報案有助於您取得失物證明以進行補領和保險索賠。然後再通知PCPD。" },
+        { q: "[中小企] 駭客加密了您的伺服器（勒索軟體）。您應該立即關閉伺服器電源嗎？", opts: ["是的，以阻止病毒", "不，保持開機但斷開網路", "是的，然後立即重新啟動", "不，讓它保持連接網際網路"], ans: 1, expl: "正確！不要關閉電源。揮發性記憶體（RAM）包含證據金鑰。應改為斷開網路線（氣隙）。" },
+        { q: "[法律] 在2025年，中小企是否必須向PCPD報告資料外洩？", opts: ["是的，24小時內", "是的，72小時內", "不，這是自願的", "是的，如果涉及信用卡"], ans: 2, expl: "正確！截至2025年12月，這是自願的。然而，PCPD強烈建議這樣做以降低執法風險。" },
+        { q: "[中小企] 您的客戶信用卡資料庫外洩。即使法律沒有強制，您為什麼應該通知客戶？", opts: ["為避免民事訴訟並建立信任", "因為金管局強制您", "因為Visa強制您", "為了獲得退稅"], ans: 0, expl: "正確！及早通知可讓客戶凍結信用卡，減少他們的損失。這會降低您因疏忽而被起訴的風險。" },
+        { q: "[一般] 哪個政府部門處理資料外洩的刑事方面（駭客/盜竊）？", opts: ["PCPD", "HKCERT", "香港警務處 (CSTCB)", "入境事務處"], ans: 2, expl: "正確！香港警務處（網路安全及科技罪案調查科）處理刑事調查。" },
+        { q: "[恢復] 提及的「3-2-1」備份規則是什麼？", opts: ["3個檔案，2個資料夾，1個硬碟", "3份副本，2種媒體類型，1份異地", "3台伺服器，2個人，1把鑰匙", "3天，2週，1個月"], ans: 1, expl: "正確！3份資料副本，2種不同的媒體類型，以及1份異地（或離線）副本。" }
+    ];
+    let currentQ = 0, score = 0;
+    function loadQuestion() {
+        const qData = questions[currentQ];
+        document.getElementById('q-text').innerText = (currentQ + 1) + ". " + qData.q;
+        const optsDiv = document.getElementById('q-options');
+        optsDiv.innerHTML = "";
+        qData.opts.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index);
+            optsDiv.appendChild(btn);
+        });
+        document.getElementById('q-feedback').style.display = 'none';
+        document.getElementById('btn-next').style.display = 'none';
+    }
+    function checkAnswer(selectedIndex) {
+        const qData = questions[currentQ], feedback = document.getElementById('q-feedback'),
+              nextBtn = document.getElementById('btn-next'), btns = document.getElementById('q-options').getElementsByTagName('button');
+        for(let btn of btns) { btn.disabled = true; }
+        if(selectedIndex === qData.ans) {
+            score++;
+            feedback.className = "quiz-feedback feedback-correct";
+            feedback.innerHTML = "<strong>✅ 正確！</strong> " + qData.expl;
+            btns[selectedIndex].style.background = "#d4edda";
+        } else {
+            feedback.className = "quiz-feedback feedback-wrong";
+            feedback.innerHTML = "<strong>❌ 錯誤。</strong> " + qData.expl;
+            btns[selectedIndex].style.background = "#f8d7da";
+            btns[qData.ans].style.background = "#d4edda";
+        }
+        feedback.style.display = 'block';
+        nextBtn.style.display = 'block';
+    }
+    function nextQuestion() {
+        currentQ++;
+        if(currentQ < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+    function showResults() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'block';
+        const percentage = Math.round((score / questions.length) * 100);
+        let msg = "";
+        if(percentage >= 80) msg = "🌟 優秀！您已準備好處理漏洞。";
+        else if(percentage >= 50) msg = "👍 不錯。請再次複習法律部分。";
+        else msg = "⚠️ 繼續學習。請閱讀個人/中小企指南。";
+        document.getElementById('score-text').innerHTML = `得分：${score} / ${questions.length} (${percentage}%)<br><small>${msg}</small>`;
+    }
+    function resetQuiz() {
+        currentQ = 0;
+        score = 0;
+        document.getElementById('quiz-area').style.display = 'block';
+        document.getElementById('quiz-result').style.display = 'none';
+        loadQuestion();
+    }
+    loadQuestion();
+</script>
+
+</body>
+</html>

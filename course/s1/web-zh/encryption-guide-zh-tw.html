@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密與安全儲存指南 2025</title>
+    <style>
+        :root {
+            --primary: #2563eb; --secondary: #1e293b; --accent: #f59e0b;
+            --bg: #f1f5f9; --card-bg: #ffffff; --success: #10b981; --danger: #ef4444;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--bg); color: #334155; margin: 0; padding: 0; line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white; padding: 2.5rem 1rem; text-align: center;
+        }
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; margin-top: 10px; font-size: 1.1rem; }
+        .badge {
+            background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px;
+            font-size: 0.85rem; display: inline-block; margin-top: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        nav {
+            background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex; justify-content: center; gap: 10px; padding: 1rem;
+            position: sticky; top: 0; z-index: 100; flex-wrap: wrap;
+        }
+        button.nav-btn {
+            background: none; border: none; padding: 0.6rem 1.2rem; font-size: 1rem;
+            font-weight: 600; color: var(--secondary); cursor: pointer;
+            border-bottom: 3px solid transparent; transition: all 0.3s;
+        }
+        button.nav-btn:hover { background: #f8fafc; border-radius: 5px; }
+        button.nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; min-height: 60vh; }
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem;
+            border-left: 5px solid var(--primary);
+        }
+        h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h3 { color: var(--secondary); margin-top: 1.5rem; }
+        .option-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .select-btn {
+            padding: 1.5rem; border: 2px solid #cbd5e1; background: white;
+            border-radius: 8px; text-align: left; cursor: pointer;
+            transition: 0.2s; font-size: 1rem;
+        }
+        .select-btn:hover { border-color: var(--primary); background: #eff6ff; }
+        .select-btn.selected { border-color: var(--primary); background: #dbeafe; font-weight: bold; box-shadow: 0 0 0 2px var(--primary); }
+        .select-btn small { display: block; color: #64748b; margin-top: 5px; font-weight: normal; }
+        #result-area { display:none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        th { background-color: #f8fafc; color: var(--secondary); font-weight: 700; white-space: nowrap; }
+        tr:hover { background-color: #f8fafc; }
+        .feature-tag {
+            background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px;
+            font-size: 0.85rem; display: inline-block; margin-bottom: 5px;
+        }
+        .tips-box {
+            background: #fffbeb; border: 1px solid #fcd34d; color: #92400e;
+            padding: 1rem; border-radius: 8px; margin-top: 1rem;
+        }
+        footer {
+            text-align: center; padding: 3rem 1rem; color: #64748b;
+            font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 3rem;
+        }
+        .disclaimer-text {
+            max-width: 800px; margin: 0 auto; font-style: italic;
+            opacity: 0.8; font-size: 0.8rem; background: #fff;
+            padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🔐 加密與安全儲存</h1>
+    <p>保護靜態與傳輸中的資料（符合香港PDPO）</p>
+    <div class="badge">2025年底更新 </div>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('basics')">1. 基礎知識</button>
+    <button class="nav-btn" onclick="showTab('finder')">2. 解決方案查找器</button>
+    <button class="nav-btn" onclick="showTab('mobile')">3. 行動安全</button>
+</nav>
+
+<main>
+    <div id="basics" class="section active">
+        <div class="card">
+            <h2>為何要加密？</h2>
+            <p>加密能將您的資料轉換為不可讀的代碼。如果您遺失了筆記型電腦或USB隨身碟，竊賊沒有金鑰就無法存取您的檔案（如香港身分證副本或銀行資訊）。</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">💻 全磁碟加密 (FDE)</h3><p>保護<strong>整個</strong>硬碟。如果電腦關機，資料就是安全的。（例如，BitLocker、FileVault）。</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">☁️ 安全雲端儲存</h3><p>確保檔案在離開您的裝置前就已加密（「零知識」）。Google/Dropbox都無法看到它們。</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">📱 行動保護</h3><p>現代手機預設加密，但前提是您必須設定一個強密碼（6位數以上）或生物辨識。</p>
+                </div>
+            </div>
+            <div class="tips-box">
+                <strong>🇭🇰 香港PDPO提示：</strong><br>
+                根據資料保護原則第4條（保安），資料使用者必須保護個人資料免於未經授權的存取。加密USB隨身碟和筆記型電腦是遵守此規定的最有效方法。
+            </div>
+        </div>
+    </div>
+
+    <div id="finder" class="section">
+        <div class="card">
+            <h2>尋找您的加密工具</h2>
+            <p>選擇您的需求以比較頂級解決方案。</p>
+            <h3>步驟 1：您要保護什麼？</h3>
+            <div class="option-grid">
+                <button class="select-btn" onclick="selectOption('target', 'computer', this)">💻 <strong>筆記型/桌上型電腦</strong><small>Windows、Mac、Linux 硬碟。</small></button>
+                <button class="select-btn" onclick="selectOption('target', 'storage', this)">☁️ <strong>外部儲存/雲端</strong><small>USB隨身碟、雲端備份、NAS。</small></button>
+            </div>
+            <h3>步驟 2：這是為誰而設？</h3>
+            <div class="option-grid">
+                <button class="select-btn" onclick="selectOption('user', 'individual', this)">👤 <strong>個人</strong><small>免費、內建工具。設定簡單。</small></button>
+                <button class="select-btn" onclick="selectOption('user', 'sme', this)">🏢 <strong>中小企/團隊</strong><small>可管理的政策、可擴展、合規。</small></button>
+            </div>
+            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-top: 1rem;">顯示建議</button>
+        </div>
+        <div id="result-area" style="display:none;"></div>
+    </div>
+
+    <div id="mobile" class="section">
+        <div class="card" style="border-left-color: var(--accent);">
+            <h2>行動加密 (Android & iOS)</h2>
+            <p>智慧型手機攜帶我們最敏感的資料。大多數現代手機預設都是加密的，但您必須啟用金鑰。</p>
+            <table>
+                <thead><tr><th style="width:20%">作業系統</th><th style="width:25%">功能</th><th style="width:40%">如何啟用/驗證</th><th style="width:15%">費用</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>iOS (iPhone)</strong></td><td>資料保護 (AES-256)</td><td>前往 <em>設定 > Face ID 與密碼</em>。向下捲動查看「資料保護已啟用」。設定至少6位數的PIN碼。</td><td>免費</td></tr>
+                    <tr><td><strong>Android</strong></td><td>檔案式加密</td><td>前往 <em>設定 > 安全性 > 加密與憑證</em>。應顯示「已加密」。使用生物辨識更方便。</td><td>免費</td></tr>
+                    <tr><td><strong>MDM (中小企)</strong></td><td>遠端強制執行</td><td>使用 <strong>ManageEngine</strong> 或 <strong>Samsung Knox</strong> 等工具在所有員工手機上強制加密。</td><td>約10美元/月</td></tr>
+                </tbody>
+            </table>
+            <div class="tips-box" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
+                <strong>✅ 快速行動：</strong>將您的「自動鎖定」螢幕逾時設為<strong>30秒</strong>。加密只有在手機鎖定時才有效！
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="disclaimer-text">
+        <strong>⚠️ 免責聲明：</strong>本指南中提及的軟體建議（BitLocker、VeraCrypt、pCloud等）和價格估算僅供參考。價格和功能可能隨時間而變化。使用者在啟用加密前應自行研究並備份資料，以避免意外資料遺失。本指南的創作者對遺失金鑰或資料不承擔任何責任。
+    </div>
+    <p style="margin-top: 2rem;">&copy; 2025 加密與安全參考指南</p>
+</footer>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('.section, .nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    let selections = { target: null, user: null };
+    function selectOption(category, value, element) {
+        selections[category] = value;
+        element.parentNode.querySelectorAll('.select-btn').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+    function getRecommendation() {
+        const resDiv = document.getElementById('result-area');
+        const { target, user } = selections;
+        if (!target || !user) {
+            alert("請選擇「您要保護什麼？」和「這是為誰而設？」兩個選項。");
+            return;
+        }
+        let htmlContent = "", strategyName = "", strategyDesc = "";
+        const createRow = (name, type, pros, cons, cost) => `<tr><td style="font-weight:bold;">${name}<br><span style="font-weight:normal; font-size:0.85em; color:#64748b;">${type}</span></td><td style="color:var(--success);">${pros}</td><td style="color:var(--warning);">${cons}</td><td style="font-weight:bold;">${cost}</td></tr>`;
+        
+        if (target === 'computer') {
+            strategyName = `💻 裝置加密解決方案`;
+            strategyDesc = `建議用於<strong>${user === 'individual' ? '個人筆記型電腦' : '商業機隊'}</strong>：`;
+            htmlContent = createRow("BitLocker", "Windows", "內建、無縫、強大的AES-256保護。", "需要Windows「專業版」（家庭版使用者需升級）。", "免費 / 800港元") +
+                          createRow("FileVault", "Mac", "內建、在M1/M2/M3晶片上速度極快、iCloud恢復金鑰。", "在舊硬碟上初次加密耗時較長。", "免費") +
+                          createRow("VeraCrypt", "通用", "開源，適用於Windows/Mac/Linux，可建立「隱藏磁區」。", "學習曲線較陡峭；需要手動安裝。", "免費");
+        } else {
+            strategyName = `☁️ 安全儲存與雲端`;
+            strategyDesc = `建議用於<strong>${user === 'individual' ? '個人備份' : '客戶資料儲存'}</strong>：`;
+            htmlContent = createRow("pCloud / Sync.com", "加密雲端", "零知識（他們看不到檔案），受瑞士/加拿大隱私法保護。", "由於加密較重，上傳速度較慢。", "免費 / 約400港元/年") +
+                          createRow("Synology NAS", "私有雲", "您擁有硬體（本地部署），完全控制，無月費。", "前期硬體成本高，若無實體鎖定則易遭竊。", "約2000港元 + 硬碟") +
+                          createRow("IronKey USB", "硬體加密", "若被駭客攻擊會自毀，堅固耐用，無需軟體。", "每GB成本高，容易實體遺失。", "約800港元 (16GB)");
+        }
+        resDiv.innerHTML = `<div class="card" style="border-top-color: var(--primary);"><h2 style="color: var(--primary);">${strategyName}</h2><p>${strategyDesc}</p>
+            <table><thead><tr><th>工具/類型</th><th>✅ 優點</th><th>⚠️ 缺點</th><th>費用</th></tr></thead><tbody>${htmlContent}</tbody></table>
+            <div class="tips-box"><strong>給中小企的提示：</strong>如果您使用雲端儲存客戶資料，請確保供應商合約中註明他們使用<strong>AES-256加密</strong>靜態資料。</div></div>`;
+        resDiv.style.display = 'block';
+        resDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
