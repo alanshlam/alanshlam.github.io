@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption & Secure Storage Guide 2025</title>
+    <style>
+        :root {
+            --primary: #2563eb; /* Blue */
+            --secondary: #1e293b;
+            --accent: #f59e0b; /* Amber for tips */
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #334155;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; margin-top: 10px; font-size: 1.1rem; }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        button.nav-btn {
+            background: none;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        button.nav-btn:hover { background: #f8fafc; border-radius: 5px; }
+        button.nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: 60vh;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary);
+        }
+
+        h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h3 { color: var(--secondary); margin-top: 1.5rem; }
+
+        /* Interactive Finder Buttons */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .select-btn {
+            padding: 1.5rem;
+            border: 2px solid #cbd5e1;
+            background: white;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .select-btn:hover { border-color: var(--primary); background: #eff6ff; }
+        .select-btn.selected { border-color: var(--primary); background: #dbeafe; font-weight: bold; box-shadow: 0 0 0 2px var(--primary); }
+        .select-btn small { display: block; color: #64748b; margin-top: 5px; font-weight: normal; }
+
+        /* Results Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        th { background-color: #f8fafc; color: var(--secondary); font-weight: 700; white-space: nowrap; }
+        tr:hover { background-color: #f8fafc; }
+        
+        .feature-tag {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        /* Tips Box */
+        .tips-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        /* Disclaimer */
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 3rem;
+        }
+        .disclaimer-text {
+            max-width: 800px;
+            margin: 0 auto;
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 0.8rem;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🔐 Encryption & Secure Storage</h1>
+    <p>Protect Data at Rest & In Transit (HK PDPO Compliant)</p>
+    <div class="badge">Updated Late 2025 </div>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('basics')">1. The Basics</button>
+    <button class="nav-btn" onclick="showTab('finder')">2. Solution Finder</button>
+    <button class="nav-btn" onclick="showTab('mobile')">3. Mobile Security</button>
+</nav>
+
+<main>
+    <!-- SECTION 1: BASICS -->
+    <div id="basics" class="section active">
+        <div class="card">
+            <h2>Why Encrypt?</h2>
+            <p>Encryption turns your data into unreadable code. If you lose your laptop or USB drive, thieves cannot access your files (like HKID copies or bank info) without the key.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">💻 Full Disk Encryption (FDE)</h3>
+                    <p>Protects the <strong>entire</strong> hard drive. If the computer is off, data is safe. (e.g., BitLocker, FileVault).</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">☁️ Secure Cloud Storage</h3>
+                    <p>Ensures files are encrypted <strong>before</strong> leaving your device ("Zero-Knowledge"). Google/Dropbox can't see them.</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top:0">📱 Mobile Protection</h3>
+                    <p>Modern phones are encrypted by default, BUT only if you set a strong Passcode (6+ digits) or Biometric.</p>
+                </div>
+            </div>
+            
+            <div class="tips-box">
+                <strong>🇭🇰 Hong Kong PDPO Tip:</strong><br>
+                Under Data Protection Principle 4 (Security), data users must protect personal data from unauthorized access. Encrypting USB drives and laptops is the most effective way to comply.
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: SOLUTION FINDER -->
+    <div id="finder" class="section">
+        <div class="card">
+            <h2>Find Your Encryption Tool</h2>
+            <p>Select your needs to compare top-rated solutions.</p>
+
+            <h3>Step 1: What are you securing?</h3>
+            <div class="option-grid">
+                <button class="select-btn" onclick="selectOption('target', 'computer', this)">
+                    💻 <strong>Laptops / Desktops</strong>
+                    <small>Windows, Mac, Linux Hard Drives.</small>
+                </button>
+                <!-- UPDATED ICON BELOW -->
+                <button class="select-btn" onclick="selectOption('target', 'storage', this)">
+                    ☁️ <strong>External Storage / Cloud</strong>
+                    <small>USB Drives, Cloud Backup, NAS.</small>
+                </button>
+            </div>
+
+            <h3>Step 2: Who is it for?</h3>
+            <div class="option-grid">
+                <button class="select-btn" onclick="selectOption('user', 'individual', this)">
+                    👤 <strong>Individual</strong>
+                    <small>Free, built-in tools. Simple setup.</small>
+                </button>
+                <button class="select-btn" onclick="selectOption('user', 'sme', this)">
+                    🏢 <strong>SME / Team</strong>
+                    <small>Managed policies, scalable, compliant.</small>
+                </button>
+            </div>
+
+            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-top: 1rem;">Show Recommendations</button>
+        </div>
+
+        <div id="result-area" style="display:none;">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+
+    <!-- SECTION 3: MOBILE SECURITY -->
+    <div id="mobile" class="section">
+        <div class="card" style="border-left-color: var(--accent);">
+            <h2>Mobile Encryption (Android & iOS)</h2>
+            <p>Smartphones carry our most sensitive data. Most modern phones are encrypted by default, but you must enable the key.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:20%">OS</th>
+                        <th style="width:25%">Feature</th>
+                        <th style="width:40%">How to Enable / Verify</th>
+                        <th style="width:15%">Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>iOS (iPhone)</strong></td>
+                        <td>Data Protection (AES-256)</td>
+                        <td>Go to <em>Settings > Face ID & Passcode</em>. Scroll down to see "Data protection is enabled". Set a 6-digit PIN minimum.</td>
+                        <td>Free</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Android</strong></td>
+                        <td>File-Based Encryption</td>
+                        <td>Go to <em>Settings > Security > Encryption & Credentials</em>. It should say "Encrypted". Use Biometrics for ease.</td>
+                        <td>Free</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MDM (SME)</strong></td>
+                        <td>Remote Enforcement</td>
+                        <td>Use tools like <strong>ManageEngine</strong> or <strong>Samsung Knox</strong> to force encryption on all employee phones.</td>
+                        <td>~$10/mo</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tips-box" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
+                <strong>✅ Quick Action:</strong> Set your "Auto-Lock" screen timeout to <strong>30 seconds</strong>. Encryption only works when the phone is locked!
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="disclaimer-text">
+        <strong>⚠️ Disclaimer:</strong> The software recommendations (BitLocker, VeraCrypt, pCloud, etc.) and pricing estimates provided in this guide are for reference only. Prices and features are subject to change over time. Users should conduct their own research and backup data before enabling encryption to avoid accidental data loss. The creator accepts no liability for lost keys or data.
+    </div>
+    <p style="margin-top: 2rem;">&copy; 2025 Encryption & Security Reference Guide</p>
+</footer>
+
+<script>
+    // Tab Navigation
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Selection Logic
+    let selections = { target: null, user: null };
+
+    function selectOption(category, value, element) {
+        selections[category] = value;
+        // Visual feedback
+        let siblings = element.parentElement.children;
+        for (let sib of siblings) { sib.classList.remove('selected'); }
+        element.classList.add('selected');
+    }
+
+    function getRecommendation() {
+        const resultArea = document.getElementById('result-area');
+        const { target, user } = selections;
+
+        if (!target || !user) {
+            alert("Please select both 'What are you securing?' and 'Who is it for?'.");
+            return;
+        }
+
+        let htmlContent = "";
+
+        // LOGIC TREE
+        if (target === 'computer') {
+            htmlContent = `
+                <div class="card" style="border-top: 4px solid var(--primary);">
+                    <h2>💻 Device Encryption Solutions</h2>
+                    <p>Recommended for <strong>${user === 'individual' ? 'Personal Laptops' : 'Business Fleets'}</strong>:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:25%">Tool Name</th>
+                                <th style="width:30%">✅ Pros</th>
+                                <th style="width:30%">⚠️ Cons</th>
+                                <th style="width:15%">Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="feature-tag">Windows</span><br><strong>BitLocker</strong></td>
+                                <td>Built-in, seamless, strong AES-256 protection.</td>
+                                <td>Requires Windows "Pro" edition (Home users must upgrade).</td>
+                                <td>Free / $800 HKD</td>
+                            </tr>
+                            <tr>
+                                <td><span class="feature-tag">Mac</span><br><strong>FileVault</strong></td>
+                                <td>Built-in, very fast on M1/M2/M3 chips, iCloud recovery key.</td>
+                                <td>Initial encryption takes time on old drives.</td>
+                                <td>Free</td>
+                            </tr>
+                            <tr>
+                                <td><span class="feature-tag">Universal</span><br><strong>VeraCrypt</strong></td>
+                                <td>Open-source, works on Windows/Mac/Linux, creates "Hidden Volumes".</td>
+                                <td>Steeper learning curve; requires manual install.</td>
+                                <td>Free</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            // STORAGE / CLOUD - UPDATED ICONS
+            htmlContent = `
+                <div class="card" style="border-top: 4px solid var(--accent);">
+                    <h2>☁️ Secure Storage & Cloud</h2>
+                    <p>Recommended for <strong>${user === 'individual' ? 'Personal Backups' : 'Client Data Storage'}</strong>:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:25%">Solution</th>
+                                <th style="width:30%">✅ Pros</th>
+                                <th style="width:30%">⚠️ Cons</th>
+                                <th style="width:15%">Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>pCloud / Sync.com</strong><br><small>Encrypted Cloud</small></td>
+                                <td>Zero-Knowledge (they can't see files), Swiss/Canadian privacy laws.</td>
+                                <td>Slower upload speeds due to heavy encryption.</td>
+                                <td>Free / ~$400 HKD yr</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Synology NAS</strong><br><small>Private Cloud</small></td>
+                                <td>You own the hardware (On-Premise), total control, no monthly fees.</td>
+                                <td>High upfront cost, vulnerable to theft if not physically locked.</td>
+                                <td>~$2000 HKD + HDD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IronKey USB</strong><br><small>🔌 Hardware Encrypted</small></td>
+                                <td>Self-destructs if hacked, rugged, no software needed.</td>
+                                <td>Expensive per GB, easy to lose physically.</td>
+                                <td>~$800 HKD (16GB)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     <div class="tips-box">
+                        <strong>Tip for SMEs:</strong> If you use cloud storage for client data, ensure the vendor contract states they use <strong>AES-256 Encryption</strong> at rest.
+                    </div>
+                </div>
+            `;
+        }
+
+        resultArea.innerHTML = htmlContent;
+        resultArea.style.display = 'block';
+        
+        // Smooth scroll to result
+        resultArea.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

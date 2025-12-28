@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK Data Leak Response Center</title>
+    <style>
+        :root {
+            --primary: #c0392b; /* HKCERT-like Red */
+            --primary-dark: #a93226;
+            --secondary: #2c3e50; /* Dark Blue */
+            --accent: #f1c40f; /* Yellow for alerts */
+            --bg: #ecf0f1;
+            --white: #ffffff;
+            --success: #27ae60;
+            --text: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { opacity: 0.9; margin-top: 0.5rem; }
+        
+        .emergency-banner {
+            background: var(--accent);
+            color: var(--secondary);
+            font-weight: bold;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* NAVIGATION */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: var(--white);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 2px solid transparent;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover { background: #f8f9fa; }
+        .nav-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* MAIN CONTENT */
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: 60vh;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--secondary);
+        }
+
+        h2 { color: var(--primary); margin-top: 0; }
+        h3 { color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 1.5rem; }
+
+        /* CHECKLISTS & STEPS */
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-box {
+            background: #fdfefe;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .step-icon {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* QUIZ STYLES */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-left: 5px solid var(--primary);
+        }
+
+        .quiz-options button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--white);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-options button:hover {
+            border-color: var(--secondary);
+            background: #f1f2f6;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback-correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback-wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .btn-next {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* LEGAL LIABILITY SECTION */
+        .liability-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--secondary);
+            color: #bdc3c7;
+            margin-top: auto;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .contact-card {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="emergency-banner">
+    ⚠️ Active Data Breach? Isolate device immediately. Don't turn off power. Call HKCERT: 8105 6060.
+</div>
+
+<header>
+    <h1>Data Leak Response</h1>
+    <p>Guidelines for Individuals & SMEs (Updated Dec 2025)</p>
+</header>
+
+<nav>
+    <button class="nav-btn active" onclick="showTab('individual')">👤 Individual Guide</button>
+    <button class="nav-btn" onclick="showTab('sme')">🏢 SME Guide</button>
+    <button class="nav-btn" onclick="showTab('legal')">⚖️ Legal Liability</button>
+    <button class="nav-btn" onclick="showTab('quiz')">🎓 Quiz Challenge</button>
+</nav>
+
+<main>
+
+    <!-- INDIVIDUAL GUIDE -->
+    <div id="individual" class="section active">
+        <div class="card">
+            <h2>For Individuals: Protect Your Identity</h2>
+            <p>If you lost your phone, laptop, or suspect hacking, follow these steps immediately (first 24 hours).</p>
+            
+            <div class="step-container">
+                <div class="step-box">
+                    <div class="step-icon">1</div>
+                    <div>
+                        <strong>Detection & Analysis</strong>
+                        <p>Spot signs: Slow performance, ransom notes, weird bank transactions. <br><em>Tool:</em> Check logs, run <strong>ESET Online Scanner</strong>.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-icon">2</div>
+                    <div>
+                        <strong>Containment</strong>
+                        <p>Isolate device: Disconnect Wi-Fi/LAN. <strong>Do not</strong> power off (forensics). <br>Change all passwords immediately using a clean device.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-icon">3</div>
+                    <div>
+                        <strong>Protection</strong>
+                        <p>Freeze credit cards. Notify banks. If HKID is lost, report to Immigration Dept. <br><em>Resource:</em> Use <strong>HKPF Scameter+</strong> for fraud checks.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-icon">4</div>
+                    <div>
+                        <strong>Voluntary Reporting</strong>
+                        <p>Notify PCPD voluntarily if personal data is at risk (id theft). Report to Police if theft involved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SME GUIDE -->
+    <div id="sme" class="section">
+        <div class="card">
+            <h2>For SMEs: Business & Client Protection</h2>
+            <p>SMEs (5-50 staff) must act fast to protect client trust and minimize PDPO risks.</p>
+            
+            <h3>Phase 1: Immediate Response (0-24 Hrs)</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 10px;">🔴 <strong>Isolate:</strong> Disconnect affected segment from network. Don't reboot servers.</li>
+                <li style="margin-bottom: 10px;">🔍 <strong>Assess:</strong> Map leaked data (Credit cards? Client HKIDs?). Use logs.</li>
+                <li style="margin-bottom: 10px;">📞 <strong>Triage:</strong> Call HKCERT Hotline (8105 6060) for technical help.</li>
+            </ul>
+
+            <h3>Phase 2: Notification & Compliance</h3>
+            <div class="liability-box" style="background: #e8f8f5; color: #0e6655; border-color: #a2d9ce;">
+                <strong>💡 Notification Strategy:</strong>
+                <ul>
+                    <li><strong>Clients:</strong> Notify immediately if risk is high (e.g., credit cards leaked). Be transparent.</li>
+                    <li><strong>PCPD:</strong> Voluntary but highly recommended "as soon as practicable" (aim for < 5 days).</li>
+                    <li><strong>Police:</strong> Report to Cyber Security Bureau (CSTCB) if hacking/criminality suspected.</li>
+                </ul>
+            </div>
+
+            <h3>Phase 3: Recovery</h3>
+            <p>Restore from clean <strong>Offline Backups</strong> (3-2-1 rule). Patch vulnerabilities. Anonymize data per 2025 PCPD Guide.</p>
+        </div>
+    </div>
+
+    <!-- LEGAL LIABILITY -->
+    <div id="legal" class="section">
+        <div class="card">
+            <h2>⚖️ Am I Legally Liable? (Dec 2025 Status)</h2>
+            <p>Understanding the consequences of NOT reporting a data breach in Hong Kong.</p>
+
+            <div class="step-container">
+                <div class="step-box" style="border-left: 5px solid #f39c12;">
+                    <div class="step-icon" style="background: #f39c12;">!</div>
+                    <div>
+                        <strong>Reporting to PCPD (Privacy Commissioner)</strong>
+                        <p><strong>Status:</strong> Voluntary (Not mandatory yet).</p>
+                        <p><strong>Risk:</strong> If you don't report and PCPD finds out (e.g., client complaint), you face stricter scrutiny. Breaching DPP4 (Security) can lead to Enforcement Notices. Non-compliance with notices = <strong>Fine HK$50k + 2 Years Jail</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="step-box" style="border-left: 5px solid #2980b9;">
+                    <div class="step-icon" style="background: #2980b9;">!</div>
+                    <div>
+                        <strong>Reporting to Police (HKPF)</strong>
+                        <p><strong>Status:</strong> No general obligation for accidental loss.</p>
+                        <p><strong>Risk:</strong> Strongly encouraged if criminal (Hacking/Theft). Helps in civil defense. If "Serious Crime" involved, withholding info could theoretically be obstruction (rare for SMEs).</p>
+                    </div>
+                </div>
+
+                <div class="step-box" style="border-left: 5px solid #c0392b;">
+                    <div class="step-icon" style="background: #c0392b;">!</div>
+                    <div>
+                        <strong>Civil Liability</strong>
+                        <p>Clients can sue for damages (e.g., fraud loss due to leak) under PDPO Section 66. Prompt notification helps mitigate these claims.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUIZ CHALLENGE -->
+    <div id="quiz" class="section">
+        <div class="card quiz-container">
+            <h2>🎓 Knowledge Check: Individuals & SMEs</h2>
+            <p>Test your understanding of the 2025 Guidelines.</p>
+            
+            <div id="quiz-area">
+                <div class="quiz-question" id="q-text">Loading Question...</div>
+                <div class="quiz-options" id="q-options">
+                    <!-- Buttons injected via JS -->
+                </div>
+                <div id="q-feedback" class="quiz-feedback"></div>
+                <button id="btn-next" class="btn-next" onclick="nextQuestion()">Next Question</button>
+            </div>
+            
+            <div id="quiz-result" style="display:none; text-align: center;">
+                <h3>Quiz Complete!</h3>
+                <p id="score-text" style="font-size: 1.5rem; font-weight: bold;"></p>
+                <button class="nav-btn" onclick="resetQuiz()" style="background:var(--primary); color:white;">Restart Quiz</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="contact-grid">
+        <div class="contact-card">
+            <strong>HKCERT Hotline</strong><br>
+            8105 6060
+        </div>
+        <div class="contact-card">
+            <strong>HKPF CSTCB</strong><br>
+            2527 7887
+        </div>
+        <div class="contact-card">
+            <strong>PCPD Email</strong><br>
+            dbn@pcpd.org.hk
+        </div>
+    </div>
+    <p style="margin-top: 2rem; font-size: 0.8rem;">Content based on HKCERT, PCPD, and HKPF 2025 Guidelines. Educational use only.</p>
+</footer>
+
+<script>
+    // --- NAVIGATION ---
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // Find button that calls this function to set active class
+        const buttons = document.getElementsByTagName('button');
+        for (let btn of buttons) {
+            if(btn.getAttribute('onclick') === `showTab('${id}')`) {
+                btn.classList.add('active');
+            }
+        }
+    }
+
+    // --- QUIZ DATA ---
+    const questions = [
+        {
+            q: "[Individual] You suspect your laptop with personal data was stolen. What is the FIRST thing you should do?",
+            opts: ["Call the PCPD immediately", "Report to Police for a loss certificate", "Wait to see if data appears online", "Delete your backups"],
+            ans: 1,
+            expl: "Correct! For theft/loss, reporting to Police immediately helps you get a loss memo for replacements and insurance. Then notify PCPD."
+        },
+        {
+            q: "[SME] A hacker encrypts your server (Ransomware). Should you turn off the server power immediately?",
+            opts: ["Yes, to stop the virus", "No, keep it on but disconnect network", "Yes, then reboot immediately", "No, leave it connected to internet"],
+            ans: 1,
+            expl: "Correct! Do NOT power off. Volatile memory (RAM) contains evidence keys. Disconnect the network cable (Air Gap) instead."
+        },
+        {
+            q: "[Legal] Is it MANDATORY for an SME to report a data breach to the PCPD in 2025?",
+            opts: ["Yes, within 24 hours", "Yes, within 72 hours", "No, it is voluntary", "Yes, if credit cards are involved"],
+            ans: 2,
+            expl: "Correct! As of Dec 2025, it is VOLUNTARY. However, PCPD strongly recommends it to mitigate enforcement risks."
+        },
+        {
+            q: "[SME] Your client credit card database was leaked. Why should you notify clients even if not legally forced?",
+            opts: ["To avoid civil lawsuits and build trust", "Because HKMA forces you", "Because Visa forces you", "To get a tax rebate"],
+            ans: 0,
+            expl: "Correct! Early notification allows clients to freeze cards, reducing their loss. This reduces your risk of being sued for negligence."
+        },
+        {
+            q: "[General] Which government body handles the CRIMINAL aspect (hacking/theft) of a breach?",
+            opts: ["PCPD", "HKCERT", "HKPF (CSTCB)", "Immigration Dept"],
+            ans: 2,
+            expl: "Correct! The HK Police Force (Cyber Security and Technology Crime Bureau) handles criminal investigations."
+        },
+        {
+            q: "[Recovery] What is the '3-2-1' backup rule mentioned for recovery?",
+            opts: ["3 files, 2 folders, 1 drive", "3 copies, 2 media types, 1 offsite", "3 servers, 2 people, 1 key", "3 days, 2 weeks, 1 month"],
+            ans: 1,
+            expl: "Correct! 3 copies of data, 2 different media types, and 1 copy offsite (or offline)."
+        }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const qData = questions[currentQ];
+        document.getElementById('q-text').innerText = (currentQ + 1) + ". " + qData.q;
+        
+        const optsDiv = document.getElementById('q-options');
+        optsDiv.innerHTML = ""; // Clear old buttons
+
+        qData.opts.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index);
+            optsDiv.appendChild(btn);
+        });
+
+        document.getElementById('q-feedback').style.display = 'none';
+        document.getElementById('btn-next').style.display = 'none';
+    }
+
+    function checkAnswer(selectedIndex) {
+        const qData = questions[currentQ];
+        const feedback = document.getElementById('q-feedback');
+        const nextBtn = document.getElementById('btn-next');
+        const btns = document.getElementById('q-options').getElementsByTagName('button');
+
+        // Disable all buttons
+        for(let btn of btns) { btn.disabled = true; }
+
+        if(selectedIndex === qData.ans) {
+            score++;
+            feedback.className = "quiz-feedback feedback-correct";
+            feedback.innerHTML = "<strong>✅ Correct!</strong> " + qData.expl;
+            btns[selectedIndex].style.background = "#d4edda";
+        } else {
+            feedback.className = "quiz-feedback feedback-wrong";
+            feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + qData.expl;
+            btns[selectedIndex].style.background = "#f8d7da";
+            btns[qData.ans].style.background = "#d4edda"; // Show correct one
+        }
+        
+        feedback.style.display = 'block';
+        nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if(currentQ < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'block';
+        
+        const percentage = Math.round((score / questions.length) * 100);
+        let msg = "";
+        if(percentage >= 80) msg = "🌟 Excellent! You are ready to handle a breach.";
+        else if(percentage >= 50) msg = "👍 Good effort. Review the Legal section again.";
+        else msg = "⚠️ Keep learning. Read the Individual/SME guides.";
+
+        document.getElementById('score-text').innerHTML = `Score: ${score} / ${questions.length} (${percentage}%)<br><small>${msg}</small>`;
+    }
+
+    function resetQuiz() {
+        currentQ = 0;
+        score = 0;
+        document.getElementById('quiz-area').style.display = 'block';
+        document.getElementById('quiz-result').style.display = 'none';
+        loadQuestion();
+    }
+
+    // Initialize
+    loadQuestion();
+</script>
+
+</body>
+</html>
