@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Security: MDM & BYOD Edition</title>
+    <style>
+        :root {
+            --primary: #8b5cf6; /* Vivid Purple */
+            --primary-dark: #6d28d9;
+            --accent: #10b981; /* Success Green */
+            --bg-dark: #111827; /* Deep Charcoal */
+            --card-bg: #1f2937; /* Lighter Charcoal */
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; font-size: 16px; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: rgba(31, 41, 55, 0.95);
+            border-bottom: 2px solid var(--primary);
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 70px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 0.5px; }
+        .logo span { color: var(--text-main); margin-left: 8px; font-size: 0.9rem; background: var(--primary); padding: 2px 8px; border-radius: 6px; }
+
+        .nav-links { display: flex; gap: 8px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); background: rgba(139, 92, 246, 0.1); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 1rem; color: white; text-align: center; }
+        h2 { color: var(--primary); margin-bottom: 1.2rem; border-left: 4px solid var(--accent); padding-left: 15px; font-size: 1.5rem; }
+        p { margin-bottom: 1.2rem; line-height: 1.6; color: var(--text-muted); }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(135deg, rgba(109, 40, 217, 0.8), rgba(17, 24, 39, 0.9)), url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 3rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 25px; }
+        .stat-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; backdrop-filter: blur(5px); }
+        .stat-icon { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+        .stat-label { font-size: 0.9rem; font-weight: bold; color: #e5e7eb; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1.1rem; 
+            border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 25px; font-weight: bold;
+            display: inline-block; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .info-card { background: var(--card-bg); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid #374151; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: white; margin-bottom: 10px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .card-icon { background: var(--primary); padding: 8px; border-radius: 8px; font-size: 1.2rem; }
+
+        /* MDM & BYOD Comparison Styles */
+        .comparison-wrapper { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+        .comp-card { flex: 1; background: var(--card-bg); padding: 20px; border-radius: 12px; border-top: 4px solid var(--text-muted); min-width: 300px; }
+        .comp-card.mdm { border-top-color: var(--primary); }
+        .comp-card.byod { border-top-color: var(--accent); }
+        
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; }
+        .badge-mdm { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .badge-byod { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        .pros-cons { margin-top: 15px; font-size: 0.9rem; }
+        .pc-title { font-weight: bold; color: white; margin-top: 10px; display: block; }
+        .pc-item { display: flex; gap: 8px; margin-bottom: 5px; }
+        .pc-icon { font-weight: bold; }
+
+        /* Software Grid & Disclaimer */
+        .software-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .soft-card { background: #111827; padding: 15px; border-radius: 8px; border: 1px solid #374151; text-align: center; }
+        .soft-name { color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.1rem; }
+        .soft-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+        .disclaimer { 
+            background: rgba(139, 92, 246, 0.1); 
+            border-left: 4px solid var(--primary); 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Checklist */
+        ul.checklist { list-style: none; }
+        ul.checklist li { margin-bottom: 12px; padding-left: 25px; position: relative; color: var(--text-muted); font-size: 0.95rem; }
+        ul.checklist li::before { content: "●"; color: var(--accent); position: absolute; left: 0; font-size: 1.2rem; line-height: 1rem; }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 2rem; border-radius: 16px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid #374151; }
+        .progress-bar { width: 100%; background: #111827; height: 8px; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
+        
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: white; }
+
+        .option-btn { 
+            display: block; width: 100%; padding: 16px; margin-bottom: 12px; border: 1px solid #374151; 
+            background: #111827; color: var(--text-muted); border-radius: 12px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #1f2937; color: white; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+        
+        .feedback { padding: 15px; border-radius: 8px; margin-top: 15px; display: none; font-size: 1rem; font-weight: bold;}
+        .feedback.correct { background: rgba(16, 185, 129, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+        .feedback.wrong { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; margin-top: auto; border-top: 1px solid #374151; background: #0f1219; }
+
+        /* Mobile Responsive */
+        @media (max-width: 700px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .nav-btn { font-size: 0.8rem; padding: 6px 10px; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">📱 MOBILE <span>SECURE</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-setup">Setup</button>
+            <button class="nav-btn" id="btn-maint">Maintenance</button>
+            <button class="nav-btn" id="btn-mdm">MDM & BYOD</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>Mobile Security Essentials</h1>
+                <p>From personal locking habits to enterprise MDM solutions. Secure your devices against theft, malware, and data breaches.</p>
+                
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <span class="stat-icon">🔒</span>
+                        <span class="stat-label">Lock It</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">📲</span>
+                        <span class="stat-label">Update It</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">🏢</span>
+                        <span class="stat-label">MDM Tools</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">📱</span>
+                        <span class="stat-label">BYOD</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="jump-setup">Start Setup Guide</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3><span class="card-icon">⚙️</span> Setup Phase</h3>
+                    <p>The first 30 minutes with a device are critical. Configure biometrics, encryption, and accounts correctly from day one.</p>
+                </div>
+                <div class="info-card">
+                    <h3><span class="card-icon">🛠️</span> Maintenance</h3>
+                    <p>Security is a habit. Regular updates, scanning for malware, and checking app permissions keep you safe over time.</p>
+                </div>
+                <div class="info-card">
+                    <h3><span class="card-icon">💼</span> For SMEs</h3>
+                    <p>Understanding <strong>MDM</strong> (Mobile Device Management) and <strong>BYOD</strong> (Bring Your Own Device) policies.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SETUP PHASE -->
+        <section id="setup" class="tab-content">
+            <h2>Initial Setup: The Foundation</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🔐 Auth & Access</h3>
+                    <ul class="checklist">
+                        <li><strong>Strong Lock:</strong> Use a 6-digit PIN or complex password. Patterns are easily guessed.</li>
+                        <li><strong>Biometrics:</strong> Enable FaceID or Fingerprint for convenience and security.</li>
+                        <li><strong>MFA:</strong> Turn on Multi-Factor Authentication for all linked accounts (Google, iCloud).</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🛡️ Software & Encryption</h3>
+                    <ul class="checklist">
+                        <li><strong>Encryption:</strong> Ensure full-disk encryption is active (usually default on modern iOS/Android).</li>
+                        <li><strong>Remote Wipe:</strong> Enable "Find My" (iOS) or "Find My Device" (Android) to erase data if stolen.</li>
+                        <li><strong>Security Apps:</strong> Install reputable anti-malware (especially on Android).</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>📶 Network & Privacy</h3>
+                    <ul class="checklist">
+                        <li><strong>VPN:</strong> Install a VPN for using public Wi-Fi (coffee shops, airports).</li>
+                        <li><strong>Permissions:</strong> Deny unnecessary app permissions (e.g., a Flashlight app doesn't need your Location).</li>
+                        <li><strong>Backups:</strong> Enable automated encrypted cloud backups.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MAINTENANCE PHASE -->
+        <section id="maint" class="tab-content">
+            <h2>Ongoing Maintenance: Daily Habits</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🔄 Updates</h3>
+                    <p>OS and App updates contain critical security patches. <br><strong style="color:var(--accent)">Golden Rule:</strong> Enable Automatic Updates and install them as soon as they appear.</p>
+                </div>
+                <div class="info-card">
+                    <h3>📥 App Hygiene</h3>
+                    <p>Only download apps from official stores (App Store, Google Play). <br><strong>Sideloading</strong> (installing from websites) bypasses security checks and is a major malware vector.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🧠 Awareness</h3>
+                    <p>Learn to spot <strong>Smishing</strong> (SMS Phishing). Banks and deliveries will never ask for passwords via text. If in doubt, do not click the link.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MDM & BYOD SECTION -->
+        <section id="mdm" class="tab-content">
+            <h2>Understanding MDM & BYOD</h2>
+            <p>For businesses (SMEs), managing devices is a balance between security and flexibility. Here is the breakdown.</p>
+            
+            <div class="comparison-wrapper">
+                <!-- MDM CARD -->
+                <div class="comp-card mdm">
+                    <span class="badge badge-mdm">The Reins</span>
+                    <h3>MDM (Mobile Device Management)</h3>
+                    <p>Imagine your device is a wild horse. MDM is the reins. It is software that allows IT admins to control, secure, and monitor devices remotely.</p>
+                    <div class="pros-cons">
+                        <span class="pc-title">Functions:</span>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Remote Wipe (if stolen)</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Push Updates automatically</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Enforce Password Rules</div>
+                    </div>
+                </div>
+
+                <!-- BYOD CARD -->
+                <div class="comp-card byod">
+                    <span class="badge badge-byod">The Policy</span>
+                    <h3>BYOD (Bring Your Own Device)</h3>
+                    <p>Like bringing your own lunch to work. Employees use their personal phones for work tasks. Convenient, but risky without rules.</p>
+                    <div class="pros-cons">
+                        <span class="pc-title">Pros & Cons:</span>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Saves company money</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Employees are comfortable</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> Privacy concerns</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> Risk of data leakage</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Common MDM Software</h3>
+            <div class="disclaimer">
+                <strong>⚠️ Disclaimer:</strong> The following software examples are provided for reference purposes only. Every organization has unique needs; please consult a qualified IT professional to determine the best solution for your specific company.
+            </div>
+            <div class="software-grid">
+                <div class="soft-card">
+                    <span class="soft-name">Microsoft Intune</span>
+                    <span class="soft-desc">Best for Windows/Office ecosystems.</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Jamf Pro</span>
+                    <span class="soft-desc">The standard for Apple (iOS/Mac) heavy offices.</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Hexnode</span>
+                    <span class="soft-desc">Affordable, cross-platform, good for kiosks.</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Kandji</span>
+                    <span class="soft-desc">Apple-focused, known for easy automation.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Test your mobile security IQ. Can you protect the pocket computer?</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:20px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Mobile Security Educational Module</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. NAVIGATION LOGIC ---
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'setup': 'btn-setup',
+                    'maint': 'btn-maint',
+                    'mdm': 'btn-mdm',
+                    'quiz': 'btn-quiz'
+                };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
+            }
+
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-setup').onclick = () => switchTab('setup');
+            document.getElementById('btn-maint').onclick = () => switchTab('maint');
+            document.getElementById('btn-mdm').onclick = () => switchTab('mdm');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-setup').onclick = () => switchTab('setup');
+
+            // --- 2. QUIZ DATA (15 Questions) ---
+            const questions = [
+                // SETUP
+                {
+                    q: "1. What is the most effective screen lock method?",
+                    options: ["A 4-digit PIN (e.g., 1234)", "A Pattern Swipe", "Biometrics (Fingerprint/Face) + Strong Password", "No lock for faster access"],
+                    a: 2,
+                    exp: "Correct. Biometrics offer convenience, while a strong alphanumeric password provides a secure fallback."
+                },
+                {
+                    q: "2. Why should you enable 'Remote Wipe'?",
+                    options: ["To clean the screen remotely", "To delete data if the device is lost or stolen", "To update apps automatically", "To save battery"],
+                    a: 1,
+                    exp: "Correct. If a device is lost, Remote Wipe ensures a thief cannot access your personal or company data."
+                },
+                {
+                    q: "3. When should you use a VPN on mobile?",
+                    options: ["Only at home", "When using Public Wi-Fi (Cafes, Airports)", "Never, it slows down the phone", "Only when charging"],
+                    a: 1,
+                    exp: "Correct. Public Wi-Fi is often unencrypted. A VPN encrypts your traffic so hackers on the same network can't spy on you."
+                },
+                // MAINTENANCE
+                {
+                    q: "4. What is 'Sideloading'?",
+                    options: ["Charging the phone on its side", "Installing apps from outside the Official App Stores", "Transferring data to a PC", "Using the phone while lying down"],
+                    a: 1,
+                    exp: "Correct. Sideloading bypasses the security checks of the App Store/Play Store, increasing the risk of malware."
+                },
+                {
+                    q: "5. Why are App Permissions important?",
+                    options: ["They save storage space", "They stop ads", "They limit what data an app can access (e.g., Location, Contacts)", "They make apps run faster"],
+                    a: 2,
+                    exp: "Correct. You should restrict apps to only the permissions they actually need to function."
+                },
+                {
+                    q: "6. What is 'Smishing'?",
+                    options: ["Cleaning the screen", "Phishing attacks sent via SMS/Text Message", "A coding error", "Ignoring a call"],
+                    a: 1,
+                    exp: "Correct. Smishing is phishing via SMS. Scammers send fake links via text pretending to be banks or delivery services."
+                },
+                // MDM & BYOD (New Questions)
+                {
+                    q: "7. What analogy best describes MDM?",
+                    options: ["A wild horse running free", "Reins that control and guide a wild horse", "A stable for horses", "Horse racing"],
+                    a: 1,
+                    exp: "Correct. MDM acts as the 'reins' that allow IT admins to control and protect the device."
+                },
+                {
+                    q: "8. Which MDM software is best for Microsoft-heavy companies?",
+                    options: ["Jamf Pro", "Microsoft Intune", "Addigy", "Kandji"],
+                    a: 1,
+                    exp: "Correct. Microsoft Intune integrates seamlessly with Windows and Office 365 environments."
+                },
+                {
+                    q: "9. Which MDM tool is famous for managing Apple (iOS/Mac) devices?",
+                    options: ["Microsoft Intune", "Jamf Pro", "NinjaOne", "Android Enterprise"],
+                    a: 1,
+                    exp: "Correct. Jamf Pro is the industry standard for managing Apple ecosystems."
+                },
+                {
+                    q: "10. What is a major downside (Con) of BYOD for employees?",
+                    options: ["It saves money", "They get to use their own phone", "Privacy concerns and blurring work/life balance", "Faster updates"],
+                    a: 2,
+                    exp: "Correct. Employees often worry about employers seeing personal data, and work emails arriving during personal time."
+                },
+                {
+                    q: "11. Why do SMEs use MDM?",
+                    options: ["To spy on employees", "To enforce security policies like passwords and encryption centrally", "To make phones faster", "To sell phones"],
+                    a: 1,
+                    exp: "Correct. MDM automates security, ensuring every device follows the rules without manual checking."
+                },
+                // GENERAL
+                {
+                    q: "12. What is the benefit of a Password Manager on mobile?",
+                    options: ["It remembers complex passwords so you don't have to type them", "It speeds up the internet", "It deletes old emails", "It stops phone calls"],
+                    a: 0,
+                    exp: "Correct. Typing long passwords on a touchscreen is hard. Password managers autofill them securely."
+                },
+                {
+                    q: "13. If you sell or recycle your phone, what must you do first?",
+                    options: ["Delete the photos manually", "Factory Reset / Secure Wipe", "Sign out of Facebook", "Remove the case"],
+                    a: 1,
+                    exp: "Correct. A Factory Reset wipes the encryption keys and data, making it unreadable for the next owner."
+                },
+                {
+                    q: "14. How often should you update your mobile OS?",
+                    options: ["Once a year", "Never, it changes the look", "Immediately when an update is available", "Only when it stops working"],
+                    a: 2,
+                    exp: "Correct. Updates often contain fixes for critical security vulnerabilities exploited by hackers."
+                },
+                {
+                    q: "15. What is the 'Golden Rule' of App Hygiene?",
+                    options: ["Download everything", "Only download from Official Stores", "Use free cracked apps", "Never update apps"],
+                    a: 1,
+                    exp: "Correct. Official stores (Apple/Google) scan apps for malware. Third-party sites usually do not."
+                }
+            ];
+
+            let currentQIndex = 0;
+            let score = 0;
+
+            const qText = document.getElementById('question-text');
+            const optsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback-display');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress');
+            const finalScore = document.getElementById('final-score');
+            const scoreMsg = document.getElementById('score-message');
+            const quizBlock = document.getElementById('quiz-block');
+            const scoreBlock = document.getElementById('score-block');
+            const restartBtn = document.getElementById('restart-btn');
+
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+
+                const pct = ((currentQIndex) / questions.length) * 100;
+                progressBar.style.width = pct + "%";
+
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = function() { handleAnswer(idx, btn); };
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                const allBtns = optsContainer.querySelectorAll('button');
+                allBtns.forEach(b => b.disabled = true);
+
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.style.background = "rgba(16, 185, 129, 0.2)";
+                    btnElement.style.color = "#10b981";
+                    btnElement.style.borderColor = "#10b981";
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+                } else {
+                    btnElement.style.background = "rgba(239, 68, 68, 0.2)";
+                    btnElement.style.color = "#ef4444";
+                    btnElement.style.borderColor = "#ef4444";
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = function() {
+                currentQIndex++;
+                if (currentQIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            restartBtn.onclick = function() {
+                currentQIndex = 0;
+                score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                
+                if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! Mobile Fortified.";
+                else if(score > 10) scoreMsg.innerText = "👍 Good Job! Your device is safe.";
+                else scoreMsg.innerText = "📚 Review the tips and try again.";
+            }
+
+            // Init
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>

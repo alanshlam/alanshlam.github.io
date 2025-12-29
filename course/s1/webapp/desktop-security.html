@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop Security: Complete Edition</title>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Cyber Blue */
+            --primary-dark: #0284c7;
+            --secondary: #0f172a; /* Deep Slate Background */
+            --card-bg: #1e293b; /* Lighter Slate */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --accent: #f59e0b; /* Amber for EDR highlight */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--secondary); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 2px solid var(--primary);
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 70px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { color: var(--text-main); margin-left: 10px; font-size: 0.8rem; border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px; }
+
+        .nav-links { display: flex; gap: 5px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); background: rgba(14, 165, 233, 0.1); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; border-color: var(--primary-dark); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--text-main); margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 15px; font-size: 1.8rem; }
+        p { margin-bottom: 1.2rem; font-size: 1.1rem; line-height: 1.7; color: var(--text-muted); }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap; }
+        .stat { text-align: center; background: rgba(14, 165, 233, 0.1); padding: 20px; border-radius: 10px; border: 1px solid var(--primary); min-width: 150px; }
+        .stat-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .stat-label { font-size: 1rem; color: white; font-weight: bold; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1.1rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid #334155; transition: transform 0.2s; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        
+        /* Lists inside cards */
+        ul.checklist { list-style: none; }
+        ul.checklist li { margin-bottom: 10px; padding-left: 20px; position: relative; color: var(--text-muted); }
+        ul.checklist li::before { content: "✓"; color: var(--success); position: absolute; left: 0; font-weight: bold; }
+
+        /* EDR Step Process */
+        .edr-process { display: flex; flex-direction: column; gap: 15px; }
+        .edr-step { background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); }
+        .edr-step strong { color: var(--accent); font-size: 1.1rem; }
+
+        /* Comparison Table */
+        .comparison-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; margin-top: 20px; }
+        .comparison-table th, .comparison-table td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
+        .comparison-table th { background: var(--primary-dark); color: white; }
+        .comparison-table tr:hover { background: #334155; }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid #334155; }
+        .progress-bar { width: 100%; background: #0f172a; height: 10px; border-radius: 5px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 20px; color: white; }
+
+        .option-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #334155; 
+            background: #0f172a; color: var(--text-muted); border-radius: 6px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
+            position: relative; z-index: 2; 
+        }
+        .option-btn:hover { border-color: var(--primary); background: #1e293b; color: white; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; font-weight: bold;}
+        .feedback.correct { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .feedback.wrong { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; border-top: 1px solid #334155; background: var(--secondary); }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; height: auto; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+            .stat-row { flex-direction: column; align-items: center; }
+            .stat { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">DESKTOP <span>SECURITY</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-setup">Setup Phase</button>
+            <button class="nav-btn" id="btn-maint">Maintenance</button>
+            <button class="nav-btn" id="btn-edr">EDR</button>
+            <button class="nav-btn" id="btn-sme">SME vs Individual</button>
+            <button class="nav-btn" id="btn-quiz">Quiz</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>Desktop Security Fundamentals</h1>
+                <p>Securing a computer is a lifecycle process. From the first setup to advanced threat hunting with EDR.</p>
+                
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-icon">🛡️</span>
+                        <span class="stat-label">Prevention</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-icon">🔄</span>
+                        <span class="stat-label">Recovery</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-label">Detection</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="jump-setup">Start with Setup</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🏗️ Setup</h3>
+                    <p>The foundation. Installing the OS, enabling encryption, and creating strong accounts sets the baseline for security.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🔧 Maintenance</h3>
+                    <p>The routine. Updates, scanning, and audits ensure that new vulnerabilities don't compromise your system over time.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🤖 EDR Technology</h3>
+                    <p>Endpoint Detection and Response. A super-smart security guard that watches devices in real-time, detecting advanced threats.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SETUP PHASE -->
+        <section id="setup" class="tab-content">
+            <h2>Initial Configuration: The Foundation</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>💿 OS & Encryption</h3>
+                    <ul class="checklist">
+                        <li>Start with a clean install of Windows, macOS, or Linux.</li>
+                        <li>Enable <strong>Full-Disk Encryption</strong> (BitLocker/FileVault).</li>
+                        <li>Turn on the built-in Firewall immediately.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🔑 Accounts & Auth</h3>
+                    <ul class="checklist">
+                        <li>Create separate <strong>Admin</strong> and <strong>Standard</strong> accounts.</li>
+                        <li>Use a Password Manager to generate complex (12+ char) passwords.</li>
+                        <li>Enable <strong>MFA (Multi-Factor Authentication)</strong> on everything.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🛡️ Software Defense</h3>
+                    <ul class="checklist">
+                        <li>Install reputable Antivirus/Anti-malware.</li>
+                        <li>For businesses, prepare for EDR deployment.</li>
+                        <li>Secure the Network: Use WPA3 encryption for Wi-Fi.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <!-- FIXED ICON HERE -->
+                    <h3>☁️ The 3-2-1 Backup Rule</h3>
+                    <p><strong>3</strong> Copies of data.</p>
+                    <p><strong>2</strong> Different media types (e.g., Cloud + External Drive).</p>
+                    <p><strong>1</strong> Copy kept Offsite (to protect against fire/theft).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MAINTENANCE PHASE -->
+        <section id="maint" class="tab-content">
+            <h2>Ongoing Maintenance: Staying Secure</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🔄 Updates & Patches</h3>
+                    <p>Software vulnerabilities are discovered daily. Set OS and Apps to <strong>Auto-Update</strong>. In an SME, test patches before rolling them out.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🕵️ Monitoring & Scanning</h3>
+                    <p>Run full system scans weekly. Be paranoid about emails, attachments, and USB drives. Use browser extensions for ad-blocking and privacy.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎓 Education</h3>
+                    <p>Technology fails if the human fails. Stay informed on phishing trends. For SMEs, conduct regular <strong>Phishing Simulations</strong>.</p>
+                </div>
+                <div class="info-card">
+                    <h3>📋 Audit & Review</h3>
+                    <p>Periodically check logs for strange logins. Delete unused accounts. Verify that your backups can actually be restored (Test them!).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. EDR SECTION -->
+        <section id="edr" class="tab-content">
+            <h2>Endpoint Detection and Response (EDR)</h2>
+            <p>Think of EDR as a super-smart security guard that watches over all your gadgets—laptops, desktops, smartphones, and servers.</p>
+            
+            <div class="grid-container">
+                <!-- Definition Card -->
+                <div class="info-card">
+                    <h3>🔍 What are "Endpoints"?</h3>
+                    <p>An "endpoint" is any device that connects to a network.
+                    <br><strong>Individuals:</strong> Your home PC and phone.
+                    <br><strong>SMEs:</strong> Employee laptops, office desktops, and servers.</p>
+                </div>
+
+                <!-- How it Works Card -->
+                <div class="info-card">
+                    <h3>⚙️ How EDR Works</h3>
+                    <div class="edr-process">
+                        <div class="edr-step">
+                            <strong>1. Monitoring:</strong> Runs quietly in the background, collecting data on running programs, files opened, and network connections.
+                        </div>
+                        <div class="edr-step">
+                            <strong>2. Detection:</strong> Uses AI to spot "Red Flags" like programs trying to hide themselves or unusual data transfers.
+                        </div>
+                        <div class="edr-step">
+                            <strong>3. Response:</strong> Automatically isolates infected devices (cuts the internet) or rolls back changes to undo damage.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefits Card -->
+                <div class="info-card">
+                    <h3>🚀 Why Use EDR?</h3>
+                    <ul class="checklist">
+                        <li><strong>Scalability:</strong> Protects many devices at once from a central dashboard.</li>
+                        <li><strong>Proactive:</strong> Unlike old antivirus (which waits for known viruses), EDR hunts for suspicious <em>behavior</em>.</li>
+                        <li><strong>Examples:</strong> CrowdStrike, Microsoft Defender for Endpoint, SentinelOne.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SME vs INDIVIDUAL (RESTORED) -->
+        <section id="sme" class="tab-content">
+            <h2>Context Matters: Individual vs. SME</h2>
+            <p>While the technical basics are the same, the scale and responsibility differ significantly.</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Individual User</th>
+                        <th>SME (Business)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Access Control</strong></td>
+                        <td>Single user or Family accounts</td>
+                        <td><strong>Least Privilege</strong> via Active Directory or IAM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Software</strong></td>
+                        <td>Standard Antivirus</td>
+                        <td><strong>EDR</strong> & Network Monitoring Tools</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Policies</strong></td>
+                        <td>Common Sense</td>
+                        <td>Formal <strong>Cybersecurity Policy</strong> & Compliance (GDPR)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Updates</strong></td>
+                        <td>Automatic / Immediate</td>
+                        <td>Managed / Tested to prevent downtime</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Advanced</strong></td>
+                        <td>VPN for public Wi-Fi</td>
+                        <td><strong>Zero-Trust Architecture</strong> & VPN for Remote Work</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 6. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Test your understanding of desktop security and EDR.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:20px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
+                    <p id="score-message"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Desktop Security Educational Module</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. NAVIGATION LOGIC ---
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'setup': 'btn-setup',
+                    'maint': 'btn-maint',
+                    'edr': 'btn-edr',
+                    'sme': 'btn-sme',
+                    'quiz': 'btn-quiz'
+                };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
+            }
+
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-setup').onclick = () => switchTab('setup');
+            document.getElementById('btn-maint').onclick = () => switchTab('maint');
+            document.getElementById('btn-edr').onclick = () => switchTab('edr');
+            document.getElementById('btn-sme').onclick = () => switchTab('sme');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-setup').onclick = () => switchTab('setup');
+
+            // --- 2. QUIZ DATA (15 Questions including EDR) ---
+            const questions = [
+                // SETUP
+                {
+                    q: "1. What is the '3-2-1' Backup Rule?",
+                    options: ["3 backups, 2 years old, 1 password", "3 copies of data, 2 different media types, 1 offsite", "3 hard drives, 2 cloud accounts, 1 user", "3 passwords, 2 users, 1 computer"],
+                    a: 1,
+                    exp: "Correct. 3 copies ensure redundancy, 2 media types protect against device failure, and 1 offsite protects against fire/theft."
+                },
+                {
+                    q: "2. Why should you use separate 'Admin' and 'Standard' accounts?",
+                    options: ["To organize files better", "Because Admins get faster internet", "If a Standard account is hacked, the malware has limited permissions", "It is required by Windows"],
+                    a: 2,
+                    exp: "Correct. Limiting privileges prevents malware from installing itself system-wide if a user makes a mistake."
+                },
+                {
+                    q: "3. What does Full-Disk Encryption (like BitLocker) do?",
+                    options: ["Speeds up the computer", "Prevents hackers from seeing your screen", "Protects data if the physical computer is stolen", "Stops viruses"],
+                    a: 2,
+                    exp: "Correct. Encryption scrambles the data on the drive so it cannot be read without the password, even if the drive is removed."
+                },
+                // MAINTENANCE
+                {
+                    q: "4. What is the most critical maintenance task to prevent exploits?",
+                    options: ["Defragmenting the disk", "Applying Software/OS Updates and Patches", "Cleaning the keyboard", "Deleting old photos"],
+                    a: 1,
+                    exp: "Correct. Updates patch known security holes that hackers use to enter systems."
+                },
+                {
+                    q: "5. Why is MFA (Multi-Factor Authentication) important?",
+                    options: ["It adds a layer of security beyond just a password", "It makes logging in faster", "It creates a backup of your data", "It stops spam emails"],
+                    a: 0,
+                    exp: "Correct. Even if a hacker steals your password, they cannot login without the second factor (like a code on your phone)."
+                },
+                {
+                    q: "6. What is a recommended password hygiene practice?",
+                    options: ["Write them on a sticky note", "Use the same password for everything so you don't forget", "Use a Password Manager and unique complex passwords", "Change passwords every day"],
+                    a: 2,
+                    exp: "Correct. Password managers allow you to have unique, un-guessable passwords for every site."
+                },
+                // SME vs INDIVIDUAL
+                {
+                    q: "7. SME: What is the 'Principle of Least Privilege'?",
+                    options: ["Giving the boss all the access", "Giving users only the access they need to do their job", "Making sure the guest account has admin rights", "Banning internet access"],
+                    a: 1,
+                    exp: "Correct. Restricting access minimizes the potential damage if an employee account is compromised."
+                },
+                {
+                    q: "8. Why should SMEs test updates before automatic deployment?",
+                    options: ["To save bandwidth", "To avoid business disruptions if an update breaks a critical app", "To let hackers test them first", "It is cheaper"],
+                    a: 1,
+                    exp: "Correct. Businesses prioritize stability; a bad update can stop operations, so IT tests them first."
+                },
+                // EDR (New Questions)
+                {
+                    q: "9. EDR: What is an 'Endpoint'?",
+                    options: ["The end of a network cable", "Any device connected to a network (laptop, phone, server)", "A type of virus", "The firewall settings"],
+                    a: 1,
+                    exp: "Correct. Endpoints are the devices at the edge of the network that users interact with."
+                },
+                {
+                    q: "10. How is EDR different from traditional Antivirus?",
+                    options: ["It is cheaper", "It only scans for known viruses", "It proactively monitors behavior and uses AI to spot unknown threats", "It only works on Macs"],
+                    a: 2,
+                    exp: "Correct. Traditional AV looks for known signatures. EDR looks for suspicious behavior (like a program trying to hide)."
+                },
+                {
+                    q: "11. What is an automated 'Response' action an EDR system might take?",
+                    options: ["Deleting the hard drive immediately", "Isolating the infected device from the network", "Sending an email to the hacker", "Turning off the monitor"],
+                    a: 1,
+                    exp: "Correct. EDR can automatically cut the network connection to stop a virus from spreading to other computers."
+                },
+                {
+                    q: "12. What is a potential drawback of EDR?",
+                    options: ["It makes the computer too fast", "It can flag harmless activities as threats (False Positives)", "It works without internet", "It is free"],
+                    a: 1,
+                    exp: "Correct. Sometimes EDR might think a legitimate program is acting suspiciously and block it."
+                },
+                // GENERAL AWARENESS
+                {
+                    q: "13. What is a 'Zero-Trust' model?",
+                    options: ["Trusting no one, verifying every access request", "Trusting only the CEO", "Using zero passwords", "Having zero internet connection"],
+                    a: 0,
+                    exp: "Correct. Zero-trust assumes a breach has already happened and verifies every single request for access."
+                },
+                {
+                    q: "14. When disposing of an old computer, what should you do?",
+                    options: ["Throw it in the trash", "Delete the files to the Recycle Bin", "Use a secure deletion tool or destroy the drive", "Give it to a friend"],
+                    a: 2,
+                    exp: "Correct. Standard deletion doesn't remove data permanently. Secure wiping or physical destruction is required."
+                },
+                {
+                    q: "15. What is Phishing?",
+                    options: ["Fishing for data on a hard drive", "A social engineering attack via email to steal credentials", "Connecting to Wi-Fi", "Installing a Printer"],
+                    a: 1,
+                    exp: "Correct. Phishing relies on tricking the user into clicking links or downloading files via deceptive emails."
+                }
+            ];
+
+            let currentQIndex = 0;
+            let score = 0;
+
+            const qText = document.getElementById('question-text');
+            const optsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback-display');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress');
+            const finalScore = document.getElementById('final-score');
+            const scoreMsg = document.getElementById('score-message');
+            const quizBlock = document.getElementById('quiz-block');
+            const scoreBlock = document.getElementById('score-block');
+            const restartBtn = document.getElementById('restart-btn');
+
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+
+                const pct = ((currentQIndex) / questions.length) * 100;
+                progressBar.style.width = pct + "%";
+
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = function() { handleAnswer(idx, btn); };
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                const allBtns = optsContainer.querySelectorAll('button');
+                allBtns.forEach(b => b.disabled = true);
+
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.style.background = "#22c55e"; /* Success Green */
+                    btnElement.style.color = "#0f172a";
+                    btnElement.style.borderColor = "#16a34a";
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+                } else {
+                    btnElement.style.background = "#ef4444"; /* Danger Red */
+                    btnElement.style.color = "white";
+                    btnElement.style.borderColor = "#dc2626";
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = function() {
+                currentQIndex++;
+                if (currentQIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            restartBtn.onclick = function() {
+                currentQIndex = 0;
+                score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                
+                if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You are a Security Pro.";
+                else if(score > 10) scoreMsg.innerText = "👍 Good Job! Your system is safe.";
+                else scoreMsg.innerText = "📚 Review the lessons and try again.";
+            }
+
+            // Init
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
