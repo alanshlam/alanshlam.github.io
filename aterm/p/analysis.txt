@@ -1,0 +1,75 @@
+## Network Traffic Analysis Report of vsftp.pcap
+
+
+**Date:** October 26, 2023 (Based on packet timestamps)
+
+**Source PCAP:** vsftp.pcap
+
+
+Summary of Findings:
+
+The `tcpdump` output reveals a clear attempt at unauthorized access and potential exploitation of the target system. The attacker (172.17.0.1) is attempting to gain access via FTP, and is actively probing for information by issuing commands like `cat /etc/passwd` and `cat /etc/shadow`.  The successful retrieval of `/etc/shadow` is a critical security breach, as this file contains hashed passwords. This indicates a compromised system or a successful brute-force/credential stuffing attack.
+
+Identified Attack Details:
+
+1. Attack Vector:  Information Disclosure/Credential Theft via FTP. The attacker is exploiting a potentially misconfigured or vulnerable FTP service to gain access to sensitive system files.  The use of `cat /etc/passwd` and `/etc/shadow` is a direct attempt to steal user credentials.
+2. Attacker ID:
+    *   IP Address: 172.17.0.1
+    *   MAC Address: 8e:de:56:b4:41:2b
+3. Victim ID:
+    *   IP Address: 172.17.0.2
+    *   MAC Address: da:4d:73:6b:0f:cc
+4. Hacking Timeline:
+    *   14:57:38 - 14:57:38: ARP requests and replies establish initial communication.
+    *   14:57:38 - 14:57:38: Initial TCP connection attempt (SYN) from attacker to FTP port (21) on the victim.
+    *   14:57:38 - 14:57:38: Connection established.
+    *   14:57:38 - 14:58:03: Command execution: `USER pVOE:)`, `PASS 2p`, `whoami`, `cat /etc/passwd`, `cat /etc/shadow`, `exit`.  The attacker is escalating privileges and attempting to extract sensitive information.
+5. Relevant Details:
+    *   Protocol: TCP, FTP
+    *   Ports: Source Port (variable), Destination Port 21 (FTP), 6200 (appears to be a secondary port used in the communication)
+    *   Payloads: The `tcpdump` output shows clear ASCII data representing FTP commands being sent by the attacker. The commands `whoami`, `cat /etc/passwd`, and `cat /etc/shadow` are particularly concerning.
+
+Recommended Countermeasures:
+
+1. Immediate Action:
+    *   Isolate the compromised system: Disconnect the affected machine from the network to prevent further damage.
+    *   Change all passwords: Immediately change passwords for all user accounts on the compromised system, especially those listed in `/etc/shadow`.
+    *   Review system logs: Thoroughly examine system logs for any other signs of compromise.
+2. Security Hardening:
+    *   Disable or secure FTP: FTP is inherently insecure.  Consider disabling it entirely or using a secure alternative like SFTP (SSH File Transfer Protocol) or FTPS (FTP over SSL/TLS).
+    *   Implement strong password policies: Enforce strong, unique passwords for all user accounts.
+    *   Principle of Least Privilege: Grant users only the minimum necessary permissions.
+    *   Regular Security Audits: Conduct regular security audits and vulnerability assessments.
+    *   Firewall Configuration: Implement a firewall to restrict access to the FTP service to only authorized IP addresses.
+    *   Intrusion Detection/Prevention System (IDS/IPS): Deploy an IDS/IPS to detect and block malicious activity.
+3. Monitoring and Logging:
+    *   Enable detailed logging: Configure the FTP server and system to log all activity.
+    *   Monitor network traffic: Continuously monitor network traffic for suspicious patterns.
+
+Suricata Rules:
+
+Here are some Suricata rules to detect and block this type of activity.  These are examples and may need to be adjusted based on your specific environment.
+
+alert ftp any any -> any 21 (msg:"FTP Command - Attempt to read /etc/passwd"; content:"cat /etc/passwd"; sid:1000001; rev:1;)
+alert ftp any any -> any 21 (msg:"FTP Command - Attempt to read /etc/shadow"; content:"cat /etc/shadow"; sid:1000002; rev:1;)
+alert ftp $HOME_NET any -> any 21 (msg:"FTP Command - Suspicious command execution"; content:"|whoami|"; sid:1000003; rev:1;)
+alert ftp $HOME_NET any -> any 21 (msg:"FTP Command - Potential credential theft"; content:"cat /etc/"; sid:1000004; rev:1;)
+alert tcp $HOME_NET any -> any 21 (msg:"FTP - Possible Brute Force"; flow:established,to_server; content:"USER "; depth:5; nocase; sid:1000005; rev:1;)
+
+Explanation of Suricata Rules:
+
+*   alert ftp:  Specifies that the rule applies to FTP traffic.
+*   any any -> any 21:  Matches traffic from any source IP/port to destination IP/port 21 (FTP).
+*   msg:  The alert message.
+*   content:  The string to search for in the packet payload.
+*   sid:  The Suricata rule ID (must be unique).
+*   rev:  The rule revision number.
+*   $HOME_NET: A variable representing your internal network.  You'll need to define this in your Suricata configuration.
+*   flow:established,to_server: Matches traffic that is part of an established connection and is going from the client to the server.
+*   nocase: Performs a case-insensitive search.
+
+Important Considerations:
+
+*   This analysis is based solely on the provided `tcpdump` output. A more comprehensive investigation may be necessary to fully understand the scope of the attack.
+*   The Suricata rules are examples and should be tested and tuned to your specific environment.
+*   Regularly update your security tools and signatures to protect against the latest threats.
