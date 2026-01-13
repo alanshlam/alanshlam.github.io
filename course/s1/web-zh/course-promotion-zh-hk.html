@@ -14,27 +14,21 @@
             --card-bg: #fff;
             --footer-color: #95a5a6;
         }
-
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
         body {
             font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             transition: background-color 0.3s; 
         }
-
-        body:fullscreen {
-            background-color: #000;
-        }
-        
-        body:-webkit-full-screen {
-            background-color: #000;
-        }
-
         .container {
             width: 90%;
             max-width: 1000px;
@@ -44,16 +38,15 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 90vh; 
+            height: 90vh;
+            max-height: 700px;
         }
-
         .slide-content {
             display: flex;
             flex-direction: row;
-            min-height: 500px;
+            flex-grow: 1;
             overflow: hidden; 
         }
-
         .visual-container {
             flex: 1;
             background-color: #eef2f5;
@@ -62,16 +55,15 @@
             justify-content: center;
             padding: 20px;
             border-right: 1px solid #ddd;
+            overflow: hidden;
         }
-
         .visual-container img {
             max-width: 100%;
-            max-height: 450px;
+            max-height: 100%;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             object-fit: contain;
         }
-
         .text-container {
             flex: 1;
             padding: 40px;
@@ -80,17 +72,11 @@
             justify-content: space-between;
             position: relative;
             background-color: white;
+            overflow-y: auto;
         }
-
         .dynamic-content {
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow-y: auto;
-            padding-right: 10px;
         }
-
         .slide-footer {
             margin-top: 20px;
             padding-top: 15px;
@@ -101,21 +87,10 @@
             font-style: italic;
             letter-spacing: 0.5px;
         }
-
-        h1, h2, h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        ul, ol {
-            line-height: 1.5;
-            margin: 10px 0;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
+        h1 { font-size: 2rem; }
+        h2, h3 { color: var(--primary-color); margin-top: 0; }
+        ul, ol { line-height: 1.6; margin: 10px 0 10px 20px; padding-left: 15px; }
+        li { margin-bottom: 8px; }
         .stat-container {
             display: flex;
             gap: 15px;
@@ -142,7 +117,6 @@
             font-weight: bold;
             color: var(--accent-color);
         }
-
         .controls {
             background-color: #fff;
             border-top: 1px solid #eee;
@@ -151,8 +125,8 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px; 
+            flex-shrink: 0;
         }
-
         button {
             background-color: var(--accent-color);
             color: white;
@@ -166,48 +140,39 @@
             align-items: center;
             gap: 8px;
         }
+        button:hover { background-color: #a93226; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        #fullscreenBtn { background-color: #2c3e50; }
+        #fullscreenBtn:hover { background-color: #1a252f; }
+        .progress { font-weight: bold; color: #7f8c8d; white-space: nowrap; }
 
-        button:hover {
-            background-color: #a93226;
-        }
-
-        button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        #fullscreenBtn {
-            background-color: #2c3e50; 
-        }
-        #fullscreenBtn:hover {
-            background-color: #1a252f;
-        }
-
-        .progress {
-            font-weight: bold;
-            color: #7f8c8d;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 768px) {
-            .slide-content {
-                flex-direction: column;
+        @media (max-width: 800px) {
+            body { 
+                align-items: stretch;
+                height: auto; 
+                -webkit-text-size-adjust: 100%;
             }
+            .container {
+                width: 100%;
+                height: 100%;
+                max-height: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .slide-content { flex-direction: column; }
             .visual-container {
+                flex: 0 0 250px; 
                 border-right: none;
                 border-bottom: 1px solid #ddd;
-                min-height: 250px;
+                padding: 15px;
             }
-            .text-container {
-                padding: 20px;
-            }
-            .stat-container {
-                flex-direction: column;
-            }
-            .controls {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
+            .text-container { padding: 25px; flex-grow: 1; }
+            h1 { font-size: 1.6rem; }
+            h3 { font-size: 1.1rem; }
+            .stat-container { flex-direction: column; }
+            .controls { padding: 10px; justify-content: center; }
+            .progress { order: -1; width: 100%; text-align: center; margin-bottom: 10px; }
+            #fullscreenBtn { display: none; }
         }
     </style>
 </head>
