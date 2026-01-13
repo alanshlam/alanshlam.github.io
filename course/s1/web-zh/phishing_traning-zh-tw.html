@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>釣魚郵件防禦訓練</title>
+    <style>
+        :root {
+            --primary-color: #006699; --accent-color: #ff6600; --bg-color: #f4f7f6;
+            --text-color: #333; --white: #ffffff; --success: #28a745; --danger: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            margin: 0; padding: 0; background-color: var(--bg-color);
+            color: var(--text-color); line-height: 1.6;
+        }
+        header {
+            background-color: var(--white); padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center; border-bottom: 4px solid var(--primary-color);
+        }
+        h1 { margin: 0; color: var(--primary-color); }
+        h2 { color: var(--accent-color); }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+        .nav-tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+        .nav-btn {
+            background: #ddd; border: none; padding: 15px 30px; cursor: pointer;
+            font-size: 1.1rem; font-weight: bold; transition: 0.3s;
+            flex: 1; max-width: 200px;
+        }
+        .nav-btn.active { background-color: var(--primary-color); color: var(--white); }
+        .nav-btn:hover:not(.active) { background-color: #ccc; }
+        .section {
+            display: none; background: var(--white); padding: 30px;
+            border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .section.active { display: block; }
+        .tip-card {
+            border-left: 5px solid var(--accent-color); background: #fff;
+            margin-bottom: 20px; padding: 15px; border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tip-title {
+            font-weight: bold; font-size: 1.2rem; color: var(--primary-color); margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #fff3cd; padding: 2px 5px; border-radius: 3px; font-weight: bold;
+        }
+        .quiz-question { margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 15px; border: 2px solid #ddd; background: white;
+            border-radius: 5px; text-align: left; cursor: pointer;
+            font-size: 1rem; transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: var(--primary-color); background-color: #f0f8ff; }
+        .option-btn.correct { background-color: #d4edda; border-color: var(--success); color: #155724; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: var(--danger); color: #721c24; }
+        .explanation {
+            margin-top: 15px; padding: 15px; background-color: #e2e3e5;
+            border-radius: 5px; display: none;
+        }
+        .controls { margin-top: 20px; display: flex; justify-content: space-between; }
+        .action-btn {
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 1rem;
+        }
+        .action-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .score-display { text-align: center; font-size: 2rem; color: var(--primary-color); margin: 20px 0; }
+        .footer-tag { text-align: center; margin-top: 40px; font-weight: bold; color: #777; }
+        .red-text { color: var(--danger); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>釣魚郵件意識訓練</h1>
+    <p>基於常見提示指南</p>
+</header>
+
+<div class="container">
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('study')">1. 學習跡象</button>
+        <button class="nav-btn" onclick="switchTab('quiz')">2. 參加測驗</button>
+    </div>
+
+    <div id="study" class="section active">
+        <h2>8個常見的釣魚郵件跡象</h2>
+        <p>在參加測驗前，請仔細閱讀這些提示。</p>
+        <div class="tip-card"><div class="tip-title">1. 不匹配的網址</div><p>連結文字看起來是真的（例如 www.hsbc.com），但實際目標網址不同。</p><p><span class="highlight">行動：</span>將滑鼠懸停在連結上查看真實地址。<strong>不要點擊！</strong></p></div>
+        <div class="tip-card"><div class="tip-title">2. 索取敏感資料</div><p>釣魚者常透過電子郵件表單直接索取密碼、使用者名稱或信用卡詳細資料。</p><p><span class="highlight">事實：</span>合法機構很少透過電子郵件索取密碼。</p></div>
+        <div class="tip-card"><div class="tip-title">3. 好到難以置信的優惠</div><p>您沒參加的樂透中獎了？意外的遺產？疫苗抽獎獎品？</p><p><span class="highlight">思考：</span>如果您沒買票，就不會中獎。這是個陷阱。</p></div>
+        <div class="tip-card"><div class="tip-title">4. 未經您授權的行動</div><p>聲稱「您最近提取了款項」或「您要求重設密碼」的電子郵件，而您什麼也沒做。</p><p><span class="highlight">目標：</span>他們想讓您驚慌失措，點擊「驗證資訊」以竊取您的登入資料。</p></div>
+        <div class="tip-card"><div class="tip-title">5. 金錢/威脅</div><p>駭客聲稱擁有您的私人照片或資料，並要求在48小時內支付比特幣。</p><p><span class="highlight">行動：</span>不要支付。舉報它。不要回覆。</p></div>
+        <div class="tip-card"><div class="tip-title">6. 可疑的寄件人地址</div><p>一封聲稱來自「Joel教授」或「大學管理員」的電子郵件，但寄件人是 <code>jte895@gmail.com</code> 或 <code>admin@hotmail.com</code>。</p><p><span class="highlight">檢查：</span>官方業務應透過官方組織電子郵件地址進行。</p></div>
+        <div class="tip-card"><div class="tip-title">7. 緊急的語氣</div><p>主旨行如「緊急請求」或「帳戶將在24小時內終止」。</p><p><span class="highlight">原因：</span>他們想讓您在沒有思考的情況下迅速行動。</p></div>
+        <div class="tip-card"><div class="tip-title">8. 意外的附件</div><p>聲稱「來自印表機的掃描文件」或「附上發票」的電子郵件，而您並未預期收到。</p><p><span class="highlight">危險：</span>這些檔案通常包含惡意軟體。不要打開它們。</p></div>
+        <div class="tip-card" style="border-left-color: var(--primary-color);"><div class="tip-title">如何舉報？</div><p>如果您發現釣魚郵件，請向您的系統管理員舉報。</p><p><strong>關鍵步驟：</strong>將可疑郵件以<span class="highlight">附件</span>形式轉寄，以保留郵件標頭。</p></div>
+    </div>
+
+    <div id="quiz" class="section">
+        <div id="quiz-container">
+            <div class="progress-bar" style="margin-bottom: 15px; color: #777;">問題 <span id="q-current">1</span> / <span id="q-total">5</span></div>
+            <div id="question-box"></div>
+            <div class="explanation" id="explanation"></div>
+            <div class="controls"><button class="action-btn" id="next-btn" onclick="nextQuestion()" disabled>下一題</button></div>
+        </div>
+        <div id="result-container" style="display: none; text-align: center;">
+            <h2>測驗完成！</h2>
+            <div class="score-display">您答對了 <span id="score">0</span>/5</div>
+            <p id="feedback-msg"></p>
+            <button class="action-btn" onclick="restartQuiz()">再試一次</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-tag">
+    #點擊前要三思
+</div>
+
+<script>
+    const questions = [
+        { question: "您收到一封來自「滙豐銀行」的郵件，稱您的帳戶已被暫停。連結文字顯示為「www.hsbc.com/verify」，但當您將滑鼠懸停在上面時，彈出視窗顯示「http://hsbc-online.wpew.info」。您該怎麼辦？", options: ["立即點擊連結以驗證您的帳戶。", "回覆郵件詢問是否屬實。", "不要點擊。這是一個不匹配的網址（釣魚）。", "轉寄給朋友以警告他們。"], correct: 2, explanation: "<strong>正確！</strong>這是典型的「不匹配網址」。在點擊前，務必將滑鼠懸停在連結上查看真實目標地址。" },
+        { question: "您收到一封來自「大學管理員」的郵件，要求您提供使用者名稱和密碼以進行系統升級。不回覆將導致帳戶刪除。", options: ["僅回覆您的使用者名稱。", "回覆您的使用者名稱和密碼以避免被刪除。", "忽略它，但點擊連結只是為了檢查一下。", "舉報它。合法機構很少透過電子郵件索取密碼。"], correct: 3, explanation: "<strong>正確！</strong>提示 #2：絕不透過電子郵件提供密碼等敏感個人資訊。真正的管理員已經可以存取系統，他們不需要問您。" },
+        { question: "您收到一封來自「John Smith教授」關於兼職工作的郵件。寄件人地址是「johnny_cool_dude88@gmail.com」。這可疑嗎？", options: ["不，教授們經常使用個人Gmail處理工作。", "是的。官方大學業務應來自大學電子郵件網域（例如 .edu.hk）。", "不，只要薪水高就好。", "是的，但我還是應該申請。"], correct: 1, explanation: "<strong>正確！</strong>提示 #6：檢查寄件人地址。如果教授或官方人員使用免費網路郵件帳戶（Gmail、Hotmail）與您聯繫處理公務，請務必保持高度警惕。" },
+        { question: "您收到一封主旨為「緊急：最後警告 - 付款逾期」的郵件。您不記得買過任何東西。", options: ["這使用威脅性語言讓您驚慌。這很可能是個騙局。", "您一定忘記了某張帳單。立即支付。", "點擊附件查看發票。", "回覆並道歉。"], correct: 0, explanation: "<strong>正確！</strong>提示 #7 & #4：詐騙者使用緊急/威脅性語言來繞過您的批判性思維。此外，由於您沒有發起行動（購買東西），這就是一個騙局。" },
+        { question: "您已識別出一封釣魚郵件。您應如何向您的技術團隊舉報？", options: ["直接刪除。", "截圖並傳送。", "將郵件以附件形式轉寄。", "回覆駭客，告訴他們您抓到他們了。"], correct: 2, explanation: "<strong>正確！</strong>為了正確分析攻擊，IT支援需要郵件標頭。以<strong>附件</strong>形式轉寄郵件可以保留這些技術資料。" }
+    ];
+    let currentQuestionIndex = 0, score = 0;
+    function switchTab(tabId) {
+        document.querySelectorAll('.section, .nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        const buttons = document.querySelectorAll('.nav-btn');
+        if(tabId === 'study') buttons[0].classList.add('active');
+        if(tabId === 'quiz') buttons[1].classList.add('active');
+    }
+    function loadQuestion() {
+        const qData = questions[currentQuestionIndex], qContainer = document.getElementById('question-box'),
+              nextBtn = document.getElementById('next-btn'), explanation = document.getElementById('explanation');
+        document.getElementById('q-current').innerText = currentQuestionIndex + 1;
+        document.getElementById('q-total').innerText = questions.length;
+        nextBtn.disabled = true;
+        explanation.style.display = 'none';
+        let html = `<div class="quiz-question">${qData.question}</div><div class="options">`;
+        qData.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        qContainer.innerHTML = html;
+    }
+    function checkAnswer(selectedIndex, btnElement) {
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(btn => btn.disabled = true);
+        const qData = questions[currentQuestionIndex], explanation = document.getElementById('explanation'),
+              nextBtn = document.getElementById('next-btn');
+        if(selectedIndex === qData.correct) {
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            btnElement.classList.add('wrong');
+            allBtns[qData.correct].classList.add('correct');
+        }
+        explanation.innerHTML = qData.explanation;
+        explanation.style.display = 'block';
+        nextBtn.disabled = false;
+    }
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if(currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+    function showResults() {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('score').innerText = score;
+        let msg = "";
+        if(score === 5) msg = "太棒了！您是釣魚專家。";
+        else if(score >= 3) msg = "做得不錯，但請保持警惕。";
+        else msg = "您可能需要再次複習學習提示。";
+        document.getElementById('feedback-msg').innerText = msg;
+    }
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+    loadQuestion();
+</script>
+
+</body>
+</html>
