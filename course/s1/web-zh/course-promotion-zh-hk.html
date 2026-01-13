@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>課程推廣：日常網路安全要點</title>
     <style>
         :root {
@@ -24,17 +24,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: background-color 0.3s; 
+            /* Prevent bounce effect on mobile */
+            overscroll-behavior-y: none;
         }
 
-        body:fullscreen {
-            background-color: #000;
-        }
-        
-        body:-webkit-full-screen {
-            background-color: #000;
-        }
-
+        /* Container styles */
         .container {
             width: 90%;
             max-width: 1000px;
@@ -44,16 +38,19 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 90vh; 
+            /* Default height for desktop */
+            height: 85vh; 
+            max-height: 800px;
         }
 
         .slide-content {
             display: flex;
             flex-direction: row;
-            min-height: 500px;
+            flex: 1; /* Takes up remaining space above controls */
             overflow: hidden; 
         }
 
+        /* Image Area */
         .visual-container {
             flex: 1;
             background-color: #eef2f5;
@@ -66,56 +63,62 @@
 
         .visual-container img {
             max-width: 100%;
-            max-height: 450px;
+            max-height: 100%;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             object-fit: contain;
+            transition: opacity 0.3s ease-in-out;
         }
 
+        /* Text Area */
         .text-container {
             flex: 1;
             padding: 40px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             position: relative;
             background-color: white;
+            overflow: hidden;
         }
 
+        /* The scrollable part of the text */
         .dynamic-content {
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             overflow-y: auto;
             padding-right: 10px;
+            /* Smooth scrolling for mobile */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        /* Fade animation class */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .slide-footer {
-            margin-top: 20px;
-            padding-top: 15px;
+            margin-top: 15px;
+            padding-top: 10px;
             border-top: 1px solid #eee;
             font-size: 12px;
             color: var(--footer-color);
             text-align: right;
             font-style: italic;
-            letter-spacing: 0.5px;
+            flex-shrink: 0;
         }
 
-        h1, h2, h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
+        /* Typography */
+        h1 { font-size: 1.8rem; color: var(--primary-color); margin-top: 0; }
+        h2 { font-size: 1.5rem; color: var(--primary-color); margin-top: 0; }
+        h3 { font-size: 1.2rem; color: var(--primary-color); margin-top: 0; }
+        p, li { line-height: 1.6; font-size: 1rem; }
+        li { margin-bottom: 8px; }
 
-        ul, ol {
-            line-height: 1.5;
-            margin: 10px 0;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
+        /* Stats Box */
         .stat-container {
             display: flex;
             gap: 15px;
@@ -143,86 +146,123 @@
             color: var(--accent-color);
         }
 
+        /* Controls */
         .controls {
             background-color: #fff;
             border-top: 1px solid #eee;
-            padding: 15px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px; 
+            gap: 10px; 
+            flex-shrink: 0; /* Prevents controls from shrinking */
+            z-index: 10;
         }
 
         button {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 20px; /* Larger touch target */
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.1s;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            touch-action: manipulation;
         }
 
-        button:hover {
-            background-color: #a93226;
-        }
+        button:active { transform: scale(0.96); }
+        button:hover { background-color: #a93226; }
+        button:disabled { background-color: #e0e0e0; color: #999; cursor: not-allowed; }
 
-        button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        #fullscreenBtn {
-            background-color: #2c3e50; 
-        }
-        #fullscreenBtn:hover {
-            background-color: #1a252f;
-        }
-
+        #fullscreenBtn { background-color: #2c3e50; }
+        
         .progress {
             font-weight: bold;
             color: #7f8c8d;
             white-space: nowrap;
+            font-size: 0.9rem;
         }
 
+        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 768px) {
+            body {
+                background-color: #fff;
+                align-items: flex-start;
+            }
+
+            .container {
+                width: 100%;
+                /* Use dynamic viewport height to handle mobile URL bars */
+                height: 100dvh; 
+                max-height: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
             .slide-content {
                 flex-direction: column;
             }
+
             .visual-container {
                 border-right: none;
                 border-bottom: 1px solid #ddd;
-                min-height: 250px;
+                /* Limit image height to 30% of screen so text is readable */
+                height: 30%; 
+                flex: none; /* Don't grow */
+                padding: 10px;
+                background-color: #f8f9fa;
             }
+
+            .visual-container img {
+                max-height: 100%;
+                width: auto;
+            }
+
             .text-container {
-                padding: 20px;
+                flex: 1; /* Takes remaining 70% */
+                padding: 20px 20px 5px 20px; /* Less bottom padding */
             }
-            .stat-container {
-                flex-direction: column;
-            }
+
+            /* Adjust typography for mobile */
+            h1 { font-size: 1.4rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.1rem; }
+            p, li { font-size: 0.95rem; }
+
+            .stat-container { flex-direction: column; gap: 10px; }
+            
             .controls {
-                flex-wrap: wrap;
-                justify-content: center;
+                padding: 10px 15px;
+                background: #fff;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
             }
+
+            /* Hide fullscreen button on mobile - usually redundant or buggy */
+            #fullscreenBtn { display: none; }
+            
+            /* Make nav buttons occupy space evenly */
+            #prevBtn, #nextBtn { flex: 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="slide-content">
+<div class="container" id="main-container">
+    <div class="slide-content" id="swipe-area">
         <div class="visual-container">
             <img id="slide-img" src="" alt="簡報視覺圖示">
         </div>
         <div class="text-container">
             <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
             </div>
             <div class="slide-footer">
-                日常網路安全要點與應急響應
+                &#8592; 左右滑動換頁 &#8594; | 日常網路安全要點
             </div>
         </div>
     </div>
@@ -230,7 +270,6 @@
         <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一頁</button>
         <span class="progress" id="slide-counter">1 / 11</span>
         <button id="nextBtn" onclick="changeSlide(1)">下一頁 &#8594;</button>
-        <div style="flex-grow:1"></div>
         <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
     </div>
 </div>
@@ -330,11 +369,11 @@
                         <strong>第一單元：了解概況</strong><br>
                         機密性、完整性、可用性，以及「數位房屋」的類比。
                     </div>
-                    <div class="lecture-item">
+                    <div class="lecture-item" style="margin-top:10px">
                         <strong>第二單元：建立您的防禦</strong><br>
                         四大基本習慣：鎖、更新、安全軟體和安全的應用程式。
                     </div>
-                    <div class="lecture-item">
+                    <div class="lecture-item" style="margin-top:10px">
                         <strong>第三單元：密碼與多重身份驗證 (MFA)</strong><br>
                         為什麼密碼會失效，以及為什麼多重身份驗證是終極的鎖。
                     </div>
@@ -351,7 +390,7 @@
                         <strong>第四單元：安全瀏覽</strong><br>
                         辨識假連結、了解 HTTPS，以及使用 VPN。
                     </div>
-                    <div class="lecture-item">
+                    <div class="lecture-item" style="margin-top:10px">
                         <strong>第五單元：電子郵件與交易</strong><br>
                         識別魚叉式網路釣魚，以及為什麼信用卡比簽帳卡更安全。
                     </div>
@@ -382,7 +421,7 @@
                         <strong>第七單元：威脅簡報</strong><br>
                         深入探討釣魚、勒索軟體和資料外洩。
                     </div>
-                    <div class="lecture-item">
+                    <div class="lecture-item" style="margin-top:10px">
                         <strong>第八單元：急救</strong><br>
                         黃金法則：不要驚慌，不要刪除。逐步恢復指南。
                     </div>
@@ -399,7 +438,7 @@
                         <strong>第九單元：案例研究</strong><br>
                         分析 Target、Colonial Pipeline 和 Twitter 的駭客事件，學到真實的教訓。
                     </div>
-                    <div class="lecture-item">
+                    <div class="lecture-item" style="margin-top:10px">
                         <strong>第十單元：人工智慧與詐騙</strong><br>
                         語音複製、Deepfakes，以及在 AI 時代如何驗證真偽。
                     </div>
@@ -430,14 +469,34 @@
     const fsBtn = document.getElementById('fullscreenBtn');
 
     function loadSlide(index) {
+        // Reset scroll position
+        textElement.scrollTop = 0;
+        
+        // Add fade animation
+        textElement.classList.remove('fade-in');
+        void textElement.offsetWidth; // Trigger reflow
+        textElement.classList.add('fade-in');
+
         textElement.innerHTML = slides[index].html;
         
         const slideNum = slides[index].id;
-        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+        // Simple opacity fade for image
+        imgElement.style.opacity = 0;
+        setTimeout(() => {
+            imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+            imgElement.onload = () => { imgElement.style.opacity = 1; };
+            // Handle cached images
+            if(imgElement.complete) imgElement.style.opacity = 1;
+        }, 150);
 
         counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        
+        // Update button states
         prevBtn.disabled = index === 0;
         nextBtn.disabled = index === totalSlides - 1;
+        
+        prevBtn.style.opacity = index === 0 ? "0.5" : "1";
+        nextBtn.style.opacity = index === totalSlides - 1 ? "0.5" : "1";
     }
 
     function changeSlide(direction) {
@@ -460,6 +519,33 @@
         }
     }
 
+    // --- SWIPE SUPPORT FOR MOBILE ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeArea = document.getElementById('main-container');
+
+    function checkSwipe() {
+        const threshold = 50; // min distance for swipe
+        if (touchEndX < touchStartX - threshold) {
+            // Swipe Left -> Next
+            changeSlide(1);
+        }
+        if (touchEndX > touchStartX + threshold) {
+            // Swipe Right -> Prev
+            changeSlide(-1);
+        }
+    }
+
+    swipeArea.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    swipeArea.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        checkSwipe();
+    }, {passive: true});
+    // -------------------------------
+
     document.addEventListener('fullscreenchange', (event) => {
         if (document.fullscreenElement) {
             fsBtn.innerHTML = "&#10005; 離開全螢幕";
@@ -476,6 +562,7 @@
         }
     });
 
+    // Initialize
     loadSlide(currentIndex);
 
 </script>

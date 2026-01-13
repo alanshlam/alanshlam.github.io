@@ -1,210 +1,399 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <title>課程講座</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>課程講座導航</title>
   <style>
+    :root {
+      --primary-color: #2c3e50;
+      --menu-bg: #f4f4f4;
+      --border-color: #ccc;
+      --link-color: #007bff;
+    }
+
     body {
       font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
       height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
       overflow: hidden;
+      background-color: #fff;
     }
+
+    /* --- Desktop/Default Layout --- */
+    #main-content {
+      display: none; /* Hidden until password check */
+      width: 100%;
+      height: 100%;
+      display: flex; /* Will be set via JS */
+      flex-direction: row;
+    }
+
     #menu {
       width: 25%;
       min-width: 250px;
-      background-color: #f4f4f4;
+      background-color: var(--menu-bg);
       padding: 1em;
       overflow-y: auto;
       flex-shrink: 0;
+      box-sizing: border-box;
+      /* Smooth scrolling */
+      -webkit-overflow-scrolling: touch;
     }
+
     #resizer {
       width: 5px;
       cursor: col-resize;
-      background-color: #ccc;
+      background-color: var(--border-color);
       flex-shrink: 0;
+      z-index: 10;
     }
+
     #content {
       flex-grow: 1;
       padding: 0;
       display: flex;
+      flex-direction: column;
+      position: relative;
     }
-    h1, h2 {
-      color: #333;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-      margin-top: 20px;
-    }
-    h1:first-child, h2:first-child {
-        margin-top: 0;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 0.5em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    a {
-      text-decoration: none;
-      color: #007bff;
-      margin-right: auto;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+
     iframe {
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
+    }
+
+    /* Typography */
+    h1, h2 {
+      color: #333;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+    h1:first-child, h2:first-child { margin-top: 0; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+
+    ul { list-style-type: none; padding: 0; }
+    
+    li {
+      margin-bottom: 0.5em;
+      display: flex;
+      align-items: center;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--link-color);
+      display: block;
+      width: 100%;
+      padding: 5px 0; /* Slight padding for desktop */
+      transition: color 0.2s;
+    }
+    a:hover { text-decoration: underline; }
+
+    /* --- Mobile Elements (Hidden by default) --- */
+    #mobile-header { display: none; }
+    #menu-overlay { display: none; }
+    .close-menu-btn { display: none; }
+
+    /* --- MOBILE OPTIMIZATION --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      #main-content {
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* Mobile Header Bar */
+      #mobile-header {
+        display: flex;
+        align-items: center;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0 15px;
+        height: 50px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1001;
+      }
+
+      #menu-toggle-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 5px 10px;
+        margin-right: 10px;
+      }
+
+      #mobile-title {
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Transform Sidebar into Drawer */
+      #menu {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Hide off-screen */
+        width: 85%; /* Leave a gap on the right */
+        max-width: 300px;
+        height: 100%;
+        background-color: white;
+        z-index: 1002;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        padding-top: 20px;
+      }
+
+      #menu.open {
+        left: 0;
+      }
+
+      /* Hide Desktop Resizer */
+      #resizer { display: none; }
+
+      /* Content fills remaining space */
+      #content {
+        height: calc(100% - 50px); /* Subtract header height */
+        width: 100%;
+      }
+
+      /* Mobile Overlay (Backdrop) */
+      #menu-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+      }
+
+      #menu-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Larger Touch Targets */
+      a {
+        padding: 12px 5px; /* Bigger tap area */
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+      }
+
+      li { margin-bottom: 0; }
+
+      /* Close button inside menu */
+      .close-menu-btn {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #666;
+        padding: 5px;
+      }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
     function checkPassword() {
-      const password = prompt("請輸入密碼：");
-      if (password) {
-        const hash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-        if (hash === "e0e4343bc15d02b5f18c316650317bd99af41e47420d74471f7a4cdb63bf431c") {
-          document.getElementById("main-content").style.display = "flex";
+      // Small timeout to allow styles to load first implies smoother UX
+      setTimeout(() => {
+        const password = prompt("請輸入密碼：");
+        if (password) {
+          const hash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+          if (hash === "e0e4343bc15d02b5f18c316650317bd99af41e47420d74471f7a4cdb63bf431c") {
+            // Use flex instead of block to maintain layout logic
+            document.getElementById("main-content").style.display = "flex";
+          } else {
+            alert("密碼錯誤！");
+            location.reload();
+          }
         } else {
-          alert("密碼錯誤！");
+          alert("請輸入密碼！");
           location.reload();
         }
-      } else {
-        alert("請輸入密碼！");
-        location.reload();
-      }
+      }, 100);
     }
+    
     window.onload = checkPassword;
   </script>
 </head>
 <body>
-  <div id="main-content" style="display: none; width: 100%; height: 100%; flex-direction: row;">
+
+  <!-- Main Container -->
+  <div id="main-content" style="display: none;">
+    
+    <!-- Mobile Header -->
+    <div id="mobile-header">
+        <button id="menu-toggle-btn" onclick="toggleMenu()">&#9776;</button>
+        <span id="mobile-title">課程導航</span>
+    </div>
+
+    <!-- Dark Overlay for Mobile -->
+    <div id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <!-- Sidebar / Menu Drawer -->
     <div id="menu">
+        <button class="close-menu-btn" onclick="toggleMenu()">&times;</button>
+        
         <h1>日常網路安全要點與應急響應</h1>
         <h2>課程內容</h2>
 
-        <a href="course-promotion-zh-tw.html" target="content_frame">課程推廣</a>
+        <a href="course-promotion-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">課程推廣</a>
 
-    <hr>    
+        <hr>    
         <h2>投影片</h2>
         <ul>
-        <li><a href="slide0-zh-tw.html" target="content_frame">課程總覽</a></li>
-        <li><a href="slide1-zh-tw.html" target="content_frame">第一單元投影片：網路安全基礎</a></li>
-        <li><a href="slide2-zh-tw.html" target="content_frame">第二單元投影片：保護您的裝置</a></li>
-        <li><a href="slide3-zh-tw.html" target="content_frame">第三單元投影片：密碼與多重身份驗證</a></li>
-        <li><a href="slide4-zh-tw.html" target="content_frame">第四單元投影片：安全瀏覽</a></li>
-        <li><a href="slide5-zh-tw.html" target="content_frame">第五單元投影片：電子郵件與交易</a></li>
-        <li><a href="slide6-zh-tw.html" target="content_frame">第六單元投影片：更新與備份</a></li>
-        <li><a href="slide7-zh-tw.html" target="content_frame">第七單元投影片：常見事件</a></li>
-        <li><a href="slide8-zh-tw.html" target="content_frame">第八單元投影片：急救</a></li>
-        <li><a href="slide8-hkcert-zh-tw.html" target="content_frame">第八單元投影片：急救 (HKCERT)</a></li>
-        <li><a href="slide9-zh-tw.html" target="content_frame">第九單元投影片：案例研究</a></li>
-        <li><a href="slide10-zh-tw.html" target="content_frame">第十單元投影片：AI 與詐騙</a></li>
+        <li><a href="slide0-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">課程總覽</a></li>
+        <li><a href="slide1-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第一單元投影片：網路安全基礎</a></li>
+        <li><a href="slide2-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第二單元投影片：保護您的裝置</a></li>
+        <li><a href="slide3-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第三單元投影片：密碼與多重身份驗證</a></li>
+        <li><a href="slide4-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第四單元投影片：安全瀏覽</a></li>
+        <li><a href="slide5-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第五單元投影片：電子郵件與交易</a></li>
+        <li><a href="slide6-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第六單元投影片：更新與備份</a></li>
+        <li><a href="slide7-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第七單元投影片：常見事件</a></li>
+        <li><a href="slide8-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第八單元投影片：急救</a></li>
+        <li><a href="slide8-hkcert-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第八單元投影片：急救 (HKCERT)</a></li>
+        <li><a href="slide9-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第九單元投影片：案例研究</a></li>
+        <li><a href="slide10-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第十單元投影片：AI 與詐騙</a></li>
         </ul>
 
         <h2>互動講座</h2>
         <ul>
-        <li><a href="lecture1-zh-tw.html" target="content_frame">第一單元：網路安全基礎</a></li>
-        <li><a href="lecture2-zh-tw.html" target="content_frame">第二單元：保護您的裝置</a></li>
-        <li><a href="lecture3-zh-tw.html" target="content_frame">第三單元：密碼與多重身份驗證</a></li>
-        <li><a href="lecture4-zh-tw.html" target="content_frame">第四單元：安全瀏覽</a></li>
-        <li><a href="lecture5-zh-tw.html" target="content_frame">第五單元：電子郵件與交易</a></li>
-        <li><a href="lecture6-zh-tw.html" target="content_frame">第六單元：更新與備份</a></li>
-        <li><a href="lecture7-zh-tw.html" target="content_frame">第七單元：常見事件</a></li>
-        <li><a href="lecture8-zh-tw.html" target="content_frame">第八單元：急救</a></li>
-        <li><a href="lecture8-hkcert-zh-tw.html" target="content_frame">第八單元：急救 (HKCERT)</a></li>
-        <li><a href="lecture9-zh-tw.html" target="content_frame">第九單元：案例研究</a></li>
-        <li><a href="lecture10-zh-tw.html" target="content_frame">第十單元：AI 與詐騙</a></li>
+        <li><a href="lecture1-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第一單元：網路安全基礎</a></li>
+        <li><a href="lecture2-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第二單元：保護您的裝置</a></li>
+        <li><a href="lecture3-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第三單元：密碼與多重身份驗證</a></li>
+        <li><a href="lecture4-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第四單元：安全瀏覽</a></li>
+        <li><a href="lecture5-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第五單元：電子郵件與交易</a></li>
+        <li><a href="lecture6-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第六單元：更新與備份</a></li>
+        <li><a href="lecture7-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第七單元：常見事件</a></li>
+        <li><a href="lecture8-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第八單元：急救</a></li>
+        <li><a href="lecture8-hkcert-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第八單元：急救 (HKCERT)</a></li>
+        <li><a href="lecture9-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第九單元：案例研究</a></li>
+        <li><a href="lecture10-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">第十單元：AI 與詐騙</a></li>
         </ul>
 
         <h2>互動工具</h2>
         <ul>
-            <li><a href="phishing_traning-zh-tw.html" target="content_frame">釣魚郵件防禦訓練</a></li>
-            <li><a href="fake_domain-zh-tw.html" target="content_frame">釣魚網域獵人</a></li>
-            <li><a href="Homograph_Attack-zh-tw.html" target="content_frame">同形異義字攻擊防禦者</a></li>
-            <li><a href="fraud_defense-zh-tw.html" target="content_frame">香港金融管理局防詐騙學院</a></li>
-            <li><a href="AI_phishing-zh-tw.html" target="content_frame">AI 網路釣魚意識訓練</a></li>
-            <li><a href="AI_Ransomware_Tactics-zh-tw.html" target="content_frame">AI 勒索軟體防禦訓練</a></li>
-            <li><a href="Deepfakes_Ransomware_Extortion-zh-tw.html" target="content_frame">Deepfake 勒索意識</a></li>
-            <li><a href="AI_Defense_Force-zh-tw.html" target="content_frame">AI 防禦部隊</a></li>
-            <li><a href="backup-guide-zh-tw.html" target="content_frame">資料生存指南</a></li>
-            <li><a href="breach-detector-zh-tw.html" target="content_frame">漏洞偵測器</a></li>
-            <li><a href="hk-response-kit-zh-tw.html" target="content_frame">香港事故應變工具包</a></li>
-            <li><a href="hkcert-ransomware-guide-zh-tw.html" target="content_frame">HKCERT 勒索軟體防禦指南</a></li>
-            <li><a href="pdpo-guide-zh-tw.html" target="content_frame">PDPO 指南</a></li>
-            <li><a href="secure-browsing-zh-tw.html" target="content_frame">安全瀏覽學院</a></li>
-            <li><a href="data-leak-guide-zh-tw.html" target="content_frame">資料外洩應變中心</a></li>
-            <li><a href="encryption-guide-zh-tw.html" target="content_frame">加密與安全儲存指南</a></li>
-            <li><a href="password-manager-guide-zh-tw.html" target="content_frame">密碼管理器指南</a></li>
-            <li><a href="desktop-security-zh-tw.html" target="content_frame">桌面安全：設定與維護</a></li>
-            <li><a href="mobile-security-zh-tw.html" target="content_frame">行動安全：MDM 與 BYOD 版本</a></li>
+            <li><a href="phishing_traning-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">釣魚郵件防禦訓練</a></li>
+            <li><a href="fake_domain-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">釣魚網域獵人</a></li>
+            <li><a href="Homograph_Attack-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">同形異義字攻擊防禦者</a></li>
+            <li><a href="fraud_defense-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">香港金融管理局防詐騙學院</a></li>
+            <li><a href="AI_phishing-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">AI 網路釣魚意識訓練</a></li>
+            <li><a href="AI_Ransomware_Tactics-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">AI 勒索軟體防禦訓練</a></li>
+            <li><a href="Deepfakes_Ransomware_Extortion-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Deepfake 勒索意識</a></li>
+            <li><a href="AI_Defense_Force-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">AI 防禦部隊</a></li>
+            <li><a href="backup-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">資料生存指南</a></li>
+            <li><a href="breach-detector-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">漏洞偵測器</a></li>
+            <li><a href="hk-response-kit-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">香港事故應變工具包</a></li>
+            <li><a href="hkcert-ransomware-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">HKCERT 勒索軟體防禦指南</a></li>
+            <li><a href="pdpo-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">PDPO 指南</a></li>
+            <li><a href="secure-browsing-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">安全瀏覽學院</a></li>
+            <li><a href="data-leak-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">資料外洩應變中心</a></li>
+            <li><a href="encryption-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">加密與安全儲存指南</a></li>
+            <li><a href="password-manager-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">密碼管理器指南</a></li>
+            <li><a href="desktop-security-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">桌面安全：設定與維護</a></li>
+            <li><a href="mobile-security-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">行動安全：MDM 與 BYOD 版本</a></li>
         </ul>
 
         <h2>案例研究</h2>
         <ul>
-        <li><a href="Arup_Case-zh-tw.html" target="content_frame">Arup Deepfake 搶劫案</a></li>
-        <li><a href="Arup_Deepfake-zh-tw.html" target="content_frame">Arup Deepfake 搶劫案 (v2)</a></li>
-        <li><a href="china-deepfake-zh-tw.html" target="content_frame">中國 Deepfake 騙局</a></li>
-        <li><a href="voice-clone-fraud-zh-tw.html" target="content_frame">語音複製詐騙</a></li>
-        <li><a href="nomani-scam-zh-tw.html" target="content_frame">Nomani 投資騙局</a></li>
-        <li><a href="trudeau-deepfake-zh-tw.html" target="content_frame">杜魯道 Deepfake 騙局</a></li>
-        <li><a href="VC_Infiltration-zh-tw.html" target="content_frame">VC Deepfake 滲透</a></li>
-        <li><a href="mgm-breach-zh-tw.html" target="content_frame">MGM Resorts 漏洞</a></li>
-        <li><a href="Salesforce-zh-tw.html" target="content_frame">Salesforce 漏洞</a></li>
-        <li><a href="Target_Case-zh-tw.html" target="content_frame">Target 資料外洩</a></li>
-        <li><a href="Colonial_Pipeline-zh-tw.html" target="content_frame">Colonial Pipeline 攻擊</a></li>
-        <li><a href="Twitter_Bitcoin-zh-tw.html" target="content_frame">Twitter 比特幣駭客</a></li>
-        <li><a href="SolarWinds-zh-tw.html" target="content_frame">SolarWinds 供應鏈攻擊</a></li>
-        <li><a href="MOVEit-zh-tw.html" target="content_frame">MOVEit 供應鏈攻擊</a></li>
-        <li><a href="Log4Shell-zh-tw.html" target="content_frame">Log4Shell 漏洞</a></li>
+        <li><a href="Arup_Case-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Arup Deepfake 搶劫案</a></li>
+        <li><a href="Arup_Deepfake-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Arup Deepfake 搶劫案 (v2)</a></li>
+        <li><a href="china-deepfake-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">中國 Deepfake 騙局</a></li>
+        <li><a href="voice-clone-fraud-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">語音複製詐騙</a></li>
+        <li><a href="nomani-scam-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Nomani 投資騙局</a></li>
+        <li><a href="trudeau-deepfake-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">杜魯道 Deepfake 騙局</a></li>
+        <li><a href="VC_Infiltration-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">VC Deepfake 滲透</a></li>
+        <li><a href="mgm-breach-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">MGM Resorts 漏洞</a></li>
+        <li><a href="Salesforce-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Salesforce 漏洞</a></li>
+        <li><a href="Target_Case-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Target 資料外洩</a></li>
+        <li><a href="Colonial_Pipeline-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Colonial Pipeline 攻擊</a></li>
+        <li><a href="Twitter_Bitcoin-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Twitter 比特幣駭客</a></li>
+        <li><a href="SolarWinds-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">SolarWinds 供應鏈攻擊</a></li>
+        <li><a href="MOVEit-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">MOVEit 供應鏈攻擊</a></li>
+        <li><a href="Log4Shell-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">Log4Shell 漏洞</a></li>
         </ul>
 
         <h2>工具 / 參考</h2>
         <ul>
-            <li><a href="https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf" target="_blank"> 處理網絡釣魚電郵的常用技巧</a></li>
-            <li><a href="https://spconnect.hkcert.org/service-provider-reference-list/" target="_blank">網路安全服務供應商</a></li>
-            <li><a href="https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes" target="_blank">中小企事故應變指引</a></li>
-            <li><a href="https://cyberdefender.hk/scameter/" target="_blank">Scameter from cyberdefender.hk</a></li>
-            <li><a href="https://www.virustotal.com" target="_blank">Virustotal</a></li>
-            <li><a href="https://www.sicherheitstacho.eu/" target="_blank">HoneyPot SecurityMeter</a></li>
-            <li><a href="https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md" target="_blank">十大密碼</a></li>
+            <li><a href="https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf" target="_blank" onclick="closeMenuOnMobile()"> 處理網絡釣魚電郵的常用技巧</a></li>
+            <li><a href="https://spconnect.hkcert.org/service-provider-reference-list/" target="_blank" onclick="closeMenuOnMobile()">網路安全服務供應商</a></li>
+            <li><a href="https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes" target="_blank" onclick="closeMenuOnMobile()">中小企事故應變指引</a></li>
+            <li><a href="https://cyberdefender.hk/scameter/" target="_blank" onclick="closeMenuOnMobile()">Scameter from cyberdefender.hk</a></li>
+            <li><a href="https://www.virustotal.com" target="_blank" onclick="closeMenuOnMobile()">Virustotal</a></li>
+            <li><a href="https://www.sicherheitstacho.eu/" target="_blank" onclick="closeMenuOnMobile()">HoneyPot SecurityMeter</a></li>
+            <li><a href="https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md" target="_blank" onclick="closeMenuOnMobile()">十大密碼</a></li>
         </ul>
     </div>
+
+    <!-- Drag Resizer (Hidden on Mobile) -->
     <div id="resizer"></div>
+
+    <!-- Iframe Content Area -->
     <div id="content">
         <iframe name="content_frame" src="slide0-zh-tw.html"></iframe>
     </div>
 
     <script>
-        function openPopup(url) {
-        window.open(url, 'slidePopup', 'width=1024,height=768,scrollbars=yes,resizable=yes');
+        // --- Mobile Menu Functions ---
+        const menuElement = document.getElementById('menu');
+        const overlayElement = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            menuElement.classList.toggle('open');
+            overlayElement.classList.toggle('open');
         }
 
+        function closeMenuOnMobile() {
+            // Only trigger if we are actually in mobile mode (screen width check)
+            if (window.innerWidth <= 768) {
+                menuElement.classList.remove('open');
+                overlayElement.classList.remove('open');
+            }
+        }
+
+        // --- Desktop Resizer Logic ---
         const resizer = document.getElementById('resizer');
         const menu = document.getElementById('menu');
         let isResizing = false;
 
         resizer.addEventListener('mousedown', (e) => {
-        isResizing = true;
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', () => {
-            isResizing = false;
-            document.removeEventListener('mousemove', handleMouseMove);
-        });
+            isResizing = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
         });
 
         function handleMouseMove(e) {
-        if (!isResizing) return;
-        const newWidth = e.clientX;
-        if (newWidth > 250 && newWidth < window.innerWidth - 200) {
-            menu.style.width = newWidth + 'px';
-        }
+            if (!isResizing) return;
+            // Prevent resizing too small or too big
+            const newWidth = e.clientX;
+            if (newWidth > 200 && newWidth < window.innerWidth - 200) {
+                menu.style.width = newWidth + 'px';
+            }
         }
     </script>
   </div>
