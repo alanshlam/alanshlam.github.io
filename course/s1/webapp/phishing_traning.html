@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Defense Training </title>
+    <style>
+        :root {
+            --primary-color: #006699; /* ITSC Blue-ish tone */
+            --accent-color: #ff6600; /* Orange from the PDF */
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --white: #ffffff;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--white);
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        h2 {
+            color: var(--accent-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: #ddd;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: 0.3s;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background-color: #ccc;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Study Cards */
+        .tip-card {
+            border-left: 5px solid var(--accent-color);
+            background: #fff;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tip-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .img-placeholder {
+            background-color: #eee;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-style: italic;
+        }
+
+        /* Quiz Styles */
+        .quiz-question {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f8ff;
+        }
+
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .option-btn.wrong {
+            background-color: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .action-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .score-display {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .footer-tag {
+            text-align: center;
+            margin-top: 40px;
+            font-weight: bold;
+            color: #777;
+        }
+        
+        .red-text { color: var(--danger); font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Phishing Awareness Training</h1>
+    <p>Based on Common Tips Guidelines</p>
+</header>
+
+<div class="container">
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('study')">1. Learn the Signs</button>
+        <button class="nav-btn" onclick="switchTab('quiz')">2. Take the Quiz</button>
+    </div>
+
+    <!-- STUDY SECTION -->
+    <div id="study" class="section active">
+        <h2>8 Common Signs of Phishing</h2>
+        <p>Review these tips carefully before taking the quiz.</p>
+
+        <div class="tip-card">
+            <div class="tip-title">1. Mismatched URL (網址不匹配)</div>
+            <p>The text of the link looks real (e.g., www.hsbc.com), but the actual destination is different.</p>
+            <p><span class="highlight">Action:</span> Mouseover (hover) the link to see the real address. <strong>DON'T click!</strong></p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">2. Requests for Sensitive Info (索取敏感資料)</div>
+            <p>Phishers often ask for passwords, usernames, or credit card details directly via email forms.</p>
+            <p><span class="highlight">Fact:</span> Legitimate organizations rarely ask for passwords via email.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">3. Too Good to Be True (難以置信的優惠)</div>
+            <p>Lottery wins you didn't enter? Unexpected inheritance? Vaccination lottery prizes?</p>
+            <p><span class="highlight">Thought:</span> If you didn't buy a ticket, you didn't win. It's a trap.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">4. Uninitiated Actions (未做過的行動)</div>
+            <p>Emails claiming "You recently withdrew money" or "You requested a password reset" when you did nothing.</p>
+            <p><span class="highlight">Goal:</span> They want you to panic and click "Verify Information" to steal your login.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">5. Money/Threats (勒索/匯款)</div>
+            <p>Hackers claim they have your private photos or data and demand Bitcoin within 48 hours.</p>
+            <p><span class="highlight">Action:</span> Do not pay. Report it. Do not reply.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">6. Suspicious Sender Address (發件人可疑)</div>
+            <p>An email claiming to be "Professor Joel" or "University Admin" but sent from <code>jte895@gmail.com</code> or <code>admin@hotmail.com</code>.</p>
+            <p><span class="highlight">Check:</span> Official business is conducted via official organization email addresses.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">7. Urgent Language (緊急語氣)</div>
+            <p>Subject lines like "URGENT REQUEST" or "Account Termination in 24 Hours".</p>
+            <p><span class="highlight">Why:</span> They want you to act fast without thinking.</p>
+        </div>
+
+        <div class="tip-card">
+            <div class="tip-title">8. Unexpected Attachments (意外附件)</div>
+            <p>Emails saying "Scanned Document from Printer" or "Invoice Attached" when you weren't expecting one.</p>
+            <p><span class="highlight">Danger:</span> These files often contain malware. Do not open them.</p>
+        </div>
+
+        <div class="tip-card" style="border-left-color: var(--primary-color);">
+            <div class="tip-title">How to Report?</div>
+            <p>If you find a phishing email, report it to your system administrator.</p>
+            <p><strong>Crucial Step:</strong> Forward the suspicious email as an <span class="highlight">Attachment</span> so the headers are preserved.</p>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz" class="section">
+        <div id="quiz-container">
+            <div class="progress-bar" style="margin-bottom: 15px; color: #777;">Question <span id="q-current">1</span> of <span id="q-total">5</span></div>
+            <div id="question-box">
+                <!-- Question injected here -->
+            </div>
+            <div class="explanation" id="explanation">
+                <!-- Explanation injected here -->
+            </div>
+            <div class="controls">
+                <button class="action-btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <div id="result-container" style="display: none; text-align: center;">
+            <h2>Quiz Completed!</h2>
+            <div class="score-display">You scored <span id="score">0</span>/5</div>
+            <p id="feedback-msg"></p>
+            <button class="action-btn" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-tag">
+    #THINKB4UCLICK
+</div>
+
+<script>
+    // Quiz Data derived from the PDF
+    const questions = [
+        {
+            question: "You receive an email from 'HSBC Bank' saying your account is suspended. The link text says 'www.hsbc.com/verify', but when you hover your mouse over it, the popup shows 'http://hsbc-online.wpew.info'. What should you do?",
+            options: [
+                "Click the link to verify your account immediately.",
+                "Reply to the email asking if it is real.",
+                "Do not click. This is a mismatched URL (Phishing).",
+                "Forward it to your friends to warn them."
+            ],
+            correct: 2,
+            explanation: "<strong>Correct!</strong> This is a classic 'Mismatched URL'. Always mouseover (hover) links to see the true destination before clicking."
+        },
+        {
+            question: "You receive an email from 'University Admin' asking for your username and password to perform a system upgrade. Failure to reply will result in account deletion.",
+            options: [
+                "Reply with your username only.",
+                "Reply with your username and password to avoid deletion.",
+                "Ignore it, but click the link just to check.",
+                "Report it. Legitimate organizations rarely ask for passwords via email."
+            ],
+            correct: 3,
+            explanation: "<strong>Correct!</strong> Tip #2: Never give sensitive personal information like passwords via email. Real admins already have access to the system; they don't need to ask you."
+        },
+        {
+            question: "You receive an email from 'Professor John Smith' regarding a part-time job. The sender address is 'johnny_cool_dude88@gmail.com'. Is this suspicious?",
+            options: [
+                "No, professors often use personal Gmail for work.",
+                "Yes. Official university business should come from a university email domain (e.g., .edu.hk).",
+                "No, as long as the job pays well.",
+                "Yes, but I should apply anyway."
+            ],
+            correct: 1,
+            explanation: "<strong>Correct!</strong> Tip #6: Check the sending address. If a professor or official contacts you from a free webmail account (Gmail, Hotmail) for official business, be very suspicious."
+        },
+        {
+            question: "You receive an email with the subject: 'URGENT: LAST WARNING - PAYMENT OVERDUE'. You don't recall buying anything.",
+            options: [
+                "This uses threatening language to make you panic. It is likely a scam.",
+                "You must have forgotten a bill. Pay it immediately.",
+                "Click the attachment to see the invoice.",
+                "Reply and apologize."
+            ],
+            correct: 0,
+            explanation: "<strong>Correct!</strong> Tip #7 & #4: Scammers use urgent/threatening language to bypass your critical thinking. Also, since you didn't initiate the action (buying something), it's a scam."
+        },
+        {
+            question: "You have identified a phishing email. How should you report it to your technical team?",
+            options: [
+                "Just delete it.",
+                "Take a screenshot and send it.",
+                "Forward the email as an ATTACHMENT.",
+                "Reply to the hacker telling them you caught them."
+            ],
+            correct: 2,
+            explanation: "<strong>Correct!</strong> To analyze the attack properly, IT support needs the email headers. Forwarding the email as an <strong>attachment</strong> preserves this technical data."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function switchTab(tabId) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+        // Show selected
+        document.getElementById(tabId).classList.add('active');
+        
+        // Update Buttons
+        const buttons = document.querySelectorAll('.nav-btn');
+        if(tabId === 'study') buttons[0].classList.add('active');
+        if(tabId === 'quiz') buttons[1].classList.add('active');
+    }
+
+    function loadQuestion() {
+        const qData = questions[currentQuestionIndex];
+        const qContainer = document.getElementById('question-box');
+        const nextBtn = document.getElementById('next-btn');
+        const explanation = document.getElementById('explanation');
+
+        document.getElementById('q-current').innerText = currentQuestionIndex + 1;
+        document.getElementById('q-total').innerText = questions.length;
+
+        // Reset state
+        nextBtn.disabled = true;
+        explanation.style.display = 'none';
+        
+        let html = `<div class="quiz-question">${qData.question}</div><div class="options">`;
+        
+        qData.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        
+        html += `</div>`;
+        qContainer.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        // Disable all buttons after selection
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(btn => btn.disabled = true);
+
+        const qData = questions[currentQuestionIndex];
+        const explanation = document.getElementById('explanation');
+        const nextBtn = document.getElementById('next-btn');
+
+        if(selectedIndex === qData.correct) {
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            btnElement.classList.add('wrong');
+            // Highlight the correct one
+            allBtns[qData.correct].classList.add('correct');
+        }
+
+        explanation.innerHTML = qData.explanation;
+        explanation.style.display = 'block';
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if(currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('score').innerText = score;
+
+        let msg = "";
+        if(score === 5) msg = "Excellent! You are a Phishing Expert.";
+        else if(score >= 3) msg = "Good job, but stay vigilant.";
+        else msg = "You might want to review the study tips again.";
+        
+        document.getElementById('feedback-msg').innerText = msg;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    // Initialize
+    loadQuestion();
+
+</script>
+
+</body>
+</html>
