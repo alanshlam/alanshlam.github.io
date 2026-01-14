@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Course Promotion: Daily Cyber Security Essentials</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #c0392b; /* Urgent Red */
+            --highlight-color: #d35400; /* Orange for numbers */
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Fixed height for app-feel */
+            overflow: hidden; /* Prevent body scroll, handle inside container */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh; /* Consistent height on desktop */
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- Slide Layout --- */
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            flex: 1; /* Take up all available space above controls */
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            overflow-y: auto; /* Scroll text if too long */
+        }
+
+        .dynamic-content {
+            padding-bottom: 20px;
+        }
+
+        .slide-footer {
+            margin-top: auto; /* Push to bottom of text container if space allows */
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+        }
+
+        /* --- Content Styling --- */
+        h1 { font-size: 1.8rem; }
+        h2 { font-size: 1.5rem; }
+        h3 { font-size: 1.2rem; }
+        
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            line-height: 1.2;
+        }
+
+        ul, ol {
+            line-height: 1.6;
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        li { margin-bottom: 10px; }
+
+        /* Stats Styling */
+        .stat-container {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            flex: 1;
+            background: #fff8e1;
+            border-top: 4px solid var(--highlight-color);
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .stat-header {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .big-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Missing Grid Styles for Course Modules */
+        .lecture-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .lecture-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Controls Bar --- */
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px; /* Fixed height for calculations */
+            flex-shrink: 0;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active { transform: translateY(1px); }
+        button:hover { background-color: #a93226; }
+        button:disabled { background-color: #ecf0f1; color: #bdc3c7; cursor: not-allowed; }
+
+        #fullscreenBtn { background-color: #2c3e50; }
+        .progress { font-weight: bold; color: #7f8c8d; font-size: 0.9rem;}
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 768px) {
+            body {
+                background-color: #fff; /* Remove bg color to feel native */
+            }
+
+            .container {
+                width: 100%;
+                height: 100%;
+                max-width: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .slide-content {
+                flex-direction: column;
+            }
+
+            /* Image area on mobile */
+            .visual-container {
+                flex: 0 0 auto; /* Don't grow, stick to content or max-height */
+                height: 30vh;   /* Limit height so text is visible */
+                min-height: 180px;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                padding: 10px;
+                background-color: #fff;
+            }
+
+            .visual-container img {
+                max-height: 100%;
+                width: auto;
+            }
+
+            /* Text area on mobile */
+            .text-container {
+                padding: 20px;
+                /* This allows the text to scroll independently while controls stay put */
+                overflow-y: auto; 
+                -webkit-overflow-scrolling: touch;
+            }
+
+            h1 { font-size: 1.4rem; }
+            h2 { font-size: 1.2rem; }
+            h3 { font-size: 1.1rem; }
+            p, li { font-size: 0.95rem; }
+
+            /* Flatten grids on mobile */
+            .stat-container { flex-direction: column; gap: 10px; }
+            .lecture-grid { grid-template-columns: 1fr; gap: 10px; }
+
+            /* Controls on mobile */
+            .controls {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            button {
+                font-size: 14px;
+                padding: 12px 16px; /* Larger touch target */
+            }
+
+            /* Hide "Previous" text on very small screens to save space if needed */
+            .btn-text { display: inline; }
+            
+            /* Hide fullscreen button on mobile - usually redundant/buggy in iframes */
+            #fullscreenBtn { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+    <div class="slide-content" id="touch-area">
+        <!-- Image Area -->
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="Presentation Visual">
+        </div>
+
+        <!-- Text Area (Right Side / Bottom) -->
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Fixed Footnote -->
+            <div class="slide-footer">
+                Daily Cyber Security Essentials and Emergency Response
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; <span class="btn-text">Back</span></button>
+        <span class="progress" id="slide-counter">1 / 4</span>
+        <button id="nextBtn" onclick="changeSlide(1)"><span class="btn-text">Next</span> &#8594;</button>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974;</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/promo-";
+    
+    // --- Slide Content Data ---
+    const slides = [
+        {
+            id: 1,
+            html: `
+                <h1>Why Cybersecurity is Important to YOU</h1>
+                <hr>
+                <p>It's not just about computers. It's about your life.</p>
+                <ul>
+                    <li><strong>Your Wealth:</strong> Banking apps and investment accounts are prime targets.</li>
+                    <li><strong>Your Memories:</strong> 10 years of family photos can be locked by ransomware in seconds.</li>
+                    <li><strong>Your Identity:</strong> A stolen identity takes months or years to fix.</li>
+                </ul>
+                <h3 style="color:var(--accent-color); margin-top:20px;">You lock your front door. Why leave your digital life open?</h3>
+            `
+        },
+        {
+            id: 2,
+            html: `
+                <h3>Hong Kong Cybercrime Trends (2024-2025)</h3>
+                
+                <div class="stat-container">
+                    <div class="stat-box">
+                        <div class="stat-header">HKCERT (2024 Report)</div>
+                        <ul>
+                            <li>Total Incidents: <strong>12,536</strong></li>
+                            <li>Phishing Cases: <strong>7,811</strong></li>
+                            <li><span class="big-number">+108%</span> increase in phishing Year-on-Year.</li>
+                            <li><em>Phishing remains the leading threat.</em></li>
+                        </ul>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-header">HK Police (Jan-Jul 2025)</div>
+                        <ul>
+                            <li>Financial Losses:</li>
+                            <li><span class="big-number">> HK$ 3.6 Billion</span></li>
+                            <li>Consistent trend of annual losses in the billions.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="font-size:0.9em; margin-top:10px;">
+                    <strong>Interpretation:</strong> Hong Kong is seeing a rapid escalation in technology-enabled crime, causing sustained economic impact to individuals like you.
+                </p>
+            `
+        },
+        {
+            id: 3,
+            html: `
+                <h3>What Happens When You Fall into a Trap?</h3>
+                <p><strong>The Domino Effect:</strong></p>
+                <ul>
+                    <li><strong>Personal Mistakes:</strong> You click one link. Ransomware encrypts your laptop. You lose your work and photos forever.</li>
+                    <li><strong>The "Invisible" Breach:</strong> A company you use gets hacked. Your "reused" password is stolen. Hackers use it to drain your bank account.</li>
+                </ul>
+                <p style="background:#ffebee; padding:15px; border-radius:5px; border: 1px solid #ffcdd2;"><strong>The Consequence:</strong> Financial loss, emotional stress, and reputation damage.</p>
+            `
+        },
+        {
+            id: 4,
+            html: `
+                <h1>Don't Be a Victim. Be Empowered.</h1>
+                <h3>Key Takeaways from This Course:</h3>
+                <ol>
+                    <li><strong>Spot the Scam:</strong> Learn to identify AI-driven phishing and deepfakes.</li>
+                    <li><strong>Lock It Down:</strong> Master Password Managers and Multi-Factor Authentication.</li>
+                    <li><strong>Recover Fast:</strong> Learn the exact "First Aid" steps if you do get hacked.</li>
+                </ol>
+                <hr>
+                <h2 style="color:var(--primary-color);">Join "Daily Cyber Security Essentials" Today.</h2>
+            `
+        },
+        {
+            id: 5,
+            html: `
+                <h1>Daily Cyber Security Essentials and Emergency Response</h1>
+                <hr>
+                <h2>Course Overview</h2>
+                <p><strong>A Roadmap to Your Digital Safety</strong></p>
+                <p>In this 10-unit course, we will transform you from a vulnerable user into an empowered digital defender.</p>
+            `
+        },
+        {
+            id: 6,
+            html: `
+                <h3>Module 1: The Foundations</h3>
+                <p>We start by understanding the "Digital House" we live in and how to lock the doors.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 1: Understanding the Landscape</strong><br>
+                        Confidentiality, Integrity, Availability, and the "Digital House" analogy.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 2: Building Your Defenses</strong><br>
+                        The 4 Essential Habits: Locks, Updates, Security Software, and Safe Apps.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 3: Password & MFA</strong><br>
+                        Why passwords fail and why Multi-Factor Authentication is the ultimate lock.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 7,
+            html: `
+                <h3>Module 2: Safe Habits Online</h3>
+                <p>Navigating the internet and handling transactions without getting tricked.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 4: Secure Browsing</strong><br>
+                        Spotting fake links, understanding HTTPS, and using VPNs.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 5: Email & Transactions</strong><br>
+                        Recognizing spear phishing and why Credit Cards are safer than Debit Cards.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 8,
+            html: `
+                <h3>Module 3: Maintenance & Resilience</h3>
+                <p>Ensuring your devices last and your data survives disasters.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 6: Updates & Backups</strong><br>
+                        The 3-2-1 Backup Strategy and why updates are your free security service.
+                    </div>
+                </div>
+                <p style="margin-top:20px;"><em>"Updates are maintenance. Backups are insurance."</em></p>
+            `
+        },
+        {
+            id: 9,
+            html: `
+                <h3>Module 4: Incident Response</h3>
+                <p>Understanding threats and knowing exactly what to do when they happen.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 7: Threat Briefing</strong><br>
+                        Deep dive into Phishing, Ransomware, and Data Breaches.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 8: First Aid</strong><br>
+                        Golden Rules: Don't Panic, Don't Delete. Step-by-step recovery guides.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 10,
+            html: `
+                <h3>Module 5: Real World & Future</h3>
+                <p>Learning from history and preparing for the age of AI.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 9: Case Studies</strong><br>
+                        Analyzing Target, Colonial Pipeline, and Twitter hacks to learn real lessons.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 10: AI & Fraud</strong><br>
+                        Voice cloning, Deepfakes, and how to verify reality in the AI era.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 11,
+            html: `
+                <h3>Why This Matters</h3>
+                <h2 style="color:var(--primary-color);">Security is not about being paranoid.</h2>
+                <h2 style="color:var(--accent-color);">It is about being prepared.</h2>
+                <hr>
+                <p>By the end of this course, you will have a complete <strong>Action Plan</strong> to protect yourself, your family, and your workplace.</p>
+            `
+        }
+    ];
+
+    // --- Logic ---
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+    const textContainer = document.querySelector('.text-container');
+
+    function loadSlide(index) {
+        textElement.innerHTML = slides[index].html;
+        
+        // Image format: promo-1.jpg, promo-2.jpg, etc.
+        const slideNum = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideNum}.jpg`;
+
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+
+        // Reset scroll position on slide change
+        if(textContainer) textContainer.scrollTop = 0;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    // --- Swipe Logic for Mobile ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const touchArea = document.getElementById('touch-area');
+
+    touchArea.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    touchArea.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, {passive: true});
+
+    function handleSwipe() {
+        const threshold = 50; // min distance for swipe
+        if (touchEndX < touchStartX - threshold) {
+            changeSlide(1); // Swipe Left -> Next
+        }
+        if (touchEndX > touchStartX + threshold) {
+            changeSlide(-1); // Swipe Right -> Prev
+        }
+    }
+
+    // --- Key listeners ---
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>
