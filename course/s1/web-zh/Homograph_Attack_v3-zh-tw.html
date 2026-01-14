@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同形異義字攻擊防禦者 v3.1</title>
+    
+    <!-- GOOGLE FONTS (Crucial for Mobile/Desktop consistency) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Sky Blue */
+            --primary-dark: #0284c7;
+            --accent: #f59e0b; /* Amber for warnings */
+            --danger: #ef4444;
+            --success: #22c55e;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --info-bg: rgba(14, 165, 233, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; color: var(--primary); }
+        .subtitle { color: var(--text-muted); margin-top: 0.5rem; }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .tab-btn:hover { background: #334155; }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #334155;
+            margin-bottom: 2rem;
+        }
+
+        h2 { margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        /* Inspector Tool Styles */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: white;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2rem;
+            min-width: 200px;
+        }
+
+        button.action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        button.action-btn:hover { background: var(--primary-dark); }
+
+        .analysis-result {
+            display: none;
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .big-url {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        .char-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 1rem;
+        }
+
+        .char-box {
+            border: 1px solid #475569;
+            padding: 5px;
+            text-align: center;
+            border-radius: 4px;
+            min-width: 40px;
+        }
+
+        .char-box.safe { border-color: var(--success); color: var(--success); }
+        .char-box.danger { 
+            border-color: var(--danger); 
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger); 
+            animation: pulse 2s infinite;
+        }
+
+        .char-code { font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 2px; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Training/Quiz Styles */
+        .scenario-box { text-align: center; }
+
+        .domain-display {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2rem;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #0f172a;
+            border-radius: 8px;
+            display: inline-block;
+            word-break: break-all;
+        }
+
+        .choice-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        .btn-safe { background: var(--success); color: white; }
+        .btn-fake { background: var(--danger); color: white; }
+        
+        .choice-btn:hover { transform: scale(1.05); }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback-correct { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); }
+        .feedback-wrong { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); }
+
+        .punycode-reveal {
+            font-family: 'Roboto Mono', monospace;
+            background: #000;
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* --- DEFENSE TIPS STYLES --- */
+        .defense-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 600px) {
+            .defense-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .defense-item {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .defense-item.best { border-left-color: var(--success); border: 2px solid var(--success); }
+
+        .defense-title { font-weight: bold; margin-bottom: 5px; color: white; display: block; }
+        .defense-desc { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* --- SUMMARY & REFERENCE LIST STYLES --- */
+        .section-title {
+            color: var(--text);
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .summary-container { text-align: left; margin-top: 2rem; }
+
+        .summary-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 6px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        .summary-win { border-left-color: var(--success); background-color: rgba(34, 197, 94, 0.05); }
+        .summary-loss { border-left-color: var(--danger); background-color: rgba(239, 68, 68, 0.05); }
+        .summary-reference { border-left-color: var(--primary); background-color: var(--info-bg); }
+
+        .summary-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-visual {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            word-break: break-all;
+        }
+        
+        .text-fake { color: var(--danger); }
+        .text-safe { color: var(--success); }
+        .text-puny { color: var(--accent); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; }
+
+        .tag-correct { color: var(--success); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--success); padding: 2px 8px; border-radius: 4px; }
+        .tag-wrong { color: var(--danger); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--danger); padding: 2px 8px; border-radius: 4px; }
+
+        .summary-details { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-top: 8px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
+        th { color: var(--primary); }
+        tr:hover { background: rgba(255,255,255,0.05); }
+        
+        @media (max-width: 600px) {
+            th, td { font-size: 0.85rem; padding: 8px; }
+            .domain-display { font-size: 1.5rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🆔 同形異義字攻擊防禦者</h1>
+            <p class="subtitle">學習識別國際化域名 (IDN) 欺騙</p>
+        </header>
+
+        <!-- UPDATED NAV: Added 'Defense' Button -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'learn')">📖 學習</button>
+            <button class="tab-btn" onclick="switchTab(this, 'defense')">🛡️ 防禦</button>
+            <button class="tab-btn" onclick="switchTab(this, 'inspector')">🔍 IDN 檢查器</button>
+            <button class="tab-btn" onclick="switchTab(this, 'training')">⚔️ 訓練</button>
+        </nav>
+
+        <!-- 1. LEARN SECTION (Theory only) -->
+        <div id="learn" class="section active">
+            <div class="card">
+                <h2>什麼是同形異義字攻擊？</h2>
+                <p>同形異義字攻擊（或稱同形符號攻擊）利用來自不同文字（如拉丁文、西里爾文或希臘文）中視覺上相似的字元來創建欺騙性的域名。</p>
+                <p>攻擊者使用 <strong>Punycode</strong>（以 <code>xn--</code> 為前綴）註冊域名。對電腦來說，<code>xn--80ak6aa92e.com</code> 是一個獨特的地址，但在您的瀏覽器中，它會呈現為 <strong>apple.com</strong>。</p>
+            </div>
+
+            <div class="card">
+                <h2>常見的替換類型</h2>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>視覺欺騙</th>
+                                <th>合法域名</th>
+                                <th>技術</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-family: 'Roboto Mono', monospace;">micrоsоft.com</td>
+                                <td>microsoft.com</td>
+                                <td>西里爾文 'о'</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: 'Roboto Mono', monospace;">paypaӏ.com</td>
+                                <td>paypal.com</td>
+                                <td>西里爾文 'ӏ' (palochka)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: 'Roboto Mono', monospace;">tωitter.com</td>
+                                <td>twitter.com</td>
+                                <td>希臘文 'ω'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DEFENSE SECTION (New Dedicated Tab) -->
+        <div id="defense" class="section">
+            <div class="card">
+                <h2>🛡️ 如何保護自己</h2>
+                <p>視覺檢查並不可靠（您將在訓練中看到）。請改用以下技術方法：</p>
+                
+                <div class="defense-grid">
+                    <div class="defense-item best">
+                        <span class="defense-title">🏆 1. 使用密碼管理器</span>
+                        <span class="defense-desc">這是「殺手鐧」。密碼管理器會將您的憑證與特定網址綁定。如果您進入假網站，它不會自動填寫。</span>
+                    </div>
+
+                    <div class="defense-item">
+                        <span class="defense-title">📋 2. 複製貼上測試</span>
+                        <span class="defense-desc">從網址列複製網址並將其貼到純文字編輯器（如記事本）中。如果它變成了 <code>xn--...</code>，這就是一個同形異義字攻擊。</span>
+                    </div>
+
+                    <div class="defense-item">
+                        <span class="defense-title">🔒 3. 忽略鎖頭圖示</span>
+                        <span class="defense-desc">攻擊者也可以購買 SSL 憑證。鎖頭圖示僅表示連線已加密，不代表網站是誠實的。</span>
+                    </div>
+
+                    <div class="defense-item">
+                        <span class="defense-title">📱 4. 手機：長按連結</span>
+                        <span class="defense-desc">在手機上，點擊前請長按連結。預覽通常會顯示隱藏的 Punycode 網址。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. INSPECTOR SECTION -->
+        <div id="inspector" class="section">
+            <div class="card">
+                <h2>🔍 域名檢查器</h2>
+                <p>在下方貼上可疑域名以顯示隱藏字元。</p>
+                
+                <div class="input-group">
+                    <input type="text" id="inspectorInput" placeholder="例如 apple.com" value="аррӏе.com">
+                    <button class="action-btn" onclick="analyzeDomain()">分析</button>
+                </div>
+
+                <div id="inspectorResult" class="analysis-result">
+                    <div id="inspectorVisual" class="big-url"></div>
+                    <p id="inspectorSummary" style="font-weight: bold; color: var(--accent);"></p>
+                    
+                    <div id="inspectorBreakdown" class="char-breakdown">
+                        <!-- Dynamic Boxes -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>試試這些例子：</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="tab-btn" onclick="fillInspector('аррӏе.com')">Apple (西里爾文)</button>
+                    <button class="tab-btn" onclick="fillInspector('paypaӏ.com')">Paypal (西里爾文 l)</button>
+                    <button class="tab-btn" onclick="fillInspector('adoḅe.com')">Adobe (帶點的 b)</button>
+                    <button class="tab-btn" onclick="fillInspector('Sρօtifү.com')">Spotify (混合字元)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TRAINING SECTION -->
+        <div id="training" class="section">
+            <div class="card scenario-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span id="scoreDisplay" style="font-weight: bold; color: var(--primary);">分數: 0</span>
+                    <span id="progressDisplay" style="color: var(--text-muted);">1 / 5</span>
+                </div>
+
+                <h2>這個域名是安全的還是假的？</h2>
+                <p>仔細看這些字元。</p>
+
+                <div class="domain-display" id="quizDomain">...</div>
+
+                <div class="choice-btn-group" id="quizButtons">
+                    <button class="choice-btn btn-safe" onclick="handleQuizAnswer(true)">安全 ✅</button>
+                    <button class="choice-btn btn-fake" onclick="handleQuizAnswer(false)">假的 ❌</button>
+                </div>
+
+                <div id="quizFeedback" class="feedback-box">
+                    <h3 id="feedbackTitle"></h3>
+                    <p id="feedbackText"></p>
+                    <p><strong>實際域名：</strong> <span id="feedbackPuny" class="punycode-reveal"></span></p>
+                    <button class="action-btn" onclick="nextQuestion()" style="margin-top: 10px;">下一題 ➡️</button>
+                </div>
+
+                <div id="quizFinal" style="display:none;">
+                    <h2>訓練完成！</h2>
+                    <p id="finalScoreMsg" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem;"></p>
+                    <button class="action-btn" onclick="restartQuiz()">重新開始訓練 🔄</button>
+
+                    <div class="summary-container">
+                        <h3 class="section-title">📊 本次結果</h3>
+                        <div id="sessionSummary"></div>
+
+                        <h3 class="section-title">📚 完整資料庫</h3>
+                        <div id="fullDbRef"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 資料集 ---
+        const homographData = [
+            { visual: "apple.com", isFake: false, puny: "apple.com", note: "這是合法的網站 (ASCII)。" },
+            { visual: "аррӏе.com", isFake: true, puny: "xn--80ak6aa92e.com", note: "西里爾文 'а', 'р', 'е'。著名的 2017 年概念驗證。" },
+            { visual: "paypal.com", isFake: false, puny: "paypal.com", note: "合法的網站 (ASCII)。" },
+            { visual: "paypaӏ.com", isFake: true, puny: "xn--paypa-ngc.com", note: "使用西里爾文 'ӏ' (palochka) 而不是 'l'。" },
+            { visual: "adoḅe.com", isFake: true, puny: "xn--adoe-750a.com", note: "使用下方帶點的拉丁文 'ḅ'。" },
+            { visual: "micrоsоft.com", isFake: true, puny: "xn--micrsft-wbd9a.com", note: "使用西里爾文 'о' 字元。" },
+            { visual: "akámai.com", isFake: true, puny: "xn--akmai-yqa.com", note: "使用重音符號 'á'。" },
+            { visual: "Sρօtifү.com", isFake: true, puny: "xn--stif-qw5b8d9c.com", note: "混合希臘文和切羅基文字元。" },
+            { visual: "metamask.io", isFake: false, puny: "metamask.io", note: "合法的加密錢包網站。" },
+            { visual: "mеtаmаsk.io", isFake: true, puny: "xn--mtmsk-p4d2b.io", note: "西里爾文 'е' 和 'а'。" }
+        ];
+
+        // --- 導航邏輯 ---
+        function switchTab(btnElement, tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active');
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+        }
+
+        // --- 檢查器邏輯 ---
+        function fillInspector(text) {
+            document.getElementById('inspectorInput').value = text;
+            analyzeDomain();
+            // Select the 3rd button (Inspector) because Defense is now 2nd
+            const inspectorBtn = document.querySelectorAll('.nav-tabs .tab-btn')[2];
+            switchTab(inspectorBtn, 'inspector');
+        }
+
+        function analyzeDomain() {
+            const input = document.getElementById('inspectorInput').value.trim();
+            const resultDiv = document.getElementById('inspectorResult');
+            const visualDiv = document.getElementById('inspectorVisual');
+            const summaryDiv = document.getElementById('inspectorSummary');
+            const breakdownDiv = document.getElementById('inspectorBreakdown');
+
+            if (!input) return;
+
+            resultDiv.style.display = 'block';
+            visualDiv.textContent = input;
+            breakdownDiv.innerHTML = '';
+
+            let suspiciousCount = 0;
+
+            for (let char of input) {
+                const code = char.codePointAt(0);
+                const isSuspicious = code > 127;
+                if (isSuspicious) suspiciousCount++;
+
+                const div = document.createElement('div');
+                div.className = isSuspicious ? 'char-box danger' : 'char-box safe';
+                div.innerHTML = `
+                    <span style="font-size:1.2rem; font-weight:bold; font-family: 'Roboto Mono', monospace;">${char}</span>
+                    <span class="char-code">U+${code.toString(16).toUpperCase()}</span>
+                    <span class="char-code">${isSuspicious ? '非-ASCII' : 'ASCII'}</span>
+                `;
+                breakdownDiv.appendChild(div);
+            }
+
+            if (suspiciousCount > 0) {
+                summaryDiv.innerHTML = `⚠️ 危險：發現 ${suspiciousCount} 個非標準字元。可能是同形異義字攻擊！`;
+                summaryDiv.style.color = 'var(--danger)';
+            } else {
+                summaryDiv.innerHTML = `✅ 安全：所有字元均為標準 ASCII。`;
+                summaryDiv.style.color = 'var(--success)';
+            }
+        }
+
+        // --- 測驗邏輯 ---
+        let currentQuizIndex = 0;
+        let score = 0;
+        let quizPool = [];
+
+        function initQuiz() {
+            let deepCopy = JSON.parse(JSON.stringify(homographData));
+            quizPool = deepCopy.sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentQuizIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            document.getElementById('quizButtons').style.display = 'flex';
+            document.getElementById('quizFeedback').style.display = 'none';
+            document.getElementById('quizFinal').style.display = 'none';
+            
+            const q = quizPool[currentQuizIndex];
+            document.getElementById('quizDomain').textContent = q.visual;
+            
+            document.getElementById('scoreDisplay').textContent = `分數: ${score}`;
+            document.getElementById('progressDisplay').textContent = `${currentQuizIndex + 1} / ${quizPool.length}`;
+        }
+
+        function handleQuizAnswer(userSaidSafe) {
+            const q = quizPool[currentQuizIndex];
+            const actuallySafe = !q.isFake;
+            const isCorrect = (userSaidSafe === actuallySafe);
+            q.userWasCorrect = isCorrect;
+            
+            if (isCorrect) score++;
+
+            document.getElementById('quizButtons').style.display = 'none';
+            const feedbackBox = document.getElementById('quizFeedback');
+            feedbackBox.style.display = 'block';
+            
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            if (isCorrect) {
+                feedbackBox.className = 'feedback-box feedback-correct';
+                feedbackTitle.textContent = "正確！ 🎉";
+            } else {
+                feedbackBox.className = 'feedback-box feedback-wrong';
+                feedbackTitle.textContent = "錯誤！ 🚫";
+            }
+
+            feedbackText.innerHTML = `
+                這個域名是 <strong>${q.isFake ? '假的 (同形異義字)' : '真的'}</strong>。<br>
+                <em>${q.note}</em>
+            `;
+            document.getElementById('feedbackPuny').textContent = q.puny;
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizPool.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('quizButtons').style.display = 'none';
+            document.getElementById('quizFeedback').style.display = 'none';
+            document.getElementById('quizDomain').style.display = 'none';
+            document.getElementById('quizFinal').style.display = 'block';
+            
+            document.getElementById('finalScoreMsg').textContent = `您在 ${quizPool.length} 題中答對了 ${score} 題`;
+
+            // Generate Session Summary
+            const sessionDiv = document.getElementById('sessionSummary');
+            sessionDiv.innerHTML = "";
+            quizPool.forEach(item => {
+                const card = document.createElement('div');
+                const isWin = item.userWasCorrect;
+                card.className = isWin ? "summary-card summary-win" : "summary-card summary-loss";
+                
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+                const statusTag = isWin ? `<span class="tag-correct">答對</span>` : `<span class="tag-wrong">答錯</span>`;
+
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <span class="summary-visual ${urlClass}">${item.visual}</span>
+                        ${statusTag}
+                    </div>
+                    <div class="summary-details">
+                        <span class="text-puny">實際/Punycode: ${item.puny}</span><br>
+                        ${item.note}
+                    </div>
+                `;
+                sessionDiv.appendChild(card);
+            });
+
+            // Generate Full Database
+            const dbDiv = document.getElementById('fullDbRef');
+            dbDiv.innerHTML = "";
+            const sortedData = [...homographData].sort((a, b) => a.visual.localeCompare(b.visual));
+            sortedData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "summary-card summary-reference";
+                const urlClass = item.isFake ? "text-fake" : "text-safe";
+                const typeTag = item.isFake ? `<span class="tag-wrong">假的</span>` : `<span class="tag-correct">真的</span>`;
+
+                card.innerHTML = `
+                    <div class="summary-head">
+                        <span class="summary-visual ${urlClass}">${item.visual}</span>
+                        ${typeTag}
+                    </div>
+                    <div class="summary-details">
+                        <span class="text-puny">實際/Punycode: ${item.puny}</span><br>
+                        ${item.note}
+                    </div>
+                `;
+                dbDiv.appendChild(card);
+            });
+        }
+
+        function restartQuiz() {
+            document.getElementById('quizDomain').style.display = 'inline-block';
+            initQuiz();
+        }
+
+        // Initialize
+        analyzeDomain();
+        initQuiz();
+
+    </script>
+</body>
+</html>
