@@ -96,16 +96,16 @@
     <nav>
         <div class="logo">DEEPFAKE <span>搶劫案</span></div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('home', this)">總覽</button>
-            <button class="nav-btn" onclick="switchTab('story', this)">時間軸</button>
-            <button class="nav-btn" onclick="switchTab('tech', this)">AI 技術</button>
-            <button class="nav-btn" onclick="switchTab('defense', this)">防禦</button>
-            <button class="nav-btn" onclick="switchTab('quiz', this)">測驗</button>
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">AI 技術</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
         </div>
     </nav>
 
     <main>
-        <div id="home" class="tab-content active-tab">
+        <section id="home" class="tab-content active-tab">
             <div class="hero">
                 <h1>視訊會議滲透 (2024)</h1>
                 <p>當「眼見為憑」不再是真理。一個 AI 騙局讓一名財務專家損失了 2500 萬美元。</p>
@@ -178,17 +178,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. 導航邏輯 ---
             function switchTab(tabId) {
-                document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active'));
-                document.getElementById(tabId).classList.add('active-tab');
-                const btnMap = { 'home': 'btn-home', 'story': 'btn-story', 'tech': 'btn-tech', 'defense': 'btn-defense', 'quiz': 'btn-quiz' };
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'story': 'btn-story',
+                    'tech': 'btn-tech',
+                    'defense': 'btn-defense',
+                    'quiz': 'btn-quiz'
+                };
                 const activeBtn = document.getElementById(btnMap[tabId]);
                 if(activeBtn) activeBtn.classList.add('active');
                 window.scrollTo(0,0);
             }
-            ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
-            document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
-            document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-story').onclick = () => switchTab('story');
+            document.getElementById('btn-tech').onclick = () => switchTab('tech');
+            document.getElementById('btn-defense').onclick = () => switchTab('defense');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-story').onclick = () => switchTab('story');
+            document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
 
             const questions = [
                 { q: "1. 事實：攻擊者是如何說服員工轉帳 2500 萬美元的？", options: ["他們駭入了銀行", "他們創建了一場 Deepfake 視訊會議", "他們發送了一封普通的電子郵件", "他們偷了員工的密碼"], a: 1, exp: "正確。他們利用 AI 模擬了一場與財務長和其他高層的即時視訊通話。" },
