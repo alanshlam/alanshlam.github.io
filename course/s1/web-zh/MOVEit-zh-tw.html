@@ -93,16 +93,16 @@
     <nav>
         <div class="logo">MOVEit <span>漏洞</span></div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('home', this)">總覽</button>
-            <button class="nav-btn" onclick="switchTab('story', this)">時間軸</button>
-            <button class="nav-btn" onclick="switchTab('tech', this)">技術細節</button>
-            <button class="nav-btn" onclick="switchTab('defense', this)">防禦</button>
-            <button class="nav-btn" onclick="switchTab('quiz', this)">測驗</button>
+            <button class="nav-btn active" id="btn-home">總覽</button>
+            <button class="nav-btn" id="btn-story">時間軸</button>
+            <button class="nav-btn" id="btn-tech">技術細節</button>
+            <button class="nav-btn" id="btn-defense">防禦</button>
+            <button class="nav-btn" id="btn-quiz">測驗</button>
         </div>
     </nav>
 
     <main>
-        <div id="home" class="module active">
+        <section id="home" class="tab-content active-tab">
             <div class="hero">
                 <h1>MOVEit Transfer 漏洞 (2023)</h1>
                 <p>這起駭客事件竊取了 9300 萬人的資料，而他們甚至從未聽說過「MOVEit」。</p>
@@ -119,9 +119,9 @@
                 <div class="info-card"><h3>☠️ 駭客：Cl0p</h3><p>一個與俄羅斯有關的勒索軟體組織。他們不鎖電腦，只竊取資料並威脅在暗網上洩露（勒索）。</p></div>
                 <div class="info-card"><h3>🔓 漏洞：SQL 注入</h3><p>一個「零時差」漏洞允許駭客向資料庫發送特殊命令，完全繞過密碼。</p></div>
             </div>
-        </div>
+        </section>
 
-        <div id="story" class="module">
+        <section id="story" class="tab-content">
             <h2 style="text-align: center; border:none;">無聲的竊盜時間軸</h2>
             <div class="timeline">
                 <div class="t-container left"><div class="t-content"><h4>2023年5月下旬</h4><h3>秘密利用</h3><p>Cl0p 駭客發現 MOVEit Transfer 中的一個零時差漏洞。他們悄悄地掃描網際網路並在任何人知道軟體有問題之前竊取資料。</p></div></div>
@@ -131,7 +131,7 @@
             </div>
         </section>
 
-        <div id="tech" class="module">
+        <section id="tech" class="tab-content">
             <h2>技術剖析</h2>
             <div class="grid-container">
                 <div class="info-card"><h3>1. SQL 注入 (SQLi)</h3><p>網站介面未正確檢查使用者輸入。駭客在登入欄位中輸入命令，欺騙資料庫給予他們「系統管理員」權限。</p></div>
@@ -140,7 +140,7 @@
             </div>
         </section>
 
-        <div id="defense" class="module">
+        <section id="defense" class="tab-content">
             <h2>消費者防禦：當「他們」被駭時</h2>
             <p>您無法修補英國航空的伺服器。但您可以保護自己免受其後續影響。</p>
             <div class="defense-tip"><div class="icon-box">❄️</div><div><h3>1. 凍結您的信用</h3><p><strong>這是第一道防線。</strong>由於社會安全碼和薪資資料被盜，罪犯可以用您的名義申請貸款。信用凍結（Equifax、Experian、TransUnion）可以徹底阻止他們。</p></div></div>
@@ -150,7 +150,7 @@
             <div style="text-align: center; margin-top: 20px;"><button class="action-btn" id="jump-quiz">參加消費者測驗</button></div>
         </section>
 
-        <div id="quiz" class="module">
+        <section id="quiz" class="tab-content">
             <h2>知識測驗</h2>
             <p>測試您對供應鏈攻擊和個人防禦的理解。</p>
             <div class="quiz-container">
@@ -174,92 +174,114 @@
     <footer><p>MOVEit Transfer 2023 案例研究 | 教育網路應用程式</p></footer>
 
     <script>
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.module, .nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(btn) btn.classList.add('active');
-        }
-        ['home', 'story', 'tech', 'defense', 'quiz'].forEach(id => document.getElementById(`btn-${id}`).onclick = (e) => switchTab(id, e.target));
-        document.getElementById('jump-story').onclick = () => switchTab('story', document.getElementById('btn-story'));
-        document.getElementById('jump-quiz').onclick = () => switchTab('quiz', document.getElementById('btn-quiz'));
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. 導航邏輯 ---
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+                const target = document.getElementById(tabId);
+                if(target) target.classList.add('active-tab');
 
-        const questions = [
-            { q: "1. 類比：「供應鏈攻擊」最貼切的比喻是什麼？", options: ["打破窗戶闖入房子", "從屋主口袋偷鑰匙", "在源頭對供水下毒", "猜對警報器的密碼"], a: 2, exp: "正確。供應鏈攻擊是入侵受信任的源頭（自來水廠/軟體供應商），以影響下游的每一個人。" },
-            { q: "2. 事實：駭客是如何分發惡意軟體的？", options: ["向每個客戶發送釣魚郵件", "一個合法的軟體更新", "一個留在停車場的 USB 隨身碟", "一個假網站"], a: 1, exp: "正確。他們將惡意軟體隱藏在 Orion 平台的標準軟體更新中。" },
-            { q: "3. 誰：哪家資安公司最先發現這次攻擊？", options: ["SolarWinds 自己", "FireEye", "FBI", "Microsoft"], a: 1, exp: "正確。FireEye 意識到他們被入侵，並將源頭追溯到 SolarWinds。" },
-            { q: "4. 技術：為什麼電腦會信任受感染的軟體？", options: ["駭客關閉了防毒軟體", "軟體有 SolarWinds 的「數位簽章」", "檔案大小非常小", "那時是假日週末"], a: 1, exp: "正確。攻擊者入侵了建構系統，因此惡意軟體擁有有效的數位簽章。" },
-            { q: "5. 時間軸：在被發現之前，攻擊者在網路中潛伏了大約多久（停留時間）？", options: ["24 小時", "1 週", "超過 1 年（14 個月）", "5 年"], a: 2, exp: "正確。這麼長的停留時間讓他們能夠在不被注意的情況下竊取大量資料。" },
-            { q: "6. 歸因：據信是誰發動了這次攻擊？", options: ["佛羅里達州的一名青少年", "Nobelium（俄羅斯情報機構）", "Anonymous 駭客組織", "一家企業競爭對手"], a: 1, exp: "正確。美國情報機構將此次攻擊歸因於 SVR（俄羅斯對外情報局）。" },
-            { q: "7. 消費者：既然更新可能被駭，您應該停止更新您的軟體嗎？", options: ["是的，再也不更新", "不，已知的漏洞比罕見的供應鏈攻擊風險更大", "每 5 年更新一次", "只在星期二更新"], a: 1, exp: "正確。雖然供應鏈攻擊確實發生，但未修補的軟體每天都在被利用。您必須繼續修補。" },
-            { q: "8. 防禦：如果一個受信任的供應商被駭，您的最後一道防線是什麼？", options: ["強密碼", "多重身份驗證 (MFA)", "聽天由命", "刪除您的帳戶"], a: 1, exp: "正確。如果他們透過供應商竊取您的憑證，MFA 會阻止他們實際登入。" },
-            { q: "9. 影響：為什麼一個普通學生應該關心像這樣的企業駭客事件？", options: ["完全不重要", "您的個人資料（如身分證號碼、電子郵件）儲存在這些公司", "SolarWinds 製作電玩遊戲", "網際網路會關閉"], a: 1, exp: "正確。您的資料存放在企業伺服器上。如果他們被入侵，您的身份就處於危險之中。" },
-            { q: "10. 策略：對使用者來說，「劃分區隔」是什麼意思？", options: ["把您的電腦放在一個盒子裡", "為不同網站使用不同密碼", "只與家人分享密碼", "只使用一個電子郵件地址"], a: 1, exp: "正確。不要讓一個網站（如遊戲或商店）的漏洞危及您的主要電子郵件或銀行帳戶。" }
-        ];
-
-        let currentQIndex = 0, score = 0;
-        const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
-              feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
-              progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
-              scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
-              scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
-        
-        function loadQuestion() {
-            const q = questions[currentQIndex];
-            qText.innerText = q.q;
-            optsContainer.innerHTML = '';
-            feedback.style.display = 'none';
-            nextBtn.style.display = 'none';
-            progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
-            q.options.forEach((optText, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = optText;
-                btn.onclick = () => handleAnswer(idx, btn);
-                optsContainer.appendChild(btn);
-            });
-        }
-
-        function handleAnswer(selectedIndex, btnElement) {
-            const q = questions[currentQIndex];
-            optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
-            if (selectedIndex === q.a) {
-                score++;
-                btnElement.classList.add('correct');
-                feedback.className = "feedback correct";
-                feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
-            } else {
-                btnElement.classList.add('wrong');
-                feedback.className = "feedback wrong";
-                feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const btnMap = {
+                    'home': 'btn-home',
+                    'story': 'btn-story',
+                    'tech': 'btn-tech',
+                    'defense': 'btn-defense',
+                    'quiz': 'btn-quiz'
+                };
+                const activeBtn = document.getElementById(btnMap[tabId]);
+                if(activeBtn) activeBtn.classList.add('active');
+                window.scrollTo(0,0);
             }
-            feedback.style.display = 'block';
-            nextBtn.style.display = 'block';
-        }
 
-        nextBtn.onclick = () => {
-            currentQIndex++;
-            if (currentQIndex < questions.length) loadQuestion();
-            else showResults();
-        };
-
-        restartBtn.onclick = () => {
-            currentQIndex = 0; score = 0;
-            scoreBlock.style.display = 'none';
-            quizBlock.style.display = 'block';
-            loadQuestion();
-        };
-
-        function showResults() {
-            quizBlock.style.display = 'none';
-            scoreBlock.style.display = 'block';
-            progressBar.style.width = "100%";
-            finalScore.innerText = `${score} / ${questions.length}`;
-            if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您了解供應鏈風險。";
-            else if(score > 7) scoreMsg.innerText = "👍 做得好！您了解風險。";
-            else scoreMsg.innerText = "📚 複習課程後再試一次。";
-        }
+            document.getElementById('btn-home').onclick = () => switchTab('home');
+            document.getElementById('btn-story').onclick = () => switchTab('story');
+            document.getElementById('btn-tech').onclick = () => switchTab('tech');
+            document.getElementById('btn-defense').onclick = () => switchTab('defense');
+            document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+            
+            document.getElementById('jump-story').onclick = () => switchTab('story');
+            document.getElementById('jump-quiz').onclick = () => switchTab('quiz');
         
-        loadQuestion();
+            const questions = [
+                { q: "1. 類比：「供應鏈攻擊」最貼切的比喻是什麼？", options: ["打破窗戶闖入房子", "從屋主口袋偷鑰匙", "在源頭對供水下毒", "猜對警報器的密碼"], a: 2, exp: "正確。供應鏈攻擊是入侵受信任的源頭（自來水廠/軟體供應商），以影響下游的每一個人。" },
+                { q: "2. 事實：駭客是如何分發惡意軟體的？", options: ["向每個客戶發送釣魚郵件", "一個合法的軟體更新", "一個留在停車場的 USB 隨身碟", "一個假網站"], a: 1, exp: "正確。他們將惡意軟體隱藏在 Orion 平台的標準軟體更新中。" },
+                { q: "3. 誰：哪家資安公司最先發現這次攻擊？", options: ["SolarWinds 自己", "FireEye", "FBI", "Microsoft"], a: 1, exp: "正確。FireEye 意識到他們被入侵，並將源頭追溯到 SolarWinds。" },
+                { q: "4. 技術：為什麼電腦會信任受感染的軟體？", options: ["駭客關閉了防毒軟體", "軟體有 SolarWinds 的「數位簽章」", "檔案大小非常小", "那時是假日週末"], a: 1, exp: "正確。攻擊者入侵了建構系統，因此惡意軟體擁有有效的數位簽章。" },
+                { q: "5. 時間軸：在被發現之前，攻擊者在網路中潛伏了大約多久（停留時間）？", options: ["24 小時", "1 週", "超過 1 年（14 個月）", "5 年"], a: 2, exp: "正確。這麼長的停留時間讓他們能夠在不被注意的情況下竊取大量資料。" },
+                { q: "6. 歸因：據信是誰發動了這次攻擊？", options: ["佛羅里達州的一名青少年", "Nobelium（俄羅斯情報機構）", "Anonymous 駭客組織", "一家企業競爭對手"], a: 1, exp: "正確。美國情報機構將此次攻擊歸因於 SVR（俄羅斯對外情報局）。" },
+                { q: "7. 消費者：既然更新可能被駭，您應該停止更新您的軟體嗎？", options: ["是的，再也不更新", "不，已知的漏洞比罕見的供應鏈攻擊風險更大", "每 5 年更新一次", "只在星期二更新"], a: 1, exp: "正確。雖然供應鏈攻擊確實發生，但未修補的軟體每天都在被利用。您必須繼續修補。" },
+                { q: "8. 防禦：如果一個受信任的供應商被駭，您的最後一道防線是什麼？", options: ["強密碼", "多重身份驗證 (MFA)", "聽天由命", "刪除您的帳戶"], a: 1, exp: "正確。如果他們透過供應商竊取您的憑證，MFA 會阻止他們實際登入。" },
+                { q: "9. 影響：為什麼一個普通學生應該關心像這樣的企業駭客事件？", options: ["完全不重要", "您的個人資料（如身分證號碼、電子郵件）儲存在這些公司", "SolarWinds 製作電玩遊戲", "網際網路會關閉"], a: 1, exp: "正確。您的資料存放在企業伺服器上。如果他們被入侵，您的身份就處於危險之中。" },
+                { q: "10. 策略：對使用者來說，「劃分區隔」是什麼意思？", options: ["把您的電腦放在一個盒子裡", "為不同網站使用不同密碼", "只與家人分享密碼", "只使用一個電子郵件地址"], a: 1, exp: "正確。不要讓一個網站（如遊戲或商店）的漏洞危及您的主要電子郵件或銀行帳戶。" }
+            ];
+
+            let currentQIndex = 0, score = 0;
+            const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
+                  feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
+                  progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
+                  scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
+                  scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+            
+            function loadQuestion() {
+                const q = questions[currentQIndex];
+                qText.innerText = q.q;
+                optsContainer.innerHTML = '';
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+                progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = optText;
+                    btn.onclick = () => handleAnswer(idx, btn);
+                    optsContainer.appendChild(btn);
+                });
+            }
+
+            function handleAnswer(selectedIndex, btnElement) {
+                const q = questions[currentQIndex];
+                optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+                if (selectedIndex === q.a) {
+                    score++;
+                    btnElement.classList.add('correct');
+                    feedback.className = "feedback correct";
+                    feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+                } else {
+                    btnElement.classList.add('wrong');
+                    feedback.className = "feedback wrong";
+                    feedback.innerHTML = `<strong>❌ 不正確。</strong> ${q.exp}`;
+                }
+                feedback.style.display = 'block';
+                nextBtn.style.display = 'block';
+            }
+
+            nextBtn.onclick = () => {
+                currentQIndex++;
+                if (currentQIndex < questions.length) loadQuestion();
+                else showResults();
+            };
+
+            restartBtn.onclick = () => {
+                currentQIndex = 0; score = 0;
+                scoreBlock.style.display = 'none';
+                quizBlock.style.display = 'block';
+                loadQuestion();
+            };
+
+            function showResults() {
+                quizBlock.style.display = 'none';
+                scoreBlock.style.display = 'block';
+                progressBar.style.width = "100%";
+                finalScore.innerText = `${score} / ${questions.length}`;
+                if(score === questions.length) scoreMsg.innerText = "🏆 滿分！您了解供應鏈風險。";
+                else if(score > 7) scoreMsg.innerText = "👍 做得好！您了解風險。";
+                else scoreMsg.innerText = "📚 複習課程後再試一次。";
+            }
+            
+            loadQuestion();
+        });
     </script>
 </body>
 </html>
