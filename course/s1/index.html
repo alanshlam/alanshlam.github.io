@@ -1,153 +1,272 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web Apps For Raising Cybersecurity Awareness</title>
   <style>
+    /* --- Base Styles --- */
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
       height: 100vh;
-      overflow: hidden; /* Prevent body scrollbars */
+      overflow: hidden;
+      flex-direction: row;
     }
+
+    /* --- Sidebar Menu --- */
     #menu {
       width: 25%;
-      min-width: 250px; /* Minimum width for the menu */
-      background-color: #f4f4f4;
+      min-width: 280px;
+      background-color: #f8f9fa;
       padding: 1em;
       overflow-y: auto;
-      flex-shrink: 0; /* Prevent menu from shrinking when resizing */
+      flex-shrink: 0;
+      border-right: 1px solid #ddd;
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+      z-index: 1000;
     }
+
+    /* --- Resizer (Desktop Only) --- */
     #resizer {
       width: 5px;
       cursor: col-resize;
-      background-color: #ccc;
+      background-color: #e0e0e0;
       flex-shrink: 0;
+      transition: background-color 0.2s;
     }
+    #resizer:hover {
+      background-color: #007bff;
+    }
+
+    /* --- Main Content Area --- */
     #content {
-      flex-grow: 1; /* Take remaining space */
+      flex-grow: 1;
       padding: 0;
-      display: flex; /* To make iframe fill the space */
+      display: flex;
+      position: relative;
+      background: white;
     }
-    h1, h2 {
-      color: #333;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-      margin-top: 20px;
-    }
-    h1:first-child, h2:first-child {
-        margin-top: 0;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
+
+    /* --- Typography & Lists --- */
+    h1 { font-size: 1.5rem; margin-top: 0; color: #2c3e50; }
+    h2 { font-size: 1.2rem; color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 25px; }
+    
+    ul, ol { padding-left: 0; list-style: none; }
+    
     li {
-      margin-bottom: 0.5em;
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
+
     a {
       text-decoration: none;
       color: #007bff;
-      margin-right: auto;
+      font-weight: 500;
+      flex-grow: 1;
+      padding-right: 10px; /* Space between text and button */
     }
-    a:hover {
-      text-decoration: underline;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    a:hover { text-decoration: underline; }
+
+    /* --- Iframe --- */
+    iframe { width: 100%; height: 100%; border: none; }
+
+    /* --- Buttons --- */
     .popup-btn {
       background-color: #6c757d;
       color: white;
       border: none;
-      padding: 3px 8px;
+      padding: 6px 10px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 12px;
-      margin-left: 10px;
-      flex-shrink: 0;
+      white-space: nowrap;
     }
-    .popup-btn:hover {
-      background-color: #5a6268;
+    
+    /* --- Mobile Header & Toggle (Hidden on Desktop) --- */
+    #mobile-header {
+      display: none;
+      background-color: #343a40;
+      color: white;
+      padding: 10px 15px;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+    }
+
+    #menu-toggle-btn {
+      background: none;
+      border: 1px solid #6c757d;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+
+    #menu-close-btn {
+      display: none; /* Hidden on desktop */
+      width: 100%;
+      padding: 12px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* --- MOBILE RESPONSIVE STYLES --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column; /* Stack vertically */
+        padding-top: 50px; /* Space for mobile header */
+      }
+
+      /* Show Mobile Header */
+      #mobile-header { display: flex; }
+
+      /* Hide Resizer on Mobile */
+      #resizer { display: none; }
+
+      /* Transform Menu into an Off-Canvas Drawer */
+      #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 85%; /* Cover most of screen */
+        max-width: 350px;
+        transform: translateX(-100%); /* Hide by default */
+        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        padding-top: 20px;
+      }
+
+      /* Class to slide menu in */
+      #menu.active {
+        transform: translateX(0);
+      }
+
+      /* Show Close Button inside menu on mobile */
+      #menu-close-btn { display: block; }
+
+      /* Larger touch targets for mobile */
+      li { padding: 12px; margin-bottom: 10px; }
+      .popup-btn { padding: 8px 12px; font-size: 14px; }
+      h1 { font-size: 1.2rem; }
+      
+      /* Make content fill screen */
+      #content {
+        width: 100%;
+        height: 100%;
+      }
+      
+      /* Overlay to click-to-close */
+      #overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+      }
+      #overlay.active { display: block; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Mobile Header -->
+  <div id="mobile-header">
+    <span>Cybersecurity Awareness</span>
+    <button id="menu-toggle-btn">&#9776;</button>
+  </div>
+
+  <!-- Background Overlay for Mobile -->
+  <div id="overlay"></div>
+
+  <!-- Sidebar Menu -->
   <div id="menu">
+    <!-- Close Button (Mobile Only) -->
+    <button id="menu-close-btn">Close Menu &times;</button>
+
     <h1>Web Apps For Raising Cybersecurity Awareness</h1>
 
     <h2>Interactive Tools</h2>
     <ol>
-        <li><a href="webapp/phishing_traning.html" target="content_frame">Phishing Training</a></li>
-        <li><a href="webapp/fake_domain.html" target="content_frame">Phishing Domain Hunter</a></li>
-        <li><a href="webapp/Homograph_Attack.html" target="content_frame">Homograph Attack Defender</a></li>
-        <li><a href="webapp/Homograph_Attack_v3.html" target="content_frame">Homograph Attack Defender V3 </a></li>
-        <li><a href="webapp/fraud_defense.html" target="content_frame">Fraud Defense Academy (HKMA)</a></li>
-        <li><a href="webapp/AI_phishing.html" target="content_frame">AI Phishing Awareness Training</a></li>
-        <li><a href="webapp/AI_Ransomware_Tactics.html" target="content_frame">AI Ransomware Defense Training</a></li>
-        <li><a href="webapp/Deepfakes_Ransomware_Extortion.html" target="content_frame">Deepfake Extortion Awareness</a></li>
-        <li><a href="webapp/AI_Defense_Force.html" target="content_frame">AI Defense Force</a></li>
-        <li><a href="webapp/backup-guide.html" target="content_frame">Data Survival Guide</a></li>
-        <li><a href="webapp/breach-detector.html" target="content_frame">Breach Detector</a></li>
-        <li><a href="webapp/hk-response-kit.html" target="content_frame">HK Incident Response Kit</a></li>
-        <li><a href="webapp/hkcert-ransomware-guide.html" target="content_frame">HKCERT Ransomware Guide</a></li>
-        <li><a href="webapp/pdpo-guide.html" target="content_frame">PDPO Guide</a></li>
-        <li><a href="webapp/secure-browsing.html" target="content_frame">Secure Browsing Academy</a></li>
-        <li><a href="webapp/data-leak-guide.html" target="content_frame">Data Leak Response Center</a></li>
-        <li><a href="webapp/encryption-guide.html" target="content_frame">Encryption & Secure Storage Guide</a></li>
-        <li><a href="webapp/password-manager-guide.html" target="content_frame">Password Manager Guide</a></li>
-        <li><a href="webapp/desktop-security.html" target="content_frame">Desktop Security Guide</a></li>
-        <li><a href="webapp/mobile-security.html" target="content_frame">Mobile Security Guide</a></li>
-
-
+        <!-- Added onclick events to close menu automatically on mobile when link is clicked -->
+        <li><a href="webapp/phishing_traning.html" target="content_frame" onclick="closeMobileMenu()">Phishing Training</a></li>
+        <li><a href="webapp/fake_domain.html" target="content_frame" onclick="closeMobileMenu()">Phishing Domain Hunter</a></li>
+        <li><a href="webapp/Homograph_Attack.html" target="content_frame" onclick="closeMobileMenu()">Homograph Attack Defender</a></li>
+        <li><a href="webapp/Homograph_Attack_v3.html" target="content_frame" onclick="closeMobileMenu()">Homograph Attack Defender V3 </a></li>
+        <li><a href="webapp/fraud_defense.html" target="content_frame" onclick="closeMobileMenu()">Fraud Defense Academy (HKMA)</a></li>
+        <li><a href="webapp/AI_phishing.html" target="content_frame" onclick="closeMobileMenu()">AI Phishing Awareness Training</a></li>
+        <li><a href="webapp/AI_Ransomware_Tactics.html" target="content_frame" onclick="closeMobileMenu()">AI Ransomware Defense Training</a></li>
+        <li><a href="webapp/Deepfakes_Ransomware_Extortion.html" target="content_frame" onclick="closeMobileMenu()">Deepfake Extortion Awareness</a></li>
+        <li><a href="webapp/AI_Defense_Force.html" target="content_frame" onclick="closeMobileMenu()">AI Defense Force</a></li>
+        <li><a href="webapp/backup-guide.html" target="content_frame" onclick="closeMobileMenu()">Data Survival Guide</a></li>
+        <li><a href="webapp/breach-detector.html" target="content_frame" onclick="closeMobileMenu()">Breach Detector</a></li>
+        <li><a href="webapp/hk-response-kit.html" target="content_frame" onclick="closeMobileMenu()">HK Incident Response Kit</a></li>
+        <li><a href="webapp/hkcert-ransomware-guide.html" target="content_frame" onclick="closeMobileMenu()">HKCERT Ransomware Guide</a></li>
+        <li><a href="webapp/pdpo-guide.html" target="content_frame" onclick="closeMobileMenu()">PDPO Guide</a></li>
+        <li><a href="webapp/secure-browsing.html" target="content_frame" onclick="closeMobileMenu()">Secure Browsing Academy</a></li>
+        <li><a href="webapp/data-leak-guide.html" target="content_frame" onclick="closeMobileMenu()">Data Leak Response Center</a></li>
+        <li><a href="webapp/encryption-guide.html" target="content_frame" onclick="closeMobileMenu()">Encryption & Secure Storage Guide</a></li>
+        <li><a href="webapp/password-manager-guide.html" target="content_frame" onclick="closeMobileMenu()">Password Manager Guide</a></li>
+        <li><a href="webapp/desktop-security.html" target="content_frame" onclick="closeMobileMenu()">Desktop Security Guide</a></li>
+        <li><a href="webapp/mobile-security.html" target="content_frame" onclick="closeMobileMenu()">Mobile Security Guide</a></li>
     </ol>
 
     <h2>Case Studies</h2>
     <ol>
-      <li><a href="webapp/Arup_Case.html" target="content_frame">Arup Deepfake Heist</a></li>
-      <li><a href="webapp/Arup_Deepfake.html" target="content_frame">Arup Deepfake Heist (V2)</a></li>
-      <li><a href="webapp/china-deepfake.html" target="content_frame">China Deepfake Scam</a></li>
-      <li><a href="webapp/voice-clone-fraud.html" target="content_frame">Voice Clone Fraud</a></li>
-      <li><a href="webapp/nomani-scam.html" target="content_frame">Nomani Investment Scam</a></li>
-      <li><a href="webapp/trudeau-deepfake.html" target="content_frame">Trudeau Deepfake Scam</a></li>
-      <li><a href="webapp/VC_Infiltration.html" target="content_frame">VC Deepfake Infiltration</a></li>
-      <li><a href="webapp/mgm-breach.html" target="content_frame">MGM Resorts Breach</a></li>
-      <li><a href="webapp/Salesforce.html" target="content_frame">Salesforce Breach</a></li>
-      <li><a href="webapp/Target_case.html" target="content_frame">Target Data Breach</a></li>
-      <li><a href="webapp/Colonial_Pipeline.html" target="content_frame">Colonial Pipeline Attack</a></li>
-      <li><a href="webapp/Twitter_Bitcoin.html" target="content_frame">Twitter Bitcoin Hack</a></li>
-      <li><a href="webapp/SolarWinds.html" target="content_frame">SolarWinds Supply Chain Attack</a></li>
-      <li><a href="webapp/MOVEit.html" target="content_frame">MOVEit Supply Chain Attack</a></li>
-      <li><a href="webapp/Log4Shell.html" target="content_frame">Log4Shell Vulnerability</a></li>
+      <li><a href="webapp/Arup_Case.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist</a></li>
+      <li><a href="webapp/Arup_Deepfake.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist (V2)</a></li>
+      <li><a href="webapp/china-deepfake.html" target="content_frame" onclick="closeMobileMenu()">China Deepfake Scam</a></li>
+      <li><a href="webapp/voice-clone-fraud.html" target="content_frame" onclick="closeMobileMenu()">Voice Clone Fraud</a></li>
+      <li><a href="webapp/nomani-scam.html" target="content_frame" onclick="closeMobileMenu()">Nomani Investment Scam</a></li>
+      <li><a href="webapp/trudeau-deepfake.html" target="content_frame" onclick="closeMobileMenu()">Trudeau Deepfake Scam</a></li>
+      <li><a href="webapp/VC_Infiltration.html" target="content_frame" onclick="closeMobileMenu()">VC Deepfake Infiltration</a></li>
+      <li><a href="webapp/mgm-breach.html" target="content_frame" onclick="closeMobileMenu()">MGM Resorts Breach</a></li>
+      <li><a href="webapp/Salesforce.html" target="content_frame" onclick="closeMobileMenu()">Salesforce Breach</a></li>
+      <li><a href="webapp/Target_case.html" target="content_frame" onclick="closeMobileMenu()">Target Data Breach</a></li>
+      <li><a href="webapp/Colonial_Pipeline.html" target="content_frame" onclick="closeMobileMenu()">Colonial Pipeline Attack</a></li>
+      <li><a href="webapp/Twitter_Bitcoin.html" target="content_frame" onclick="closeMobileMenu()">Twitter Bitcoin Hack</a></li>
+      <li><a href="webapp/SolarWinds.html" target="content_frame" onclick="closeMobileMenu()">SolarWinds Supply Chain Attack</a></li>
+      <li><a href="webapp/MOVEit.html" target="content_frame" onclick="closeMobileMenu()">MOVEit Supply Chain Attack</a></li>
+      <li><a href="webapp/Log4Shell.html" target="content_frame" onclick="closeMobileMenu()">Log4Shell Vulnerability</a></li>
     </ol>
 
     <h2>Tools / Ref</h2>
     <ol>
-<li>COMMON TIPS IN HANDLING PHISHING EMAILS  <button class="popup-btn" onclick="openPopup('https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf')">Popup</button></li>
-      
-<li>Cybersecurity service providers  <button class="popup-btn" onclick="openPopup('https://spconnect.hkcert.org/service-provider-reference-list/')">Popup</button></li>
-
-<li>Incident Response Guideline for SMEs
-<button class="popup-btn" onclick="openPopup('https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes')">Popup</button></li>
-
-<li>Scameter from cyberfender.hk <button class="popup-btn" onclick="openPopup('https://cyberdefender.hk/scameter/')">Popup</button></li>
-
-
+        <li>Common Tips (Phishing) <button class="popup-btn" onclick="openPopup('https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf')">Popup</button></li>
+        <li>Service Providers <button class="popup-btn" onclick="openPopup('https://spconnect.hkcert.org/service-provider-reference-list/')">Popup</button></li>
+        <li>SME Response Guideline <button class="popup-btn" onclick="openPopup('https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes')">Popup</button></li>
+        <li>Scameter <button class="popup-btn" onclick="openPopup('https://cyberdefender.hk/scameter/')">Popup</button></li>
         <li>Virustotal <button class="popup-btn" onclick="openPopup('https://www.virustotal.com')">Popup</button></li>
-        <li>HoneyPot SecurityMeter <button class="popup-btn" onclick="openPopup('https://www.sicherheitstacho.eu/')">Popup</button></li>
-        <li>Top 10 passwords <button class="popup-btn" onclick="openPopup('https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md')">Pouup</button></li>   
-      
-         <li>DeepFake demo 1  <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT')">Popup</button></li> 
-         <li>DeepFake demo 2 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd')">Popup</button></li> 
+        <li>HoneyPot Meter <button class="popup-btn" onclick="openPopup('https://www.sicherheitstacho.eu/')">Popup</button></li>
+        <li>Top 10 passwords <button class="popup-btn" onclick="openPopup('https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md')">Popup</button></li>   
+        <li>DeepFake demo 1 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT')">Popup</button></li> 
+        <li>DeepFake demo 2 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd')">Popup</button></li> 
     </ol>
   </div>
+
   <div id="resizer"></div>
+
   <div id="content">
     <iframe name="content_frame" src="webapp/fake_domain.html"></iframe>
   </div>
@@ -157,27 +276,53 @@
       window.open(url, 'slidePopup', 'width=1024,height=768,scrollbars=yes,resizable=yes');
     }
 
+    // --- Resizer Logic (Desktop) ---
     const resizer = document.getElementById('resizer');
     const menu = document.getElementById('menu');
     let isResizing = false;
 
     resizer.addEventListener('mousedown', (e) => {
-      isResizing = true;
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', () => {
-        isResizing = false;
-        document.removeEventListener('mousemove', handleMouseMove);
-        // Optional: you could save the width in localStorage here to persist it
-      });
+      // Only allow resizing on desktop (when overlay is not displayable)
+      if (window.innerWidth > 768) {
+        isResizing = true;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', () => {
+          isResizing = false;
+          document.removeEventListener('mousemove', handleMouseMove);
+        });
+      }
     });
 
     function handleMouseMove(e) {
       if (!isResizing) return;
       const newWidth = e.clientX;
-      if (newWidth > 250 && newWidth < window.innerWidth - 200) { // Set min and max resize width
+      if (newWidth > 250 && newWidth < window.innerWidth - 200) { 
         menu.style.width = newWidth + 'px';
       }
     }
+
+    // --- Mobile Menu Logic ---
+    const menuToggleBtn = document.getElementById('menu-toggle-btn');
+    const menuCloseBtn = document.getElementById('menu-close-btn');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMobileMenu() {
+        menu.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    function closeMobileMenu() {
+        // Only act if we are actually in mobile mode
+        if (window.innerWidth <= 768) {
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+    }
+
+    menuToggleBtn.addEventListener('click', toggleMobileMenu);
+    menuCloseBtn.addEventListener('click', closeMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
+
   </script>
 </body>
 </html>
