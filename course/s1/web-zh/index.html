@@ -78,12 +78,31 @@
     h1 { font-size: 1.5rem; }
     h2 { font-size: 1.2rem; }
 
-    ul { list-style-type: none; padding: 0; }
+    /* --- UPDATED LIST STYLES FOR NUMBERING --- */
+    ul { 
+      list-style-type: none; 
+      padding: 0; 
+      /* Initialize the counter for each UL block */
+      counter-reset: menu-item; 
+    }
     
     li {
       margin-bottom: 0.5em;
       display: flex;
-      align-items: center;
+      align-items: baseline; /* Changed from center to baseline for better text alignment */
+      /* Increment the counter */
+      counter-increment: menu-item; 
+    }
+
+    /* The visual number */
+    li::before {
+      content: counter(menu-item) ".";
+      margin-right: 8px;
+      font-weight: bold;
+      color: var(--primary-color);
+      min-width: 20px; /* Ensures alignment */
+      text-align: right;
+      flex-shrink: 0; /* Prevents number from being crushed on small screens */
     }
 
     a {
@@ -258,8 +277,13 @@
         
         <h1>日常網路安全要點與應急響應</h1>
         <h2>課程內容</h2>
-
-        <a href="course-promotion-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">課程推廣</a>
+        <!-- Added a class just to this UL if you want to skip numbering on specific lists, 
+             otherwise, default UL style handles it. 
+             If you want "Course Promotion" numbered, leave as is. 
+             If you want it unnumbered, add a class 'no-number' and specific css. -->
+        <ul>
+            <li><a href="course-promotion-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">課程推廣</a></li>
+        </ul>
 
         <hr>    
         <h2>投影片</h2>
@@ -315,6 +339,8 @@
             <li><a href="password-manager-guide-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">密碼管理器指南</a></li>
             <li><a href="desktop-security-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">桌面安全：設定與維護</a></li>
             <li><a href="mobile-security-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">行動安全：MDM 與 BYOD 版本</a></li>
+            <li><a href="PC_check-zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">個人電腦指南：感染檢查與後續處理</a></li>
+            <li><a href="mobile-security-quide_zh-tw.html" target="content_frame" onclick="closeMenuOnMobile()">行動指南：遺失裝置與檢查</a></li>
         </ul>
 
         <h2>案例研究</h2>
@@ -343,10 +369,10 @@
             <li><a href="https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes" target="_blank" onclick="closeMenuOnMobile()">中小企事故應變指引</a></li>
             <li><a href="https://cyberdefender.hk/scameter/" target="_blank" onclick="closeMenuOnMobile()">Scameter from cyberdefender.hk</a></li>
             <li><a href="https://www.virustotal.com" target="_blank" onclick="closeMenuOnMobile()">Virustotal</a></li>
-            <li><a href="https://www.sicherheitstacho.eu/" target="_blank" onclick="closeMenuOnMobile()">HoneyPot SecurityMeter</a></li> 
-            <li><a href="https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md" target="_blank" onclick="closeMenuOnMobile()">十大密碼</a></li> 
-            <li><a href="https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT" target="_blank" onclick="closeMenuOnMobile()">Deepfake 示範 1</a></li> 
-            <li><a href="https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd" target="_blank" onclick="closeMenuOnMobile()">Deepfake 示範 2</a></li> 
+            <li><a href="https://www.sicherheitstacho.eu/" target="_blank" onclick="closeMenuOnMobile()">HoneyPot SecurityMeter</a></li>
+            <li><a href="https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md" target="_blank" onclick="closeMenuOnMobile()">十大密碼</a></li>
+            <li><a href="https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT" target="_blank" onclick="closeMenuOnMobile()">Deepfake 示範 1</a></li>
+            <li><a href="https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd" target="_blank" onclick="closeMenuOnMobile()">Deepfake 示範 2</a></li>
         </ul>
     </div>
 

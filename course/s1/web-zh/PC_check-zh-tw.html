@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檢查您的電腦是否被感染的指南及後續行動</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning-bg: #fff7ed;
+            --warning-text: #9a3412;
+            --nav-width: 300px;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-mode {
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning-bg: #431407;
+            --warning-text: #ffedd5;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.7;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        .sidebar {
+            width: var(--nav-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 12px 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn:hover { background-color: var(--bg-body); color: var(--primary); }
+        .nav-btn.active { background-color: var(--primary); color: white; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header-mobile {
+            display: none; /* Hidden on desktop */
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); line-height: 1.3; }
+        h2 { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--primary); }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+        p, li { color: var(--text-main); margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; }
+        
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning-text);
+            margin: 1.5rem 0;
+        }
+
+        /* --- CONTROLS --- */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- QUIZ STYLES --- */
+        .quiz-question { margin-bottom: 2rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 12px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: var(--primary); }
+        .option-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
+        .option-btn.incorrect { background-color: var(--error); color: white; border-color: var(--error); }
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 1.5rem; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .header-mobile { display: flex; }
+            .theme-toggle { position: static; margin-left: auto; }
+            .main-content { padding: 1.5rem; padding-top: 1rem; }
+            .nav-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 90; display: none;
+            }
+            .nav-overlay.open { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle Logic in Header for Desktop, Top Bar for Mobile -->
+    <div class="header-mobile">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="logo" style="margin:0; font-size: 1rem;">桌面安全指南</span>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 主題</button>
+    </div>
+
+    <!-- Overlay for Mobile Menu -->
+    <div class="nav-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">🖥️ 個人電腦指南：感染檢查與後續處理</div>
+            <button class="nav-btn active" onclick="showSection('intro', this)">簡介</button>
+            <button class="nav-btn" onclick="showSection('signs', this)">1. 感染的跡象</button>
+            <button class="nav-btn" onclick="showSection('immediate', this)">2. 立即行動</button>
+            <button class="nav-btn" onclick="showSection('recovery', this)">3. 恢復與預防</button>
+            <button class="nav-btn" onclick="showSection('quiz', this)">📝 互動測驗</button>
+            
+            <!-- Desktop Theme Toggle -->
+            <div style="margin-top: auto; display: none;" class="desktop-theme">
+                 <button class="theme-toggle" onclick="toggleTheme()" style="position: relative; top: 0; right: 0; width: 100%;">🌓 切換主題</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <button class="theme-toggle desktop-only" onclick="toggleTheme()">🌓 主題</button>
+
+            <!-- SECTION: INTRO -->
+            <div id="intro" class="section active">
+                <h1>檢查您的電腦是否被感染的指南及後續行動</h1>
+                <p>本模組專為非技術用戶設計，旨在幫助識別、控制及從潛在的電腦感染或駭客攻擊中恢復。</p>
+                <div class="card">
+                    <h3>您將學到：</h3>
+                    <ul>
+                        <li>如何區分真實病毒和「假的」詐騙彈出視窗。</li>
+                        <li>當您認為自己被駭時應立即採取的措施。</li>
+                        <li>如何保護您的帳戶並預防未來的攻擊。</li>
+                    </ul>
+                </div>
+                <p>點擊選單中的<strong>「1. 感染的跡象」</strong>開始。</p>
+            </div>
+
+            <!-- SECTION: SIGNS (CHECK) -->
+            <div id="signs" class="section">
+                <h1>步驟 1：感染的跡象</h1>
+                <p>並非每個電腦小問題都是駭客攻擊。學會區分真實威脅和常見的惱人問題。</p>
+
+                <div class="alert-box">
+                    <h3>⚠️ 常見詐騙：「瀏覽器通知」</h3>
+                    <p><strong>情境：</strong>您在螢幕角落看到彈出視窗，顯示「系統已感染」或「McAfee 已過期」，即使您的瀏覽器已關閉。</p>
+                    <p><strong>真相：</strong>這很少是病毒。您很可能在某個可疑網站上點擊了「允許通知」。</p>
+                    <p><strong>解決方法：</strong>前往 瀏覽器設定 > 隱私權 > 網站設定 > 通知。移除可疑網站。</p>
+                </div>
+
+                <div class="card">
+                    <h3>真正的危險信號</h3>
+                    <ul>
+                        <li><strong>意外變慢：</strong>電腦閒置時風扇噪音很大。</li>
+                        <li><strong>新的擴充功能：</strong>您未安裝的工具列或搜尋引擎。</li>
+                        <li><strong>滑鼠/游標自行移動：</strong>在您沒有觸碰的情況下（需要立即斷開網路）。</li>
+                        <li><strong>帳戶警報：</strong>收到「來自 [國家] 的新登入」等非您本人操作的郵件通知。</li>
+                    </ul>
+                </div>
+
+                <h2>如何安全檢查</h2>
+                <div class="card">
+                    <h3>1. Windows 用戶</h3>
+                    <p>開啟 <strong>Windows 安全性</strong> > 病毒與威脅防護 > 快速掃描。除非您是專家，否則避免使用 "Process Explorer"；請使用標準的工作管理員。</p>
+                </div>
+                <div class="card">
+                    <h3>2. macOS 用戶</h3>
+                    <p>您的 Mac 有一個名為 <strong>XProtect</strong> 的隱形防護會自動運行。您無法「開啟」它。如需手動檢查，請下載免費版的 <strong>Malwarebytes</strong>。</p>
+                </div>
+            </div>
+
+            <!-- SECTION: IMMEDIATE ACTIONS (FOLLOWUP) -->
+            <div id="immediate" class="section">
+                <h1>步驟 2：立即行動</h1>
+                <p>如果您確認存在威脅，請迅速行動。不要驚慌。</p>
+
+                <div class="card">
+                    <h3>1. 立即斷開網路</h3>
+                    <p>拔掉您的乙太網路線或關閉 Wi-Fi。這可以阻止惡意軟體將您的資料傳送給駭客。</p>
+                </div>
+
+                <div class="card">
+                    <h3>2. 「全螢幕」詐騙凍結</h3>
+                    <p>如果您的瀏覽器凍結，發出警報聲並在螢幕上顯示一個電話號碼，<strong>請不要撥打該號碼</strong>。這是一個腳本，不是駭客攻擊。</p>
+                    <p><strong>解決方法：</strong>強制關閉瀏覽器。</p>
+                    <ul>
+                        <li><strong>Windows：</strong>使用 Alt + F4 或 Ctrl+Shift+Esc 結束工作。</li>
+                        <li><strong>Mac：</strong>使用 Cmd + Option + Esc 強制結束。</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>3. 安全模式</h3>
+                    <p>在安全模式下重新啟動只會載入基本檔案，從而阻止病毒運行。</p>
+                    <ul>
+                        <li><strong>Windows：</strong>按住 <em>Shift</em> 鍵同時點擊 重新啟動 > 疑難排解 > 啟動設定。</li>
+                        <li><strong>Mac：</strong>關機，然後在開機時立即按住 <em>Shift</em> 鍵，直到您看到登入視窗。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECTION: RECOVERY -->
+            <div id="recovery" class="section">
+                <h1>步驟 3：恢復與預防</h1>
+                <p>病毒移除後，您必須保護好您的資料。</p>
+
+                <div class="card">
+                    <h3>1. 密碼安全（重要更新）</h3>
+                    <p><strong>不要使用 LastPass。</strong>最近的資料外洩事件使其安全性降低。</p>
+                    <p><strong>建議：</strong>使用 <strong>Bitwarden</strong>（免費/開源）或 <strong>1Password</strong>。或者，蘋果/谷歌生態系統內建的密碼管理器也比到處使用相同密碼要好。</p>
+                </div>
+
+                <div class="alert-box">
+                    <h3>⚠️ 關鍵步驟：「登出所有工作階段」</h3>
+                    <p>更改密碼可能無法立即將駭客踢出。在您的 Google/Facebook/Microsoft 安全設定中尋找一個名為<strong>「登出所有裝置」</strong>的按鈕。</p>
+                </div>
+
+                <div class="card">
+                    <h3>2. 檢查郵件轉寄</h3>
+                    <p>駭客經常設定「規則」將您的郵件副本轉寄給他們。請檢查您的 郵件設定 > 轉寄/篩選器，並刪除任何非您建立的規則。</p>
+                </div>
+
+                <div class="card">
+                    <h3>3. 何時尋求專業協助</h3>
+                    <p>如果檔案被加密（勒索軟體）或您感到不知所措，請將裝置帶到信譽良好的店家（例如 Geek Squad、Apple Genius Bar）。避免點擊線上的「遠端技術支援」廣告。</p>
+                </div>
+            </div>
+
+            <!-- SECTION: QUIZ -->
+            <div id="quiz" class="section">
+                <h1>📝 知識測驗</h1>
+                <p>測試您所學的知識。點擊您認為正確的選項。</p>
+                <br>
+
+                <!-- Question 1 -->
+                <div class="card quiz-question">
+                    <h3>Q1: 一個彈出視窗出現在螢幕角落，顯示「偵測到病毒！點此修復。」最可能的原因是什麼？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。雖然有可能，但現代惡意軟體通常會試圖隱藏自己，而不是昭告天下。')">A. 您肯定中了嚴重的病毒。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！這通常是瀏覽器通知垃圾訊息。請檢查您瀏覽器的網站設定。')">B. 您在某個可疑網站上允許了通知。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。不要點擊該連結。')">C. 這是微軟在親自警告您。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="card quiz-question">
+                    <h3>Q2: 您懷疑自己被駭。您應該採取的第一個實際步驟是什麼？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。這可能會把駭客擋在門外，但如果惡意軟體正在運行，他們也可能竊取新密碼。')">A. 立即更改您的密碼。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。在不了解檔案內容的情況下刪除檔案可能會導致電腦崩潰。')">B. 開始隨機刪除檔案。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！斷開網路可以阻止惡意軟體將您的資料傳送給駭客。')">C. 斷開網路連線（Wi-Fi/乙太網路）。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="card quiz-question">
+                    <h3>Q3: 移除惡意軟體並更改電子郵件密碼後，您還必須檢查電子郵件設定中的什麼項目？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！駭客利用轉寄規則在您更改密碼後繼續監視您。')">A. 轉寄規則或篩選器。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。雖然自訂頭像很好，但這不是安全風險。')">B. 您的個人資料圖片。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。')">C. 您的字體大小。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="card quiz-question">
+                    <h3>Q4: 您的瀏覽器突然凍結，發出警報聲，一個大畫面告訴您致電「Apple/Microsoft 支援」。您該怎麼辦？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。這是一個會試圖騙取您金錢或安裝真實病毒的詐騙者。')">A. 立即撥打該號碼。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！這只是一個網頁腳本。強制關閉瀏覽器可以安全地解決問題。')">B. 強制關閉瀏覽器（Alt+F4 或 工作管理員）。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。重新啟動雖然有效，但它會保留開啟的分頁，因此可怕的彈出視窗可能會在您重啟後再次出現。')">C. 關閉電腦。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="card quiz-question">
+                    <h3>Q5: 您發現您的檔案被加密（勒索軟體），一張便條要求支付 500 美元。專家建議怎麼做？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。支付贖金會資助犯罪分子，且不保證能拿回檔案。')">A. 立即支付贖金。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。用受感染的檔案覆蓋您的備份可能會毀掉您唯一的好資料副本。')">B. 插入您的備份硬碟並覆蓋所有內容。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！不要支付。尋求專業協助或在網上尋找免費的解密工具。')">C. 不要支付。尋求專業協助。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Navigation Logic (Refactored) ---
+        function showSection(sectionId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update Sidebar Buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Close sidebar on mobile after selection
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // Scroll to top
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            // Optional: Save preference to local storage
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            // Set initial active section and button
+            showSection('intro', document.querySelector('.nav-btn.active'));
+        };
+
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.nav-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // --- Quiz Logic ---
+        function checkAnswer(btn, isCorrect, message) {
+            const parent = btn.parentElement;
+            const feedbackDiv = parent.nextElementSibling;
+            
+            // Disable all buttons in this question group
+            const allBtns = parent.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedbackDiv.style.color = "var(--success)";
+                feedbackDiv.innerHTML = "✅ " + message;
+            } else {
+                btn.classList.add('incorrect');
+                feedbackDiv.style.color = "var(--error)";
+                feedbackDiv.innerHTML = "❌ " + message;
+            }
+        }
+    </script>
+</body>
+</html>

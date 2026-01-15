@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行動裝置指南：遺失裝置、感染檢查與恢復</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #8b5cf6; /* Violet/Purple for Mobile distinction */
+            --primary-hover: #7c3aed;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning-bg: #fff7ed;
+            --warning-text: #9a3412;
+            --nav-width: 300px;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-mode {
+            --primary: #a78bfa;
+            --primary-hover: #c4b5fd;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning-bg: #451a03;
+            --warning-text: #ffedd5;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.7;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        .sidebar {
+            width: var(--nav-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 12px 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn:hover { background-color: var(--bg-body); color: var(--primary); }
+        .nav-btn.active { background-color: var(--primary); color: white; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header-mobile {
+            display: none; /* Hidden on desktop */
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); line-height: 1.3; }
+        h2 { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--primary); }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+        p, li { color: var(--text-main); margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; }
+        
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning-text);
+            margin: 1.5rem 0;
+        }
+
+        /* --- CONTROLS --- */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- QUIZ STYLES --- */
+        .quiz-question { margin-bottom: 2rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 12px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: var(--primary); }
+        .option-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
+        .option-btn.incorrect { background-color: var(--error); color: white; border-color: var(--error); }
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 1.5rem; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .header-mobile { display: flex; }
+            .theme-toggle { position: static; margin-left: auto; }
+            .main-content { padding: 1.5rem; padding-top: 1rem; }
+            .nav-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 90; display: none;
+            }
+            .nav-overlay.open { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-mobile">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="logo" style="margin:0; font-size: 1rem;">行動安全</span>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 主題</button>
+    </div>
+
+    <div class="nav-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">📱 行動指南：遺失裝置與檢查</div>
+            <button class="nav-btn active" onclick="showSection('intro', this)">簡介</button>
+            <button class="nav-btn" onclick="showSection('stolen', this)">1. 遺失或被盜</button>
+            <button class="nav-btn" onclick="showSection('check', this)">2. 感染的跡象</button>
+            <button class="nav-btn" onclick="showSection('followup', this)">3. 恢復步驟</button>
+            <button class="nav-btn" onclick="showSection('quiz', this)">📝 知識測驗</button>
+            
+            <div style="margin-top: auto; display: none;" class="desktop-theme">
+                 <button class="theme-toggle" onclick="toggleTheme()" style="position: relative; top: 0; right: 0; width: 100%;">🌓 切換主題</button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <button class="theme-toggle desktop-only" onclick="toggleTheme()">🌓 主題</button>
+
+            <div id="intro" class="section active">
+                <h1>行動裝置指南：遺失裝置、感染檢查與恢復</h1>
+                <p>智慧型手機包含我們的整個生活。本指南涵蓋當您的 Android 或 iPhone 遺失、被盜或行為可疑時該怎麼辦。</p>
+                <div class="card">
+                    <h3>主要主題：</h3>
+                    <ul>
+                        <li><strong>遺失/被盜：</strong>使用「尋找我的裝置」並避免後續詐騙。</li>
+                        <li><strong>感染檢查：</strong>如何檢查 Android 與 iOS（它們非常不同）。</li>
+                        <li><strong>恢復：</strong>保護帳戶和更換 SIM 卡。</li>
+                    </ul>
+                </div>
+                <p>點擊 <strong>"1. 遺失或被盜"</strong> 開始。</p>
+            </div>
+
+            <div id="stolen" class="section">
+                <h1>步驟 1：遺失或被盜的裝置</h1>
+                <p>迅速行動以定位或清除您的裝置。</p>
+
+                <div class="alert-box">
+                    <h3>⚠️ 嚴重警告：「簡訊」詐騙</h3>
+                    <p>如果您的手機被盜，您稍後可能會收到一則簡訊或電子郵件，內容為：<em>「Apple/Google 已找到您的裝置。點此查看位置。」</em></p>
+                    <p><strong>不要點擊。</strong>這是小偷為了竊取您的密碼以解鎖手機進行轉售而設的釣魚詐騙。只信任下方列出的官方網站。</p>
+                </div>
+
+                <div class="card">
+                    <h3>1. 定位與鎖定（僅限官方網站）</h3>
+                    <ul>
+                        <li><strong>iPhone/iPad：</strong>前往 <a href="https://www.icloud.com/find" target="_blank">icloud.com/find</a>。標記為「遺失」。</li>
+                        <li><strong>Android：</strong>前往 <a href="https://www.google.com/android/find" target="_blank">android.com/find</a>。選擇「保護裝置」。</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>2. 向香港警方及電信商報告</h3>
+                    <p>如果在香港被盜，請報警以作保險用途。</p>
+                    
+                    <p style="font-size: 0.9rem; color: var(--text-muted); font-style: italic; background-color: rgba(0,0,0,0.03); padding: 8px; border-radius: 4px; border-left: 3px solid var(--text-muted);">
+                        *註：以下電話號碼可能隨時變更。請查詢電信商官方網站以獲取最新號碼。
+                    </p>
+                    
+                    <ul>
+                        <li><strong>香港警察：</strong>致電 2860-2000 或使用電子報案中心。</li>
+                        <li><strong>電信商（致電暫停 SIM 卡）：</strong>
+                            <ul>
+                                <li>CSL/1O1O: 2512 3123</li>
+                                <li>中國移動香港: 2945 8888</li>
+                                <li>SmarTone: 2880 2688</li>
+                                <li>3 香港: 3166 8888</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="check" class="section">
+                <h1>步驟 2：感染的跡象</h1>
+                <p>手機的行為與電腦不同。了解要注意什麼。</p>
+
+                <div class="card">
+                    <h3>常見症狀</h3>
+                    <ul>
+                        <li><strong>電池/發熱：</strong>手機放在口袋裡時變熱或電池消耗很快。</li>
+                        <li><strong>數據暴增：</strong>來自未知應用程式的大量數據使用。</li>
+                        <li><strong>彈出視窗：</strong>廣告出現在您的主畫面上。</li>
+                    </ul>
+                </div>
+
+                <h2>如何檢查您的裝置</h2>
+                
+                <div class="card">
+                    <h3>🤖 對於 Android 用戶</h3>
+                    <p>Android 比較開放，所以病毒是可能的。</p>
+                    <ul>
+                        <li><strong>執行掃描：</strong>前往 Play 商店 > 個人資料圖示 > <strong>Play 安全防護</strong> > 掃描。</li>
+                        <li><strong>檢查管理員應用程式：</strong>設定 > 安全性 > 裝置管理應用程式。取消勾選任何可疑項目。</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>🍎 對於 iPhone (iOS) 用戶</h3>
+                    <p><strong>更正：</strong>iPhone 不允許傳統的防毒掃描。如果某個應用程式聲稱可以「掃描病毒」，那很可能是誤導。</p>
+                    <p><strong>請改為這樣做：</strong></p>
+                    <ol>
+                        <li><strong>檢查描述檔（重要）：</strong>前往 設定 > 一般 > VPN 與裝置管理。如果您看到不認識的「描述檔」，請立即刪除。</li>
+                        <li><strong>修復日曆垃圾訊息：</strong>如果您的日曆顯示「偵測到病毒」，這只是一個垃圾訂閱。前往 日曆 App > 日曆 > 取消勾選/刪除奇怪的日曆。</li>
+                        <li><strong>更新 iOS：</strong>設定 > 一般 > 軟體更新。</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div id="followup" class="section">
+                <h1>步驟 3：恢復步驟</h1>
+                <p>如果您確認被駭或遺失裝置，請按照以下步驟保護您的數位生活。</p>
+
+                <div class="card">
+                    <h3>1. 保護您的帳戶</h3>
+                    <p>在另一台<strong>乾淨的裝置</strong>上更改電子郵件、銀行和社交媒體的密碼。</p>
+                </div>
+
+                <div class="alert-box">
+                    <h3>⚠️ 雙重認證「SIM 卡」問題</h3>
+                    <p>如果您被盜的手機是您接收簡訊登入碼的唯一途徑，您將無法登入以更改密碼。</p>
+                    <p><strong>行動：</strong>立即攜帶您的身份證件前往您的行動電信商門市（如 CSL、SmarTone 等）取得一張<strong>補發的 SIM 卡</strong>。將其放入備用手機以接收您的 OTP 驗證碼。</p>
+                </div>
+
+                <div class="card">
+                    <h3>2. Android：安全模式</h3>
+                    <p>如果您的 Android 行為異常，請啟動到安全模式（長按螢幕上的關機圖示）。如果問題消失，則表示是最近安裝的應用程式所致。請解除安裝最近的應用程式。</p>
+                </div>
+
+                <div class="card">
+                    <h3>3. 恢復原廠設定（最後手段）</h3>
+                    <p>如果您無法移除惡意軟體，或者裝置被盜後又找回：</p>
+                    <ul>
+                        <li><strong>Android：</strong>設定 > 系統 > 重設選項 > 清除所有資料。</li>
+                        <li><strong>iOS：</strong>設定 > 一般 > 傳送或重置 > 清除所有內容。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="quiz" class="section">
+                <h1>📝 知識測驗</h1>
+                <p>測試您的行動安全知識。點擊正確的選項。</p>
+                <br>
+
+                <div class="card quiz-question">
+                    <h3>Q1: 您遺失了您的 iPhone。兩天後，您收到一則簡訊：「Apple 支援：您的裝置已定位。點此查看。」您該怎麼辦？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。這是釣魚詐騙。如果您登入，他們將解鎖您被盜的手機。')">A. 立即點擊連結並登入。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！這是詐騙。只應直接前往 icloud.com/find 查看位置。')">B. 刪除簡訊。手動前往 icloud.com/find。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。絕不回覆詐騙簡訊。')">C. 回覆您的密碼。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="card quiz-question">
+                    <h3>Q2: 您的 iPhone 日曆充滿了顯示「偵測到病毒！點此清除」的事件。發生了什麼事？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。iOS 病毒很罕見，且不會出現在日曆中。')">A. 您的手機中了嚴重的病毒。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！您意外地訂閱了一個垃圾日曆。請在日曆設定中刪除它。')">B. 這是一個垃圾日曆訂閱。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。付錢只會讓詐騙者得逞。')">C. 您需要付錢給 Apple 來修復它。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="card quiz-question">
+                    <h3>Q3: 檢查 iPhone 是否有「間諜軟體」或跟踪應用程式最有效的方法是什麼？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。App Store 的防毒應用無法掃描 iOS 上的其他應用。')">A. 從 App Store 下載一個免費的防毒軟體。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！惡意應用程式通常會安裝一個「描述檔」來控制裝置。')">B. 檢查 設定 > 一般 > VPN 與裝置管理 中是否有未知的描述檔。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。')">C. 用力搖晃手機。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="card quiz-question">
+                    <h3>Q4: 您的手機被盜。您試圖更改您的 Gmail 密碼，但 Google 將驗證碼發送到被盜的手機號碼。您該怎麼辦？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。您需要 SIM 卡來快速證明身份。')">A. 放棄並創建一個新帳戶。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！補發的 SIM 卡能讓您在備用手機上接收 OTP 驗證碼。')">B. 攜帶身份證件前往您的電信商（如 CSL/SmarTone）取得補發的 SIM 卡。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。警方無法協助處理 Google 登入驗證碼。')">C. 打電話給警察索取驗證碼。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="card quiz-question">
+                    <h3>Q5: Android 上的「安全模式」有什麼用途？</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, true, '正確！如果在安全模式下問題消失，您就知道是某個下載的應用程式造成的。')">A. 它會停用第三方應用程式，以幫助您識別是哪個應用程式造成問題。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。安全模式實際上會停用大多數遊戲。')">B. 它可以讓遊戲運行得更快。</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, '不正確。它不會讓電池充電更快。')">C. 它可以節省電池壽命。</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Navigation Logic (Refactored) ---
+        function showSection(sectionId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update Sidebar Buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Close sidebar on mobile after selection
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // Scroll to top
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            // Optional: Save preference to local storage
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            // Set initial active section and button
+            showSection('intro', document.querySelector('.nav-btn.active'));
+        };
+
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.nav-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // --- Quiz Logic ---
+        function checkAnswer(btn, isCorrect, message) {
+            const parent = btn.parentElement;
+            const feedbackDiv = parent.nextElementSibling;
+            
+            // Disable all buttons in this question group
+            const allBtns = parent.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedbackDiv.style.color = "var(--success)";
+                feedbackDiv.innerHTML = "✅ " + message;
+            } else {
+                btn.classList.add('incorrect');
+                feedbackDiv.style.color = "var(--error)";
+                feedbackDiv.innerHTML = "❌ " + message;
+            }
+        }
+    </script>
+</body>
+</html>
