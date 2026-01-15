@@ -55,17 +55,35 @@
     h1 { font-size: 1.5rem; margin-top: 0; color: #2c3e50; }
     h2 { font-size: 1.2rem; color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 25px; }
     
-    ul, ol { padding-left: 0; list-style: none; }
+    /* ADDED: Counter Reset */
+    ul, ol { 
+      padding-left: 0; 
+      list-style: none; 
+      counter-reset: menu-item; /* Initialize counter */
+    }
     
+    /* MODIFIED: Flex behavior and Counter Increment */
     li {
       margin-bottom: 8px;
       padding: 8px;
       border-radius: 6px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      /* justify-content: space-between;  <-- Removed to keep number next to text */
+      align-items: center; 
       background-color: #fff;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      counter-increment: menu-item; /* Increment counter */
+    }
+
+    /* ADDED: The visual number before the list item */
+    li::before {
+      content: counter(menu-item) ".";
+      margin-right: 10px;
+      font-weight: bold;
+      color: #007bff; /* Blue color */
+      min-width: 20px;
+      text-align: right;
+      flex-shrink: 0;
     }
 
     a {
@@ -90,6 +108,7 @@
       cursor: pointer;
       font-size: 12px;
       white-space: nowrap;
+      margin-left: auto; /* Pushes button to the far right */
     }
     
     /* --- Mobile Header & Toggle (Hidden on Desktop) --- */
@@ -208,7 +227,7 @@
     <h1>Web Apps For Raising Cybersecurity Awareness</h1>
 
     <h2>Interactive Tools</h2>
-    <ol>
+    <ul>
         <!-- Added onclick events to close menu automatically on mobile when link is clicked -->
         <li><a href="webapp/phishing_traning.html" target="content_frame" onclick="closeMobileMenu()">Phishing Training</a></li>
         <li><a href="webapp/fake_domain.html" target="content_frame" onclick="closeMobileMenu()">Phishing Domain Hunter</a></li>
@@ -230,10 +249,14 @@
         <li><a href="webapp/password-manager-guide.html" target="content_frame" onclick="closeMobileMenu()">Password Manager Guide</a></li>
         <li><a href="webapp/desktop-security.html" target="content_frame" onclick="closeMobileMenu()">Desktop Security Guide</a></li>
         <li><a href="webapp/mobile-security.html" target="content_frame" onclick="closeMobileMenu()">Mobile Security Guide</a></li>
-    </ol>
+        <!-- Fixed function name typo below: closeMenuOnMobile -> closeMobileMenu -->
+        <li><a href="webapp/PC_check.html" target="content_frame" onclick="closeMobileMenu()">PC Guideline: Infection Check & Follow Up</a></li>
+        <li><a href="webapp/mobile_security_guide.html" target="content_frame" onclick="closeMobileMenu()">Mobile Guideline: Lost Devices & Checks</a></li>
+
+    </ul>
 
     <h2>Case Studies</h2>
-    <ol>
+    <ul>
       <li><a href="webapp/Arup_Case.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist</a></li>
       <li><a href="webapp/Arup_Deepfake.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist (V2)</a></li>
       <li><a href="webapp/china-deepfake.html" target="content_frame" onclick="closeMobileMenu()">China Deepfake Scam</a></li>
@@ -249,10 +272,10 @@
       <li><a href="webapp/SolarWinds.html" target="content_frame" onclick="closeMobileMenu()">SolarWinds Supply Chain Attack</a></li>
       <li><a href="webapp/MOVEit.html" target="content_frame" onclick="closeMobileMenu()">MOVEit Supply Chain Attack</a></li>
       <li><a href="webapp/Log4Shell.html" target="content_frame" onclick="closeMobileMenu()">Log4Shell Vulnerability</a></li>
-    </ol>
+    </ul>
 
     <h2>Tools / Ref</h2>
-    <ol>
+    <ul>
         <li>Common Tips (Phishing) <button class="popup-btn" onclick="openPopup('https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf')">Popup</button></li>
         <li>Service Providers <button class="popup-btn" onclick="openPopup('https://spconnect.hkcert.org/service-provider-reference-list/')">Popup</button></li>
         <li>SME Response Guideline <button class="popup-btn" onclick="openPopup('https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes')">Popup</button></li>
@@ -262,7 +285,7 @@
         <li>Top 10 passwords <button class="popup-btn" onclick="openPopup('https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md')">Popup</button></li>   
         <li>DeepFake demo 1 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT')">Popup</button></li> 
         <li>DeepFake demo 2 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd')">Popup</button></li> 
-    </ol>
+    </ul>
   </div>
 
   <div id="resizer"></div>
