@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Guideline: Lost Devices, Infection Checks & Recovery</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #8b5cf6; /* Violet/Purple for Mobile distinction */
+            --primary-hover: #7c3aed;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning-bg: #fff7ed;
+            --warning-text: #9a3412;
+            --nav-width: 300px;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-mode {
+            --primary: #a78bfa;
+            --primary-hover: #c4b5fd;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning-bg: #451a03;
+            --warning-text: #ffedd5;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        .sidebar {
+            width: var(--nav-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 12px 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn:hover { background-color: var(--bg-body); color: var(--primary); }
+        .nav-btn.active { background-color: var(--primary); color: white; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header-mobile {
+            display: none; /* Hidden on desktop */
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); line-height: 1.3; }
+        h2 { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--primary); }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+        p, li { color: var(--text-main); margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; }
+        
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning-text);
+            margin: 1.5rem 0;
+        }
+
+        /* --- CONTROLS --- */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- QUIZ STYLES --- */
+        .quiz-question { margin-bottom: 2rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 12px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: var(--primary); }
+        .option-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
+        .option-btn.incorrect { background-color: var(--error); color: white; border-color: var(--error); }
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 1.5rem; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .header-mobile { display: flex; }
+            .theme-toggle { position: static; margin-left: auto; }
+            .main-content { padding: 1.5rem; padding-top: 1rem; }
+            .nav-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 90; display: none;
+            }
+            .nav-overlay.open { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle Logic in Header for Desktop, Top Bar for Mobile -->
+    <div class="header-mobile">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="logo" style="margin:0; font-size: 1rem;">Mobile Security</span>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+    </div>
+
+    <!-- Overlay for Mobile Menu -->
+    <div class="nav-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">📱 Mobile Guideline: Lost Devices & Checks</div>
+            <button class="nav-btn active" onclick="showSection('intro')">Introduction</button>
+            <button class="nav-btn" onclick="showSection('stolen')">1. Lost or Stolen</button>
+            <button class="nav-btn" onclick="showSection('check')">2. Signs of Infection</button>
+            <button class="nav-btn" onclick="showSection('followup')">3. Recovery Steps</button>
+            <button class="nav-btn" onclick="showSection('quiz')">📝 Knowledge Quiz</button>
+            
+            <!-- Desktop Theme Toggle -->
+            <div style="margin-top: auto; display: none;" class="desktop-theme">
+                 <button class="theme-toggle" onclick="toggleTheme()" style="position: relative; top: 0; right: 0; width: 100%;">🌓 Toggle Theme</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <button class="theme-toggle desktop-only" onclick="toggleTheme()">🌓 Theme</button>
+
+            <!-- SECTION: INTRO -->
+            <div id="intro" class="section active">
+                <h1>Mobile Guideline: Lost Devices, Infection Checks & Recovery</h1>
+                <p>Smartphones contain our entire lives. This guide covers what to do if your Android or iPhone is lost, stolen, or behaving suspiciously.</p>
+                <div class="card">
+                    <h3>Key Topics:</h3>
+                    <ul>
+                        <li><strong>Lost/Stolen:</strong> Using "Find My" and avoiding follow-up scams.</li>
+                        <li><strong>Infection Check:</strong> How to check Android vs iOS (they are very different).</li>
+                        <li><strong>Recovery:</strong> Securing accounts and replacing SIM cards.</li>
+                    </ul>
+                </div>
+                <p>Click <strong>"1. Lost or Stolen"</strong> to begin.</p>
+            </div>
+
+            <!-- SECTION: STOLEN -->
+            <div id="stolen" class="section">
+                <h1>Step 1: Lost or Stolen Device</h1>
+                <p>Act quickly to locate or wipe your device.</p>
+
+                <div class="alert-box">
+                    <h3>⚠️ CRITICAL WARNING: The "SMS" Scam</h3>
+                    <p>If your phone is stolen, you may receive an SMS or Email later saying: <em>"Apple/Google has found your device. Click here to view location."</em></p>
+                    <p><strong>DO NOT CLICK.</strong> This is a phishing scam by the thief to steal your password and unlock the phone for resale. Only trust the official websites listed below.</p>
+                </div>
+
+                <div class="card">
+                    <h3>1. Locate & Lock (Official Sites Only)</h3>
+                    <ul>
+                        <li><strong>iPhone/iPad:</strong> Go to <a href="https://www.icloud.com/find" target="_blank">icloud.com/find</a>. Mark as "Lost".</li>
+                        <li><strong>Android:</strong> Go to <a href="https://www.google.com/android/find" target="_blank">android.com/find</a>. Select "Secure Device".</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>2. Report to HK Police & Carrier</h3>
+                    <p>If stolen in Hong Kong, file a report for insurance.</p>
+                    
+                    <!-- Added Disclaimer Here -->
+                    <p style="font-size: 0.9rem; color: var(--text-muted); font-style: italic; background-color: rgba(0,0,0,0.03); padding: 8px; border-radius: 4px; border-left: 3px solid var(--text-muted);">
+                        *Note: The phone numbers below may change from time to time. Please check the official carrier websites for the updated numbers.
+                    </p>
+                    
+                    <ul>
+                        <li><strong>HK Police:</strong> Call 2860-2000 or use e-Report Centre.</li>
+                        <li><strong>Carriers (Call to suspend SIM):</strong>
+                            <ul>
+                                <li>CSL/1O1O: 2512 3123</li>
+                                <li>China Mobile HK: 2945 8888</li>
+                                <li>SmarTone: 2880 2688</li>
+                                <li>3 Hong Kong: 3166 8888</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECTION: CHECK (INFECTION) -->
+            <div id="check" class="section">
+                <h1>Step 2: Signs of Infection</h1>
+                <p>Phones behave differently than computers. Know what to look for.</p>
+
+                <div class="card">
+                    <h3>Common Symptoms</h3>
+                    <ul>
+                        <li><strong>Battery/Heat:</strong> Phone gets hot or battery dies fast while in your pocket.</li>
+                        <li><strong>Data Spikes:</strong> Large data usage from unknown apps.</li>
+                        <li><strong>Pop-ups:</strong> Ads appearing on your home screen.</li>
+                    </ul>
+                </div>
+
+                <h2>How to Check Your Device</h2>
+                
+                <div class="card">
+                    <h3>🤖 For Android Users</h3>
+                    <p>Android is more open, so viruses are possible.</p>
+                    <ul>
+                        <li><strong>Run a Scan:</strong> Go to Play Store > Profile Icon > <strong>Play Protect</strong> > Scan.</li>
+                        <li><strong>Check Admin Apps:</strong> Settings > Security > Device Admin Apps. Uncheck anything suspicious.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>🍎 For iPhone (iOS) Users</h3>
+                    <p><strong>Correction:</strong> iPhones do not allow traditional antivirus scans. If an app claims to "scan for viruses," it is likely misleading.</p>
+                    <p><strong>Do this instead:</strong></p>
+                    <ol>
+                        <li><strong>Check Profiles (Important):</strong> Go to Settings > General > VPN & Device Management. If you see a "Profile" you don't recognize, delete it immediately.</li>
+                        <li><strong>Fix Calendar Spam:</strong> If your calendar says "VIRUS DETECTED," it is just a spam subscription. Go to Calendar App > Calendars > Uncheck/Delete the weird calendar.</li>
+                        <li><strong>Update iOS:</strong> Settings > General > Software Update.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- SECTION: FOLLOWUP (RECOVERY) -->
+            <div id="followup" class="section">
+                <h1>Step 3: Recovery Steps</h1>
+                <p>If you confirmed a hack or lost your device, follow these steps to secure your digital life.</p>
+
+                <div class="card">
+                    <h3>1. Secure Your Accounts</h3>
+                    <p>Change passwords for Email, Banking, and Social Media from a <strong>different, clean device</strong>.</p>
+                </div>
+
+                <div class="alert-box">
+                    <h3>⚠️ The 2FA "SIM Card" Problem</h3>
+                    <p>If your stolen phone was the only way you received SMS login codes, you cannot log in to change passwords.</p>
+                    <p><strong>Action:</strong> Go to your mobile carrier store (CSL, SmarTone, etc.) immediately with your ID to get a <strong>Replacement SIM Card</strong>. Put it in a backup phone to receive your OTP codes.</p>
+                </div>
+
+                <div class="card">
+                    <h3>2. Android: Safe Mode</h3>
+                    <p>If your Android is acting crazy, boot into Safe Mode (Hold Power Off icon on screen). If the issue stops, a recently installed app is the cause. Uninstall recent apps.</p>
+                </div>
+
+                <div class="card">
+                    <h3>3. Factory Reset (Last Resort)</h3>
+                    <p>If you cannot remove the malware or the device was stolen and recovered:</p>
+                    <ul>
+                        <li><strong>Android:</strong> Settings > System > Reset options > Erase all data.</li>
+                        <li><strong>iOS:</strong> Settings > General > Transfer or Reset > Erase All Content.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECTION: QUIZ -->
+            <div id="quiz" class="section">
+                <h1>📝 Knowledge Quiz</h1>
+                <p>Test your mobile security knowledge. Click the correct option.</p>
+                <br>
+
+                <!-- Question 1 -->
+                <div class="card quiz-question">
+                    <h3>Q1: You lost your iPhone. Two days later, you get an SMS: "Apple Support: Your device is located. Click here to view." What do you do?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. This is a phishing scam. If you login, they will unlock your stolen phone.')">A. Click the link and login immediately.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! This is a scam. Only check location at icloud.com/find directly.')">B. Delete the SMS. Go to icloud.com/find manually.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Never reply to scam SMS messages.')">C. Reply with your passcode.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="card quiz-question">
+                    <h3>Q2: Your iPhone Calendar is full of events saying "VIRUS DETECTED! CLICK TO CLEAN". What happened?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. iOS viruses are rare and do not appear in the Calendar.')">A. Your phone has a severe virus.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! You accidentally subscribed to a spam calendar. Delete it in Calendar settings.')">B. It is a spam calendar subscription.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Paying will just give money to scammers.')">C. You need to pay Apple to fix it.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="card quiz-question">
+                    <h3>Q3: What is the most effective way to check an iPhone for "Spyware" or stalker apps?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. App Store antivirus apps cannot scan other apps on iOS.')">A. Download a free Antivirus from the App Store.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! Malicious apps often install a Profile to control the device.')">B. Check Settings > General > VPN & Device Management for unknown Profiles.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect.')">C. Shake the phone vigorously.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="card quiz-question">
+                    <h3>Q4: Your phone is stolen. You try to change your Gmail password, but Google sends the code to the stolen phone number. What do you do?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. You need the SIM to prove identity quickly.')">A. Give up and make a new account.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! A replacement SIM allows you to receive the OTP codes on a backup phone.')">B. Go to your carrier (e.g., CSL/Smartone) with ID to get a replacement SIM card.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. The police cannot help with Google login codes.')">C. Call the police to ask for the code.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="card quiz-question">
+                    <h3>Q5: What is the purpose of "Safe Mode" on Android?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! If the problem stops in Safe Mode, you know a downloaded app is the culprit.')">A. It disables third-party apps to help you identify which one is causing problems.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Safe mode actually disables most games.')">B. It makes games run faster.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. It does not charge the battery faster.')">C. It saves battery life.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Navigation Logic ---
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update Sidebar Buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase().includes(sectionId) || 
+                   (sectionId === 'intro' && btn.innerText.includes('Introduction')) ||
+                   (sectionId === 'stolen' && btn.innerText.includes('Stolen')) ||
+                   (sectionId === 'check' && btn.innerText.includes('Infection')) ||
+                   (sectionId === 'followup' && btn.innerText.includes('Recovery')) ||
+                   (sectionId === 'quiz' && btn.innerText.includes('Quiz'))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Close sidebar on mobile after selection
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // Scroll to top
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            // Optional: Save preference to local storage
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        };
+
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.nav-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // --- Quiz Logic ---
+        function checkAnswer(btn, isCorrect, message) {
+            const parent = btn.parentElement;
+            const feedbackDiv = parent.nextElementSibling;
+            
+            // Disable all buttons in this question group
+            const allBtns = parent.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedbackDiv.style.color = "var(--success)";
+                feedbackDiv.innerHTML = "✅ " + message;
+            } else {
+                btn.classList.add('incorrect');
+                feedbackDiv.style.color = "var(--error)";
+                feedbackDiv.innerHTML = "❌ " + message;
+            }
+        }
+    </script>
+</body>
+</html>

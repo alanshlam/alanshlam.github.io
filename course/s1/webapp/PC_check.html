@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guideline of checking if your desktop infected and the follow up actions</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning-bg: #fff7ed;
+            --warning-text: #9a3412;
+            --nav-width: 300px;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-mode {
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --warning-bg: #431407;
+            --warning-text: #ffedd5;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        .sidebar {
+            width: var(--nav-width);
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 12px 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-btn:hover { background-color: var(--bg-body); color: var(--primary); }
+        .nav-btn.active { background-color: var(--primary); color: white; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header-mobile {
+            display: none; /* Hidden on desktop */
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); line-height: 1.3; }
+        h2 { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--primary); }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+        p, li { color: var(--text-main); margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; }
+        
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning-text);
+            margin: 1.5rem 0;
+        }
+
+        /* --- CONTROLS --- */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- QUIZ STYLES --- */
+        .quiz-question { margin-bottom: 2rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 12px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: var(--primary); }
+        .option-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
+        .option-btn.incorrect { background-color: var(--error); color: white; border-color: var(--error); }
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 1.5rem; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .header-mobile { display: flex; }
+            .theme-toggle { position: static; margin-left: auto; }
+            .main-content { padding: 1.5rem; padding-top: 1rem; }
+            .nav-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 90; display: none;
+            }
+            .nav-overlay.open { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle Logic in Header for Desktop, Top Bar for Mobile -->
+    <div class="header-mobile">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="logo" style="margin:0; font-size: 1rem;">Desktop Security Guide</span>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+    </div>
+
+    <!-- Overlay for Mobile Menu -->
+    <div class="nav-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">🖥️ PC Guideline: Infection Check & Follow Up</div>
+            <button class="nav-btn active" onclick="showSection('intro')">Introduction</button>
+            <button class="nav-btn" onclick="showSection('signs')">1. Signs of Infection</button>
+            <button class="nav-btn" onclick="showSection('immediate')">2. Immediate Actions</button>
+            <button class="nav-btn" onclick="showSection('recovery')">3. Recovery & Prevention</button>
+            <button class="nav-btn" onclick="showSection('quiz')">📝 Interactive Quiz</button>
+            
+            <!-- Desktop Theme Toggle -->
+            <div style="margin-top: auto; display: none;" class="desktop-theme">
+                 <button class="theme-toggle" onclick="toggleTheme()" style="position: relative; top: 0; right: 0; width: 100%;">🌓 Toggle Theme</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <button class="theme-toggle desktop-only" onclick="toggleTheme()">🌓 Theme</button>
+
+            <!-- SECTION: INTRO -->
+            <div id="intro" class="section active">
+                <h1>Guideline of checking if your desktop infected and the follow up actions</h1>
+                <p>This module is designed for non-technical users to help identify, contain, and recover from potential computer infections or hacks.</p>
+                <div class="card">
+                    <h3>What you will learn:</h3>
+                    <ul>
+                        <li>How to tell the difference between a real virus and a "fake" scam pop-up.</li>
+                        <li>What to do immediately if you think you are hacked.</li>
+                        <li>How to secure your accounts and prevent future attacks.</li>
+                    </ul>
+                </div>
+                <p>Click <strong>"1. Signs of Infection"</strong> in the menu to get started.</p>
+            </div>
+
+            <!-- SECTION: SIGNS (CHECK) -->
+            <div id="signs" class="section">
+                <h1>Step 1: Signs of Infection</h1>
+                <p>Not every computer glitch is a hack. Learn to distinguish between real threats and common annoyances.</p>
+
+                <div class="alert-box">
+                    <h3>⚠️ Common Scam: The "Browser Notification"</h3>
+                    <p><strong>Scenario:</strong> You see pop-ups in the corner of your screen saying "System Infected" or "McAfee Expired," even when your browser is closed.</p>
+                    <p><strong>The Truth:</strong> This is rarely a virus. You likely clicked "Allow Notifications" on a shady website.</p>
+                    <p><strong>The Fix:</strong> Go to Browser Settings > Privacy > Site Settings > Notifications. Remove suspicious websites.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Real Red Flags</h3>
+                    <ul>
+                        <li><strong>Unexpected Slowness:</strong> High fan noise when doing nothing.</li>
+                        <li><strong>New Extensions:</strong> Toolbars or search engines you didn't install.</li>
+                        <li><strong>Mouse/Cursor Moving:</strong> Without you touching it (Immediate disconnect required).</li>
+                        <li><strong>Account Alerts:</strong> Emails saying "New login from [Country]" that wasn't you.</li>
+                    </ul>
+                </div>
+
+                <h2>How to Check Safely</h2>
+                <div class="card">
+                    <h3>1. Windows Users</h3>
+                    <p>Open <strong>Windows Security</strong> > Virus & threat protection > Quick Scan. Avoid using "Process Explorer" unless you are an expert; stick to standard Task Manager.</p>
+                </div>
+                <div class="card">
+                    <h3>2. macOS Users</h3>
+                    <p>Your Mac has an invisible guard called <strong>XProtect</strong> that runs automatically. You cannot "open" it. For a manual check, download the free version of <strong>Malwarebytes</strong>.</p>
+                </div>
+            </div>
+
+            <!-- SECTION: IMMEDIATE ACTIONS (FOLLOWUP) -->
+            <div id="immediate" class="section">
+                <h1>Step 2: Immediate Actions</h1>
+                <p>If you confirmed a threat, act fast. Don't panic.</p>
+
+                <div class="card">
+                    <h3>1. Disconnect Immediately</h3>
+                    <p>Unplug your Ethernet cable or turn off Wi-Fi. This stops the malware from sending your data to the hacker.</p>
+                </div>
+
+                <div class="card">
+                    <h3>2. The "Full Screen" Scam Freeze</h3>
+                    <p>If your browser freezes with a siren noise and a phone number on screen, <strong>DO NOT CALL THE NUMBER</strong>. It is a script, not a hack.</p>
+                    <p><strong>Fix:</strong> Force close the browser.</p>
+                    <ul>
+                        <li><strong>Windows:</strong> Alt + F4 or Ctrl+Shift+Esc to end task.</li>
+                        <li><strong>Mac:</strong> Cmd + Option + Esc to Force Quit.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>3. Safe Mode</h3>
+                    <p>Restarting in Safe Mode loads only essential files, preventing viruses from running.</p>
+                    <ul>
+                        <li><strong>Windows:</strong> Hold <em>Shift</em> while clicking Restart > Troubleshoot > Startup Settings.</li>
+                        <li><strong>Mac:</strong> Shut down, then hold <em>Shift</em> immediately upon starting up until you see the login window.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECTION: RECOVERY -->
+            <div id="recovery" class="section">
+                <h1>Step 3: Recovery & Prevention</h1>
+                <p>Once the virus is removed, you must secure your data.</p>
+
+                <div class="card">
+                    <h3>1. Password Security (Critical Update)</h3>
+                    <p><strong>Do not use LastPass.</strong> Recent breaches have made it less secure.</p>
+                    <p><strong>Recommendation:</strong> Use <strong>Bitwarden</strong> (Free/Open Source) or <strong>1Password</strong>. Alternatively, the built-in password managers in Apple/Google ecosystems are better than using the same password everywhere.</p>
+                </div>
+
+                <div class="alert-box">
+                    <h3>⚠️ Crucial Step: "Sign Out All Sessions"</h3>
+                    <p>Changing your password might not kick the hacker out immediately. Look for a button in your Google/Facebook/Microsoft security settings that says <strong>"Sign out of all devices."</strong></p>
+                </div>
+
+                <div class="card">
+                    <h3>2. Check Email Forwarding</h3>
+                    <p>Hackers often set up "Rules" to forward a copy of your emails to them. Check your Email Settings > Forwarding/Filters and delete anything you didn't create.</p>
+                </div>
+
+                <div class="card">
+                    <h3>3. When to seek Pro Help</h3>
+                    <p>If files are encrypted (Ransomware) or you feel overwhelmed, take the device to a reputable shop (e.g., Geek Squad, Apple Genius Bar). Avoid online "remote tech support" ads.</p>
+                </div>
+            </div>
+
+            <!-- SECTION: QUIZ -->
+            <div id="quiz" class="section">
+                <h1>📝 Knowledge Check</h1>
+                <p>Test what you've learned. Click the option you think is correct.</p>
+                <br>
+
+                <!-- Question 1 -->
+                <div class="card quiz-question">
+                    <h3>Q1: A pop-up appears in the corner of your screen saying "Virus Detected! Click here to fix." What is the most likely cause?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. While possible, modern malware usually tries to stay hidden, not announce itself.')">A. You definitely have a severe virus.</button>
+                        <!-- FIXED: Removed internal double quotes to prevent HTML breaking -->
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! This is usually Browser Notification Spam. Check your browser site settings.')">B. You allowed notifications from a shady website.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Do not click the link.')">C. Microsoft is trying to warn you personally.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="card quiz-question">
+                    <h3>Q2: You suspect you are hacked. What is the very first physical step you should take?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. This might lock the hacker out, but if malware is running, they might steal the new password too.')">A. Change your passwords immediately.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Deleting files without knowing what they are can crash your computer.')">B. Start deleting random files.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! Disconnecting prevents the malware from sending your data to the hacker.')">C. Disconnect from the Internet (Wi-Fi/Ethernet).</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="card quiz-question">
+                    <h3>Q3: After removing malware and changing your email password, what else must you check in your email settings?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! Hackers use forwarding rules to spy on you even after you change passwords.')">A. Forwarding Rules or Filters.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. While good to customize, it is not a security risk.')">B. Your profile picture.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect.')">C. Your font size.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="card quiz-question">
+                    <h3>Q4: Your browser suddenly freezes, a siren noise plays, and a big screen tells you to call "Apple/Microsoft Support". What do you do?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. This is a scammer who will try to steal your money or install real viruses.')">A. Call the number immediately.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! It is just a webpage script. Force quitting the browser solves the issue safely.')">B. Force Quit the browser (Alt+F4 or Task Manager).</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Rebooting works, but it preserves open tabs, so the scary pop-up might appear again when you restart.')">C. Shut down the computer.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="card quiz-question">
+                    <h3>Q5: You discover your files are encrypted (Ransomware) and a note demands $500. What is the expert advice?</h3>
+                    <div class="quiz-options">
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Paying funds criminals and does not guarantee you get your files back.')">A. Pay the ransom immediately.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, false, 'Incorrect. Overwriting your backup with infected files might ruin your only copy of good data.')">B. Plug in your backup drive and overwrite everything.</button>
+                        <button class="option-btn" onclick="checkAnswer(this, true, 'Correct! Do not pay. Seek professional help or look for free decryption tools online.')">C. Do not pay. Seek professional help.</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Navigation Logic ---
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update Sidebar Buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase().includes(sectionId) || 
+                   (sectionId === 'intro' && btn.innerText.includes('Introduction')) ||
+                   (sectionId === 'signs' && btn.innerText.includes('Signs')) ||
+                   (sectionId === 'immediate' && btn.innerText.includes('Immediate')) ||
+                   (sectionId === 'recovery' && btn.innerText.includes('Recovery')) ||
+                   (sectionId === 'quiz' && btn.innerText.includes('Quiz'))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Close sidebar on mobile after selection
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // Scroll to top
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            // Optional: Save preference to local storage
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        };
+
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.nav-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // --- Quiz Logic ---
+        function checkAnswer(btn, isCorrect, message) {
+            const parent = btn.parentElement;
+            const feedbackDiv = parent.nextElementSibling;
+            
+            // Disable all buttons in this question group
+            const allBtns = parent.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedbackDiv.style.color = "var(--success)";
+                feedbackDiv.innerHTML = "✅ " + message;
+            } else {
+                btn.classList.add('incorrect');
+                feedbackDiv.style.color = "var(--error)";
+                feedbackDiv.innerHTML = "❌ " + message;
+            }
+        }
+    </script>
+</body>
+</html>
