@@ -1,85 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Course Lectures</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Apps For Raising Cybersecurity Awareness</title>
   <style>
+    /* --- Base Styles --- */
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
       height: 100vh;
-      overflow: hidden; /* Prevent body scrollbars */
+      overflow: hidden;
+      flex-direction: row;
     }
+
+    /* --- Sidebar Menu --- */
     #menu {
       width: 25%;
-      min-width: 250px; /* Minimum width for the menu */
-      background-color: #f4f4f4;
+      min-width: 280px;
+      background-color: #f8f9fa;
       padding: 1em;
       overflow-y: auto;
-      flex-shrink: 0; /* Prevent menu from shrinking when resizing */
+      flex-shrink: 0;
+      border-right: 1px solid #ddd;
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+      z-index: 1000;
     }
+
+    /* --- Resizer (Desktop Only) --- */
     #resizer {
       width: 5px;
       cursor: col-resize;
-      background-color: #ccc;
+      background-color: #e0e0e0;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
+    }
+    #resizer:hover {
+      background-color: #007bff;
+    }
+
+    /* --- Main Content Area --- */
+    #content {
+      flex-grow: 1;
+      padding: 0;
+      display: flex;
+      position: relative;
+      background: white;
+    }
+
+    /* --- Typography & Lists --- */
+    h1 { font-size: 1.5rem; margin-top: 0; color: #2c3e50; }
+    h2 { font-size: 1.2rem; color: #495057; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 25px; }
+    
+    /* ADDED: Counter Reset */
+    ul, ol { 
+      padding-left: 0; 
+      list-style: none; 
+      counter-reset: menu-item; /* Initialize counter */
+    }
+    
+    /* MODIFIED: Flex behavior and Counter Increment */
+    li {
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      display: flex;
+      /* justify-content: space-between;  <-- Removed to keep number next to text */
+      align-items: center; 
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      counter-increment: menu-item; /* Increment counter */
+    }
+
+    /* ADDED: The visual number before the list item */
+    li::before {
+      content: counter(menu-item) ".";
+      margin-right: 10px;
+      font-weight: bold;
+      color: #007bff; /* Blue color */
+      min-width: 20px;
+      text-align: right;
       flex-shrink: 0;
     }
-    #content {
-      flex-grow: 1; /* Take remaining space */
-      padding: 0;
-      display: flex; /* To make iframe fill the space */
-    }
-    h1, h2 {
-      color: #333;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-      margin-top: 20px;
-    }
-    h1:first-child, h2:first-child {
-        margin-top: 0;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 0.5em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+
     a {
       text-decoration: none;
       color: #007bff;
-      margin-right: auto;
+      font-weight: 500;
+      flex-grow: 1;
+      padding-right: 10px; /* Space between text and button */
     }
-    a:hover {
-      text-decoration: underline;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    a:hover { text-decoration: underline; }
+
+    /* --- Iframe --- */
+    iframe { width: 100%; height: 100%; border: none; }
+
+    /* --- Buttons --- */
     .popup-btn {
       background-color: #6c757d;
       color: white;
       border: none;
-      padding: 3px 8px;
+      padding: 6px 10px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 12px;
-      margin-left: 10px;
-      flex-shrink: 0;
+      white-space: nowrap;
+      margin-left: auto; /* Pushes button to the far right */
     }
-    .popup-btn:hover {
-      background-color: #5a6268;
+    
+    /* --- Mobile Header & Toggle (Hidden on Desktop) --- */
+    #mobile-header {
+      display: none;
+      background-color: #343a40;
+      color: white;
+      padding: 10px 15px;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+      box-sizing: border-box;
+    }
+
+    #menu-toggle-btn {
+      background: none;
+      border: 1px solid #6c757d;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+
+    #menu-close-btn {
+      display: none; /* Hidden on desktop */
+      width: 100%;
+      padding: 12px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* --- MOBILE RESPONSIVE STYLES --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column; /* Stack vertically */
+        padding-top: 50px; /* Space for mobile header */
+      }
+
+      /* Show Mobile Header */
+      #mobile-header { display: flex; }
+
+      /* Hide Resizer on Mobile */
+      #resizer { display: none; }
+
+      /* Transform Menu into an Off-Canvas Drawer */
+      #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 85%; /* Cover most of screen */
+        max-width: 350px;
+        transform: translateX(-100%); /* Hide by default */
+        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        padding-top: 20px;
+      }
+
+      /* Class to slide menu in */
+      #menu.active {
+        transform: translateX(0);
+      }
+
+      /* Show Close Button inside menu on mobile */
+      #menu-close-btn { display: block; }
+
+      /* Larger touch targets for mobile */
+      li { padding: 12px; margin-bottom: 10px; }
+      .popup-btn { padding: 8px 12px; font-size: 14px; }
+      h1 { font-size: 1.2rem; }
+      
+      /* Make content fill screen */
+      #content {
+        width: 100%;
+        height: 100%;
+      }
+      
+      /* Overlay to click-to-close */
+      #overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+      }
+      #overlay.active { display: block; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Mobile Header -->
+  <div id="mobile-header">
+    <span>Cybersecurity Awareness</span>
+    <button id="menu-toggle-btn">&#9776;</button>
+  </div>
+
+  <!-- Background Overlay for Mobile -->
+  <div id="overlay"></div>
+
+  <!-- Sidebar Menu -->
   <div id="menu">
+    <!-- Close Button (Mobile Only) -->
+    <button id="menu-close-btn">Close Menu &times;</button>
     <h1>Daily Cyber Security Essentials and Emergency Response</h1>
     <h2>Course Content</h2>
 
@@ -90,95 +233,101 @@
     <h2>Slides</h2>
     <ul>
       <li><a href="slide0.html" target="content_frame">Course Overview</a> <button class="popup-btn" onclick="openPopup('slide0.html')">Popup</button></li>
-      <li><a href="slide1.html" target="content_frame">Slides for Lecture 1: Network Security Basics</a> <button class="popup-btn" onclick="openPopup('slide1.html')">Popup</button></li>
-      <li><a href="slide2.html" target="content_frame">Slides for Lecture 2: Protecting Devices</a> <button class="popup-btn" onclick="openPopup('slide2.html')">Popup</button></li>
-      <li><a href="slide3.html" target="content_frame">Slides for Lecture 3: Passwords & MFA</a> <button class="popup-btn" onclick="openPopup('slide3.html')">Popup</button></li>
-      <li><a href="slide4.html" target="content_frame">Slides for Lecture 4: Secure Browsing</a> <button class="popup-btn" onclick="openPopup('slide4.html')">Popup</button></li>
-      <li><a href="slide5.html" target="content_frame">Slides for Lecture 5: Email & Transactions</a> <button class="popup-btn" onclick="openPopup('slide5.html')">Popup</button></li>
-      <li><a href="slide6.html" target="content_frame">Slides for Lecture 6: Updates & Backups</a> <button class="popup-btn" onclick="openPopup('slide6.html')">Popup</button></li>
-      <li><a href="slide7.html" target="content_frame">Slides for Lecture 7: Common Incidents</a> <button class="popup-btn" onclick="openPopup('slide7.html')">Popup</button></li>
-      <li><a href="slide9.html" target="content_frame">Slides for Lecture 9: Case Studies</a> <button class="popup-btn" onclick="openPopup('slide9.html')">Popup</button></li>
-      <li><a href="slide8.html" target="content_frame">Slides for Lecture 8: First Aid</a> <button class="popup-btn" onclick="openPopup('slide8.html')">Popup</button></li>
-      <li><a href="slide8-hkcert.html" target="content_frame">Slides for Lecture 8: First Aid (HKCERT)</a> <button class="popup-btn" onclick="openPopup('slide8.html')">Popup</button></li>
-      <li><a href="slide10.html" target="content_frame">Slides for Lecture 10: AI & Scams</a> <button class="popup-btn" onclick="openPopup('slide10.html')">Popup</button></li>
+      <li><a href="slide1.html" target="content_frame">Slides for Unit 1: Network Security Basics</a> <button class="popup-btn" onclick="openPopup('slide1.html')">Popup</button></li>
+      <li><a href="slide2.html" target="content_frame">Slides for Unit 2: Protecting Devices</a> <button class="popup-btn" onclick="openPopup('slide2.html')">Popup</button></li>
+      <li><a href="slide3.html" target="content_frame">Slides for Unit 3: Passwords & MFA</a> <button class="popup-btn" onclick="openPopup('slide3.html')">Popup</button></li>
+      <li><a href="slide4.html" target="content_frame">Slides for Unit 4: Secure Browsing</a> <button class="popup-btn" onclick="openPopup('slide4.html')">Popup</button></li>
+      <li><a href="slide5.html" target="content_frame">Slides for Unit 5: Email & Transactions</a> <button class="popup-btn" onclick="openPopup('slide5.html')">Popup</button></li>
+      <li><a href="slide6.html" target="content_frame">Slides for Unit 6: Updates & Backups</a> <button class="popup-btn" onclick="openPopup('slide6.html')">Popup</button></li>
+      <li><a href="slide7.html" target="content_frame">Slides for Unit 7: Common Incidents</a> <button class="popup-btn" onclick="openPopup('slide7.html')">Popup</button></li>
+      <li><a href="slide9.html" target="content_frame">Slides for Unit 9: Case Studies</a> <button class="popup-btn" onclick="openPopup('slide9.html')">Popup</button></li>
+      <li><a href="slide8.html" target="content_frame">Slides for Unit 8: First Aid</a> <button class="popup-btn" onclick="openPopup('slide8.html')">Popup</button></li>
+      <li><a href="slide8-hkcert.html" target="content_frame">Slides for Unit 8: First Aid (HKCERT)</a> <button class="popup-btn" onclick="openPopup('slide8.html')">Popup</button></li>
+      <li><a href="slide10.html" target="content_frame">Slides for Unit 10: AI & Scams</a> <button class="popup-btn" onclick="openPopup('slide10.html')">Popup</button></li>
     </ul>
 
-    <h2>Interactive Lectures</h2>
+    <h2>Interactive Classworks</h2>
     <ul>
-      <li><a href="lecture1.html" target="content_frame">Lecture 1: Network Security Basics</a> <button class="popup-btn" onclick="openPopup('lecture1.html')">Popup</button></li>
-      <li><a href="lecture2.html" target="content_frame">Lecture 2: Protecting Devices</a> <button class="popup-btn" onclick="openPopup('lecture2.html')">Popup</button></li>
-      <li><a href="lecture3.html" target="content_frame">Lecture 3: Passwords & MFA</a> <button class="popup-btn" onclick="openPopup('lecture3.html')">Popup</button></li>
-      <li><a href="lecture4.html" target="content_frame">Lecture 4: Secure Browsing</a> <button class="popup-btn" onclick="openPopup('lecture4.html')">Popup</button></li>
-      <li><a href="lecture5.html" target="content_frame">Lecture 5: Email & Transactions</a> <button class="popup-btn" onclick="openPopup('lecture5.html')">Popup</button></li>
-      <li><a href="lecture6.html" target="content_frame">Lecture 6: Updates & Backups</a> <button class="popup-btn" onclick="openPopup('lecture6.html')">Popup</button></li>
-      <li><a href="lecture7.html" target="content_frame">Lecture 7: Common Incidents</a> <button class="popup-btn" onclick="openPopup('lecture7.html')">Popup</button></li>
-      <li><a href="lecture8.html" target="content_frame">Lecture 8: First Aid</a> <button class="popup-btn" onclick="openPopup('lecture8.html')">Popup</button></li>
-      <li><a href="lecture8-hkcert.html" target="content_frame">Lecture 8: First Aid (HKCERT)</a> <button class="popup-btn" onclick="openPopup('lecture8.html')">Popup</button></li>
-      <li><a href="lecture9.html" target="content_frame">Lecture 9: Case Studies</a> <button class="popup-btn" onclick="openPopup('lecture9.html')">Popup</button></li>
-      <li><a href="lecture10.html" target="content_frame">Lecture 10: AI & Scams</a> <button class="popup-btn" onclick="openPopup('lecture10.html')">Popup</button></li>
+      <li><a href="lecture1.html" target="content_frame">Unit 1: Network Security Basics</a> <button class="popup-btn" onclick="openPopup('lecture1.html')">Popup</button></li>
+      <li><a href="lecture2.html" target="content_frame">Unit 2: Protecting Devices</a> <button class="popup-btn" onclick="openPopup('lecture2.html')">Popup</button></li>
+      <li><a href="lecture3.html" target="content_frame">Unit 3: Passwords & MFA</a> <button class="popup-btn" onclick="openPopup('lecture3.html')">Popup</button></li>
+      <li><a href="lecture4.html" target="content_frame">Unit 4: Secure Browsing</a> <button class="popup-btn" onclick="openPopup('lecture4.html')">Popup</button></li>
+      <li><a href="lecture5.html" target="content_frame">Unit 5: Email & Transactions</a> <button class="popup-btn" onclick="openPopup('lecture5.html')">Popup</button></li>
+      <li><a href="lecture6.html" target="content_frame">Unit 6: Updates & Backups</a> <button class="popup-btn" onclick="openPopup('lecture6.html')">Popup</button></li>
+      <li><a href="lecture7.html" target="content_frame">Unit 7: Common Incidents</a> <button class="popup-btn" onclick="openPopup('lecture7.html')">Popup</button></li>
+      <li><a href="lecture8.html" target="content_frame">Unit 8: First Aid</a> <button class="popup-btn" onclick="openPopup('lecture8.html')">Popup</button></li>
+      <li><a href="lecture8-hkcert.html" target="content_frame">Unit 8: First Aid (HKCERT)</a> <button class="popup-btn" onclick="openPopup('lecture8-hkcert.html')">Popup</button></li>
+      <li><a href="lecture9.html" target="content_frame">Unit 9: Case Studies</a> <button class="popup-btn" onclick="openPopup('lecture9.html')">Popup</button></li>
+      <li><a href="lecture10.html" target="content_frame">Unit 10: AI & Scams</a> <button class="popup-btn" onclick="openPopup('lecture10.html')">Popup</button></li>
     </ul>
 
+    
     <h2>Interactive Tools</h2>
     <ul>
-       <li><a href="fake_domain.html" target="content_frame">Phishing Domain Hunter</a></li>
-        <li><a href="Homograph_Attack.html" target="content_frame">Homograph Attack Defender</a></li>
-        <li><a href="fraud_defense.html" target="content_frame">Fraud Defense Academy (HKMA)</a></li>
-        <li><a href="AI_phishing.html" target="content_frame">AI Phishing Awareness Training</a></li>
-        <li><a href="AI_Ransomware_Tactics.html" target="content_frame">AI Ransomware Defense Training</a></li>
-        <li><a href="Deepfakes_Ransomware_Extortion.html" target="content_frame">Deepfake Extortion Awareness</a></li>
-        <li><a href="AI_Defense_Force.html" target="content_frame">AI Defense Force</a></li>
-        <li><a href="backup-guide.html" target="content_frame">Data Survival Guide</a></li>
-        <li><a href="breach-detector.html" target="content_frame">Breach Detector</a></li>
-        <li><a href="hk-response-kit.html" target="content_frame">HK Incident Response Kit</a></li>
-        <li><a href="hkcert-ransomware-guide.html" target="content_frame">HKCERT Ransomware Guide</a></li>
-        <li><a href="pdpo-guide.html" target="content_frame">PDPO Guide</a></li>
-        <li><a href="secure-browsing.html" target="content_frame">Secure Browsing Academy</a></li>
-        <li><a href="data-leak-guide.html" target="content_frame">Data Leak Response Center</a></li>
-        <li><a href="encryption-guide.html" target="content_frame">Encryption & Secure Storage Guide</a></li>
-        <li><a href="password-manager-guide.html" target="content_frame">Password Manager Guide</a></li>
-        <li><a href="desktop-security.html" target="content_frame">Desktop Security Guide</a></li>
-        <li><a href="mobile-security.html" target="content_frame">Mobile Security Guide</a></li>
+        <!-- Added onclick events to close menu automatically on mobile when link is clicked -->
+        <li><a href="phishing_traning.html" target="content_frame" onclick="closeMobileMenu()">Phishing Training</a></li>
+        <li><a href="fake_domain.html" target="content_frame" onclick="closeMobileMenu()">Phishing Domain Hunter</a></li>
+        <li><a href="Homograph_Attack.html" target="content_frame" onclick="closeMobileMenu()">Homograph Attack Defender</a></li>
+        <li><a href="Homograph_Attack_v3.html" target="content_frame" onclick="closeMobileMenu()">Homograph Attack Defender V3 </a></li>
+        <li><a href="fraud_defense.html" target="content_frame" onclick="closeMobileMenu()">Fraud Defense Academy (HKMA)</a></li>
+        <li><a href="AI_phishing.html" target="content_frame" onclick="closeMobileMenu()">AI Phishing Awareness Training</a></li>
+        <li><a href="AI_Ransomware_Tactics.html" target="content_frame" onclick="closeMobileMenu()">AI Ransomware Defense Training</a></li>
+        <li><a href="Deepfakes_Ransomware_Extortion.html" target="content_frame" onclick="closeMobileMenu()">Deepfake Extortion Awareness</a></li>
+        <li><a href="AI_Defense_Force.html" target="content_frame" onclick="closeMobileMenu()">AI Defense Force</a></li>
+        <li><a href="backup-guide.html" target="content_frame" onclick="closeMobileMenu()">Data Survival Guide</a></li>
+        <li><a href="breach-detector.html" target="content_frame" onclick="closeMobileMenu()">Breach Detector</a></li>
+        <li><a href="hk-response-kit.html" target="content_frame" onclick="closeMobileMenu()">HK Incident Response Kit</a></li>
+        <li><a href="hkcert-ransomware-guide.html" target="content_frame" onclick="closeMobileMenu()">HKCERT Ransomware Guide</a></li>
+        <li><a href="pdpo-guide.html" target="content_frame" onclick="closeMobileMenu()">PDPO Guide</a></li>
+        <li><a href="secure-browsing.html" target="content_frame" onclick="closeMobileMenu()">Secure Browsing Academy</a></li>
+        <li><a href="data-leak-guide.html" target="content_frame" onclick="closeMobileMenu()">Data Leak Response Center</a></li>
+        <li><a href="encryption-guide.html" target="content_frame" onclick="closeMobileMenu()">Encryption & Secure Storage Guide</a></li>
+        <li><a href="password-manager-guide.html" target="content_frame" onclick="closeMobileMenu()">Password Manager Guide</a></li>
+        <li><a href="desktop-security.html" target="content_frame" onclick="closeMobileMenu()">Desktop Security Guide</a></li>
+        <li><a href="mobile-security.html" target="content_frame" onclick="closeMobileMenu()">Mobile Security Guide</a></li>
+        <!-- Fixed function name typo below: closeMenuOnMobile -> closeMobileMenu -->
+        <li><a href="PC_check.html" target="content_frame" onclick="closeMobileMenu()">PC Guideline: Infection Check & Follow Up</a></li>
+        <li><a href="mobile_security_guide.html" target="content_frame" onclick="closeMobileMenu()">Mobile Guideline: Lost Devices & Checks</a></li>
+
     </ul>
 
     <h2>Case Studies</h2>
     <ul>
-      <li><a href="Arup_Case.html" target="content_frame">Arup Deepfake Heist</a></li>
-      <li><a href="Arup_Deepfake.html" target="content_frame">Arup Deepfake Heist (V2)</a></li>
-      <li><a href="china-deepfake.html" target="content_frame">China Deepfake Scam</a></li>
-      <li><a href="voice-clone-fraud.html" target="content_frame">Voice Clone Fraud</a></li>
-      <li><a href="nomani-scam.html" target="content_frame">Nomani Investment Scam</a></li>
-      <li><a href="trudeau-deepfake.html" target="content_frame">Trudeau Deepfake Scam</a></li>
-      <li><a href="VC_Infiltration.html" target="content_frame">VC Deepfake Infiltration</a></li>
-      <li><a href="mgm-breach.html" target="content_frame">MGM Resorts Breach</a></li>
-      <li><a href="Salesforce.html" target="content_frame">Salesforce Breach</a></li>
-      <li><a href="Target_case.html" target="content_frame">Target Data Breach</a></li>
-      <li><a href="Colonial_Pipeline.html" target="content_frame">Colonial Pipeline Attack</a></li>
-      <li><a href="Twitter_Bitcoin.html" target="content_frame">Twitter Bitcoin Hack</a></li>
-      <li><a href="SolarWinds.html" target="content_frame">SolarWinds Supply Chain Attack</a></li>
-      <li><a href="MOVEit.html" target="content_frame">MOVEit Supply Chain Attack</a></li>
-      <li><a href="Log4Shell.html" target="content_frame">Log4Shell Vulnerability</a></li>
+      <li><a href="Arup_Case.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist</a></li>
+      <li><a href="Arup_Deepfake.html" target="content_frame" onclick="closeMobileMenu()">Arup Deepfake Heist (V2)</a></li>
+      <li><a href="china-deepfake.html" target="content_frame" onclick="closeMobileMenu()">China Deepfake Scam</a></li>
+      <li><a href="voice-clone-fraud.html" target="content_frame" onclick="closeMobileMenu()">Voice Clone Fraud</a></li>
+      <li><a href="nomani-scam.html" target="content_frame" onclick="closeMobileMenu()">Nomani Investment Scam</a></li>
+      <li><a href="trudeau-deepfake.html" target="content_frame" onclick="closeMobileMenu()">Trudeau Deepfake Scam</a></li>
+      <li><a href="VC_Infiltration.html" target="content_frame" onclick="closeMobileMenu()">VC Deepfake Infiltration</a></li>
+      <li><a href="mgm-breach.html" target="content_frame" onclick="closeMobileMenu()">MGM Resorts Breach</a></li>
+      <li><a href="Salesforce.html" target="content_frame" onclick="closeMobileMenu()">Salesforce Breach</a></li>
+      <li><a href="Target_case.html" target="content_frame" onclick="closeMobileMenu()">Target Data Breach</a></li>
+      <li><a href="Colonial_Pipeline.html" target="content_frame" onclick="closeMobileMenu()">Colonial Pipeline Attack</a></li>
+      <li><a href="Twitter_Bitcoin.html" target="content_frame" onclick="closeMobileMenu()">Twitter Bitcoin Hack</a></li>
+      <li><a href="SolarWinds.html" target="content_frame" onclick="closeMobileMenu()">SolarWinds Supply Chain Attack</a></li>
+      <li><a href="MOVEit.html" target="content_frame" onclick="closeMobileMenu()">MOVEit Supply Chain Attack</a></li>
+      <li><a href="Log4Shell.html" target="content_frame" onclick="closeMobileMenu()">Log4Shell Vulnerability</a></li>
     </ul>
 
     <h2>Tools / Ref</h2>
     <ul>
-
-<li>cybersecurity service providers  <button class="popup-btn" onclick="openPopup('https://spconnect.hkcert.org/service-provider-reference-list/')">Popup</button></li>
-
-<li>Incident Response Guideline for SMEs
-<button class="popup-btn" onclick="openPopup('https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes')">Popup</button></li>
-
-<li>Scameter from cyberfender.hk <button class="popup-btn" onclick="openPopup('https://cyberdefender.hk/scameter/')">Popup</button></li>
-
-
+        <li>Common Tips (Phishing) <button class="popup-btn" onclick="openPopup('https://www.itsc.cuhk.edu.hk/images/content/privacy-security/phishing/Mock-Phishing-Training.pdf')">Popup</button></li>
+        <li>Service Providers <button class="popup-btn" onclick="openPopup('https://spconnect.hkcert.org/service-provider-reference-list/')">Popup</button></li>
+        <li>SME Response Guideline <button class="popup-btn" onclick="openPopup('https://www.hkcert.org/security-guideline/incident-response-guideline-for-smes')">Popup</button></li>
+        <li>Scameter <button class="popup-btn" onclick="openPopup('https://cyberdefender.hk/scameter/')">Popup</button></li>
         <li>Virustotal <button class="popup-btn" onclick="openPopup('https://www.virustotal.com')">Popup</button></li>
-        <li>HoneyPot SecurityMeter <button class="popup-btn" onclick="openPopup('https://www.sicherheitstacho.eu/')">Popup</button></li>
-        <li>Top 10 passwords <button class="popup-btn" onclick="openPopup('https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md')">Pouup</button></li>
-
+        <li>HoneyPot Meter <button class="popup-btn" onclick="openPopup('https://www.sicherheitstacho.eu/')">Popup</button></li>
+        <li>Top 10 passwords <button class="popup-btn" onclick="openPopup('https://github.com/alanshlam/HoneyNet/blob/main/4r_report/top10_passwords.md')">Popup</button></li>   
+        <li>DeepFake demo 1 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/BSkxQeImwd8?si=Q4Mo7px8kBelo1DT')">Popup</button></li> 
+        <li>DeepFake demo 2 <button class="popup-btn" onclick="openPopup('https://youtube.com/shorts/S-Nc3SJVWcs?si=LrSICjT2XpgNT-xd')">Popup</button></li> 
     </ul>
   </div>
+
   <div id="resizer"></div>
+
   <div id="content">
-    <iframe name="content_frame" src="slide0.html"></iframe>
+    <iframe name="content_frame" src="fake_domain.html"></iframe>
   </div>
 
   <script>
@@ -186,27 +335,53 @@
       window.open(url, 'slidePopup', 'width=1024,height=768,scrollbars=yes,resizable=yes');
     }
 
+    // --- Resizer Logic (Desktop) ---
     const resizer = document.getElementById('resizer');
     const menu = document.getElementById('menu');
     let isResizing = false;
 
     resizer.addEventListener('mousedown', (e) => {
-      isResizing = true;
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', () => {
-        isResizing = false;
-        document.removeEventListener('mousemove', handleMouseMove);
-        // Optional: you could save the width in localStorage here to persist it
-      });
+      // Only allow resizing on desktop (when overlay is not displayable)
+      if (window.innerWidth > 768) {
+        isResizing = true;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', () => {
+          isResizing = false;
+          document.removeEventListener('mousemove', handleMouseMove);
+        });
+      }
     });
 
     function handleMouseMove(e) {
       if (!isResizing) return;
       const newWidth = e.clientX;
-      if (newWidth > 250 && newWidth < window.innerWidth - 200) { // Set min and max resize width
+      if (newWidth > 250 && newWidth < window.innerWidth - 200) { 
         menu.style.width = newWidth + 'px';
       }
     }
+
+    // --- Mobile Menu Logic ---
+    const menuToggleBtn = document.getElementById('menu-toggle-btn');
+    const menuCloseBtn = document.getElementById('menu-close-btn');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMobileMenu() {
+        menu.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    function closeMobileMenu() {
+        // Only act if we are actually in mobile mode
+        if (window.innerWidth <= 768) {
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+    }
+
+    menuToggleBtn.addEventListener('click', toggleMobileMenu);
+    menuCloseBtn.addEventListener('click', closeMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
+
   </script>
 </body>
 </html>
