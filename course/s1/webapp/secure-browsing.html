@@ -12,7 +12,7 @@
             --bg: #f0f9ff;
             --card-bg: #ffffff;
             --danger: #e11d48;
-            --success: #15803d; /* Darker green for text readability */
+            --success: #15803d;
             --warning: #b45309;
         }
 
@@ -239,35 +239,41 @@
             
             <div class="habit-grid">
                 <div class="habit-card">
+                    <span class="icon">📲</span>
+                    <h3>Turn on 2FA / MFA</h3>
+                    <p><strong>Crucial:</strong> Enable Two-Factor Authentication. Even if hackers steal your password, they can't get in without your phone.</p>
+                </div>
+                <div class="habit-card">
                     <span class="icon">🔄</span>
                     <h3>Update Everything</h3>
-                    <p>Enable auto-updates for browsers (Chrome/Edge) and OS. Patches fix 91% of holes.</p>
+                    <p>Enable auto-updates for browsers (Chrome/Edge) and OS. Patches fix 91% of security holes.</p>
                 </div>
                 <div class="habit-card">
                     <span class="icon">🔍</span>
                     <h3>Verify URLs</h3>
-                    <p>Hover over links before clicking. Look for <code>https://</code>. Use <strong>Scameter</strong> for weird links.</p>
+                    <p>Hover over links before clicking. Look for <code>https://</code>. Use <strong>VirusTotal</strong> to scan suspicious links.</p>
                 </div>
                 <div class="habit-card">
                     <span class="icon">🚫</span>
                     <h3>Block Ads</h3>
-                    <p>Ads can carry malware ("Malvertising"). Use a blocker to stop pop-ups and tracking.</p>
+                    <p>Ads can carry malware ("Malvertising"). Use a blocker to stop pop-ups and tracking scripts.</p>
                 </div>
                 <div class="habit-card">
                     <span class="icon">🔑</span>
-                    <h3>Don't Save Passwords</h3>
-                    <p>Browsers are easy to hack. Use a dedicated Password Manager (e.g., Bitwarden) instead.</p>
+                    <h3>Don't Reuse Passwords</h3>
+                    <p>Browsers are easy to hack. Use a dedicated Password Manager (e.g., Bitwarden) to generate unique codes.</p>
                 </div>
                 <div class="habit-card">
                     <span class="icon">🌐</span>
                     <h3>Public Wi-Fi Risk</h3>
-                    <p>Avoid banking on coffee shop Wi-Fi. If you must, use a VPN to encrypt your data.</p>
+                    <p>Avoid banking on coffee shop Wi-Fi. If you must, use a VPN to encrypt your data so others can't see it.</p>
                 </div>
-                <div class="habit-card">
+		<div class="habit-card">
                     <span class="icon">👮</span>
                     <h3>Least Privilege</h3>
                     <p>Deny site requests for Location/Camera unless 100% necessary.</p>
                 </div>
+
             </div>
         </div>
     </div>
@@ -286,8 +292,8 @@
 
             <div style="margin-bottom: 2rem;">
                 <h3>2. What is your main concern?</h3>
-                <button class="quiz-option" onclick="selectOption('concern', 'basic', this)">🛡️ <strong>General Security</strong> (Ads, Phishing, Malware)</button>
-                <button class="quiz-option" onclick="selectOption('concern', 'privacy', this)">🕵️ <strong>Privacy</strong> (Stop tracking and spying)</button>
+                <button class="quiz-option" onclick="selectOption('concern', 'basic', this)">🛡️ <strong>General Security</strong> (Stop hacks, viruses, and phishing)</button>
+                <button class="quiz-option" onclick="selectOption('concern', 'privacy', this)">🕵️ <strong>Privacy</strong> (Stop Google/Facebook tracking and spying)</button>
             </div>
 
             <button onclick="recommendTools()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">Show Recommendations</button>
@@ -321,7 +327,7 @@
 <footer>
     <p>Data Source: CISA, HKCERT, Google Safety Center.</p>
     <p class="footer-note">
-        <strong>Disclaimer:</strong> The tools and software mentioned in this guide (e.g., uBlock, VirusTotal, Brave) are suggestions based on current industry standards. 
+        <strong>Disclaimer:</strong> The tools and software mentioned in this guide (e.g., uBlock, ProtonVPN) are suggestions based on current industry standards. 
         Prices, features, and reliability can change. Users should conduct their own research or consult IT professionals before installation. The creator accepts no liability for software performance.
     </p>
 </footer>
@@ -371,29 +377,29 @@
         if (userType === 'individual') {
             if (concern === 'basic') {
                 title = "The 'Essential Defense' Kit";
-                rows += createRow("uBlock Origin", "Extension", "Extremely effective ad-blocker; lightweight.", "Can break some video sites/forms.", "Free");
-                rows += createRow("Malwarebytes Browser Guard", "Extension", "Real-time blocking of scam/tech-support sites.", "Occasional false alarms.", "Free");
-                rows += createRow("VirusTotal.com", "Website", "Scans URLs with 70+ antivirus engines.", "Manual check only (not automatic).", "Free");
+                rows += createRow("uBlock Origin", "Extension", "Best-in-class ad blocker. Very low memory usage.", "Requires a few clicks to unbreak some sites.", "Free");
+                rows += createRow("HKCERT Scameter / VirusTotal", "Verification Tool", "Check if a suspicious URL is safe before clicking.", "Manual process: requires Copy/Paste.", "Free");
+                rows += createRow("Malwarebytes Browser Guard", "Extension", "Real-time blocking of scam sites.", "Can be aggressive (false alarms).", "Free");
             } else {
                 // Individual + Privacy
                 title = "The 'Invisible User' Kit";
-                rows += createRow("Brave Browser", "Browser", "Blocks trackers out-of-the-box; fast.", "Based on Chromium (Google core).", "Free");
-                rows += createRow("Privacy Badger", "Extension", "Learns and blocks invisible trackers automatically.", "Misses some trackers during 'learning' phase.", "Free");
-                rows += createRow("ProtonVPN (Free)", "App", "Encrypts public Wi-Fi; no-logs policy.", "Free version has slower speeds.", "Free");
+                rows += createRow("Firefox or Brave", "Browser", "Firefox (Hardened) or Brave block trackers by default.", "Some websites may not load perfectly.", "Free");
+                rows += createRow("ProtonVPN", "App", "Swiss-based, strict no-logs policy, high security.", "Free version limits speed and countries.", "Free / Paid");
+                rows += createRow("DuckDuckGo Essentials", "Extension", "Blocks trackers and grades website privacy.", "Doesn't block all cosmetic ads, just trackers.", "Free");
             }
         } else {
             // SME
             if (concern === 'basic') {
                 title = "The 'Team Security' Stack";
-                rows += createRow("Sandboxie", "Software", "Isolates viruses so they can't touch the OS.", "Setup requires some learning curve.", "Free / $30");
-                rows += createRow("OpenDNS / Quad9", "DNS Settings", "Blocks malicious domains for the whole office.", "Hard to whitelist specific sites locally.", "Free");
-                rows += createRow("WOT (Web of Trust)", "Extension", "Visual Red/Green ratings help train staff.", "Ratings are user-generated (can be biased).", "Free");
+                rows += createRow("Quad9 (DNS)", "Network Setting", "Blocks malicious domains for the entire office network.", "No dashboard to see who clicked what.", "Free");
+                rows += createRow("HKCERT Scameter / VirusTotal", "Verification Tool", "Check if a suspicious URL is safe before clicking.", "Manual process: requires Copy/Paste.", "Free");
+                rows += createRow("Bitdefender TrafficLight", "Extension", "Scans links in search results for phishing.", "Adds a small icon to search pages.", "Free");
             } else {
                 // SME + Privacy
                 title = "The 'Compliance & Privacy' Stack";
-                rows += createRow("Corporate VPN", "Service", "Mandatory encryption for remote workers.", "Monthly cost per user.", "$5-10/user");
-                rows += createRow("NoScript", "Extension", "Blocks all scripts/exploits. Very secure.", "Breaks many modern websites; requires config.", "Free");
-                rows += createRow("HTTPS-Only Mode", "Browser Setting", "Forces encryption everywhere.", "May block access to old intranet sites.", "Free");
+                rows += createRow("NextDNS", "DNS Service", "Blocks trackers network-wide with detailed logs.", "Requires technical setup on router.", "Free / $2 mo");
+                rows += createRow("HTTPS-Only Mode", "Browser Policy", "Forces encryption everywhere; prevents data leaks.", "May break very old intranet websites.", "Free");
+                rows += createRow("Corporate VPN", "Service", "Encrypts all traffic for remote/traveling workers.", "Monthly cost per user.", "$5-10/user");
             }
         }
 
@@ -416,8 +422,8 @@
             </table>
             
             <div class="disclaimer-box">
-                <strong>⚠️ Disclaimer:</strong> These recommendations are for reference only. Prices (e.g., VPNs) and features change over time. 
-                SMEs should consult an IT professional before deploying software network-wide.
+                <strong>⚠️ Note for Students:</strong> Security is a process, not a product. Installing these tools is a great start, 
+                but you must still practice good habits (like checking URLs and using 2FA).
             </div>
         `;
     }
@@ -427,22 +433,22 @@
         {
             url: "https://amazon-support.billing-secure.com/login",
             isSafe: false,
-            msg: "SCAM! Look closely: The domain is 'billing-secure.com', not 'amazon.com'. This is a subdomain trick."
+            msg: "SCAM! The domain is 'billing-secure.com'. 'Amazon' is just a subdomain prefix. Always look at the words right before '.com'."
         },
         {
             url: "https://www.google.com/search?q=cats",
             isSafe: true,
-            msg: "SAFE. The domain is exactly 'google.com'. The rest is just the search query."
+            msg: "SAFE. The domain is exactly 'google.com'. The rest is just the search query path."
         },
         {
             url: "http://www.bankofamerica.com",
             isSafe: false,
-            msg: "UNSAFE! It says 'http', not 'https'. Never do banking without the Lock Icon (HTTPS). Data can be intercepted."
+            msg: "UNSAFE! It says 'http' (No S). Never do banking without the Lock Icon (HTTPS). Hackers on the same Wi-Fi can see your password."
         },
         {
             url: "https://bit.ly/3x89sA",
             isSafe: false,
-            msg: "RISKY! Shortened links hide the destination. Use a 'Link Expander' or HKCERT Scameter to check it first."
+            msg: "RISKY! Shortened links hide the destination. You cannot trust this until you use a 'Link Expander' tool to see where it goes."
         }
     ];
     
