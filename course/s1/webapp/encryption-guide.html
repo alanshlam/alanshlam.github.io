@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encryption & Secure Storage Guide 2025</title>
+    <title>Encryption & Secure Storage Guide 2026</title>
     <style>
         :root {
             --primary: #2563eb; /* Blue */
@@ -172,6 +172,15 @@
             margin-top: 1rem;
         }
 
+        .edu-note {
+            background: #eef2ff;
+            border-left: 4px solid #6366f1;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #4338ca;
+        }
+
         /* Disclaimer */
         footer {
             text-align: center;
@@ -199,7 +208,7 @@
 <header>
     <h1>🔐 Encryption & Secure Storage</h1>
     <p>Protect Data at Rest & In Transit (HK PDPO Compliant)</p>
-    <div class="badge">Updated Late 2025 </div>
+    <div class="badge">Updated 2026 Edition</div>
 </header>
 
 <nav>
@@ -213,26 +222,26 @@
     <div id="basics" class="section active">
         <div class="card">
             <h2>Why Encrypt?</h2>
-            <p>Encryption turns your data into unreadable code. If you lose your laptop or USB drive, thieves cannot access your files (like HKID copies or bank info) without the key.</p>
+            <p>Encryption turns your data into unreadable ciphertext. Without the key (password/certificate), the data looks like random noise. This is critical for complying with the <strong>Hong Kong PDPO (Principle 4)</strong>.</p>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin-top:0">💻 Full Disk Encryption (FDE)</h3>
-                    <p>Protects the <strong>entire</strong> hard drive. If the computer is off, data is safe. (e.g., BitLocker, FileVault).</p>
+                    <h3 style="margin-top:0">💾 At Rest (Storage)</h3>
+                    <p>Protects files sitting on your hard drive or USB. If the device is stolen, the thief cannot read the data.</p>
                 </div>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin-top:0">☁️ Secure Cloud Storage</h3>
-                    <p>Ensures files are encrypted <strong>before</strong> leaving your device ("Zero-Knowledge"). Google/Dropbox can't see them.</p>
+                    <h3 style="margin-top:0">📡 In Transit (Network)</h3>
+                    <p>Protects data moving over the internet (e.g., HTTPS, VPN). Prevents hackers on public Wi-Fi from intercepting passwords.</p>
                 </div>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin-top:0">📱 Mobile Protection</h3>
-                    <p>Modern phones are encrypted by default, BUT only if you set a strong Passcode (6+ digits) or Biometric.</p>
+                    <h3 style="margin-top:0">🔑 Key Management</h3>
+                    <p><strong>Critical Concept:</strong> If you encrypt data but lose the password (Key), the data is gone forever. There is no "Backdoor."</p>
                 </div>
             </div>
             
             <div class="tips-box">
                 <strong>🇭🇰 Hong Kong PDPO Tip:</strong><br>
-                Under Data Protection Principle 4 (Security), data users must protect personal data from unauthorized access. Encrypting USB drives and laptops is the most effective way to comply.
+                If a laptop containing unencrypted personal data (HKID, phone numbers) is lost, it is a significant data breach that may require reporting to the PCPD. If it was encrypted, it might not be considered a breach because the data is inaccessible.
             </div>
         </div>
     </div>
@@ -241,7 +250,7 @@
     <div id="finder" class="section">
         <div class="card">
             <h2>Find Your Encryption Tool</h2>
-            <p>Select your needs to compare top-rated solutions.</p>
+            <p>Select your needs to compare recommendations tailored for 2026.</p>
 
             <h3>Step 1: What are you securing?</h3>
             <div class="option-grid">
@@ -249,22 +258,21 @@
                     💻 <strong>Laptops / Desktops</strong>
                     <small>Windows, Mac, Linux Hard Drives.</small>
                 </button>
-                <!-- UPDATED ICON BELOW -->
                 <button class="select-btn" onclick="selectOption('target', 'storage', this)">
-                    ☁️ <strong>External Storage / Cloud</strong>
-                    <small>USB Drives, Cloud Backup, NAS.</small>
+                    ☁️ <strong>External / Cloud</strong>
+                    <small>USB Drives, Backup, Transfer.</small>
                 </button>
             </div>
 
             <h3>Step 2: Who is it for?</h3>
             <div class="option-grid">
                 <button class="select-btn" onclick="selectOption('user', 'individual', this)">
-                    👤 <strong>Individual</strong>
-                    <small>Free, built-in tools. Simple setup.</small>
+                    👤 <strong>Individual / Student</strong>
+                    <small>Free tools, personal control, simple.</small>
                 </button>
                 <button class="select-btn" onclick="selectOption('user', 'sme', this)">
-                    🏢 <strong>SME / Team</strong>
-                    <small>Managed policies, scalable, compliant.</small>
+                    🏢 <strong>SME / Enterprise</strong>
+                    <small>Central management, audit logs, recovery keys.</small>
                 </button>
             </div>
 
@@ -280,41 +288,41 @@
     <div id="mobile" class="section">
         <div class="card" style="border-left-color: var(--accent);">
             <h2>Mobile Encryption (Android & iOS)</h2>
-            <p>Smartphones carry our most sensitive data. Most modern phones are encrypted by default, but you must enable the key.</p>
+            <p>Smartphones carry our most sensitive data. Encryption is usually "On" by default, but it relies entirely on your Passcode strength.</p>
 
             <table>
                 <thead>
                     <tr>
                         <th style="width:20%">OS</th>
                         <th style="width:25%">Feature</th>
-                        <th style="width:40%">How to Enable / Verify</th>
+                        <th style="width:40%">Action Required</th>
                         <th style="width:15%">Cost</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>iOS (iPhone)</strong></td>
-                        <td>Data Protection (AES-256)</td>
-                        <td>Go to <em>Settings > Face ID & Passcode</em>. Scroll down to see "Data protection is enabled". Set a 6-digit PIN minimum.</td>
+                        <td>Data Protection</td>
+                        <td><strong>Use a 6-digit PIN or Alphanumeric code.</strong> 4-digits are too easy to brute-force. Enable "Erase Data after 10 failed attempts" for max security.</td>
                         <td>Free</td>
                     </tr>
                     <tr>
                         <td><strong>Android</strong></td>
                         <td>File-Based Encryption</td>
-                        <td>Go to <em>Settings > Security > Encryption & Credentials</em>. It should say "Encrypted". Use Biometrics for ease.</td>
+                        <td>Ensure specific apps (Banking, Signal) are using biometric locks. Do not use "Pattern" unlocks (easy to spy over shoulder).</td>
                         <td>Free</td>
                     </tr>
                     <tr>
                         <td><strong>MDM (SME)</strong></td>
-                        <td>Remote Enforcement</td>
-                        <td>Use tools like <strong>ManageEngine</strong> or <strong>Samsung Knox</strong> to force encryption on all employee phones.</td>
-                        <td>~$10/mo</td>
+                        <td>Remote Wipe</td>
+                        <td><strong>For Companies:</strong> Use Mobile Device Management (MDM) to force encryption and allow "Remote Wipe" if an employee loses a phone.</td>
+                        <td>~$15/mo</td>
                     </tr>
                 </tbody>
             </table>
 
-            <div class="tips-box" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
-                <strong>✅ Quick Action:</strong> Set your "Auto-Lock" screen timeout to <strong>30 seconds</strong>. Encryption only works when the phone is locked!
+            <div class="edu-note">
+                <strong>🎓 Student Note:</strong> "Encryption" on a phone only works when the screen is locked. If you hand your unlocked phone to someone, encryption does not protect you. Set your screen timeout to 30 seconds!
             </div>
         </div>
     </div>
@@ -322,9 +330,9 @@
 
 <footer>
     <div class="disclaimer-text">
-        <strong>⚠️ Disclaimer:</strong> The software recommendations (BitLocker, VeraCrypt, pCloud, etc.) and pricing estimates provided in this guide are for reference only. Prices and features are subject to change over time. Users should conduct their own research and backup data before enabling encryption to avoid accidental data loss. The creator accepts no liability for lost keys or data.
+        <strong>⚠️ Disclaimer:</strong> The software recommendations (BitLocker, VeraCrypt, pCloud, etc.) and pricing estimates provided in this guide are for educational reference only. Prices and features are subject to change. Users should conduct their own research and <strong>always backup data</strong> before enabling encryption to avoid accidental data loss. The creator accepts no liability for lost keys or data.
     </div>
-    <p style="margin-top: 2rem;">&copy; 2025 Encryption & Security Reference Guide</p>
+    <p style="margin-top: 2rem;">&copy; 2026 Encryption & Security Reference Guide</p>
 </footer>
 
 <script>
@@ -358,85 +366,126 @@
 
         let htmlContent = "";
 
-        // LOGIC TREE
+        // LOGIC TREE START //
+
+        // 1. COMPUTERS (Laptop/Desktop)
         if (target === 'computer') {
-            htmlContent = `
-                <div class="card" style="border-top: 4px solid var(--primary);">
-                    <h2>💻 Device Encryption Solutions</h2>
-                    <p>Recommended for <strong>${user === 'individual' ? 'Personal Laptops' : 'Business Fleets'}</strong>:</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width:25%">Tool Name</th>
-                                <th style="width:30%">✅ Pros</th>
-                                <th style="width:30%">⚠️ Cons</th>
-                                <th style="width:15%">Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="feature-tag">Windows</span><br><strong>BitLocker</strong></td>
-                                <td>Built-in, seamless, strong AES-256 protection.</td>
-                                <td>Requires Windows "Pro" edition (Home users must upgrade).</td>
-                                <td>Free / $800 HKD</td>
-                            </tr>
-                            <tr>
-                                <td><span class="feature-tag">Mac</span><br><strong>FileVault</strong></td>
-                                <td>Built-in, very fast on M1/M2/M3 chips, iCloud recovery key.</td>
-                                <td>Initial encryption takes time on old drives.</td>
-                                <td>Free</td>
-                            </tr>
-                            <tr>
-                                <td><span class="feature-tag">Universal</span><br><strong>VeraCrypt</strong></td>
-                                <td>Open-source, works on Windows/Mac/Linux, creates "Hidden Volumes".</td>
-                                <td>Steeper learning curve; requires manual install.</td>
-                                <td>Free</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        } else {
-            // STORAGE / CLOUD - UPDATED ICONS
-            htmlContent = `
-                <div class="card" style="border-top: 4px solid var(--accent);">
-                    <h2>☁️ Secure Storage & Cloud</h2>
-                    <p>Recommended for <strong>${user === 'individual' ? 'Personal Backups' : 'Client Data Storage'}</strong>:</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width:25%">Solution</th>
-                                <th style="width:30%">✅ Pros</th>
-                                <th style="width:30%">⚠️ Cons</th>
-                                <th style="width:15%">Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>pCloud / Sync.com</strong><br><small>Encrypted Cloud</small></td>
-                                <td>Zero-Knowledge (they can't see files), Swiss/Canadian privacy laws.</td>
-                                <td>Slower upload speeds due to heavy encryption.</td>
-                                <td>Free / ~$400 HKD yr</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Synology NAS</strong><br><small>Private Cloud</small></td>
-                                <td>You own the hardware (On-Premise), total control, no monthly fees.</td>
-                                <td>High upfront cost, vulnerable to theft if not physically locked.</td>
-                                <td>~$2000 HKD + HDD</td>
-                            </tr>
-                            <tr>
-                                <td><strong>IronKey USB</strong><br><small>🔌 Hardware Encrypted</small></td>
-                                <td>Self-destructs if hacked, rugged, no software needed.</td>
-                                <td>Expensive per GB, easy to lose physically.</td>
-                                <td>~$800 HKD (16GB)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                     <div class="tips-box">
-                        <strong>Tip for SMEs:</strong> If you use cloud storage for client data, ensure the vendor contract states they use <strong>AES-256 Encryption</strong> at rest.
-                    </div>
-                </div>
-            `;
+            if (user === 'individual') {
+                // Computer + Individual
+                htmlContent = `
+                    <div class="card" style="border-top: 4px solid var(--primary);">
+                        <h2>💻 Personal Computer Encryption</h2>
+                        <p>For individuals, the goal is "Set and Forget". Use built-in tools.</p>
+                        <table>
+                            <thead><tr><th>Tool</th><th>Notes for Students</th><th>Cost</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Windows (Home)</strong></td>
+                                    <td>Search for "Device Encryption". Note: Windows Home does <em>not</em> have full BitLocker, but modern laptops often have "Device Encryption" built-in.</td>
+                                    <td>Free</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Windows (Pro)</strong></td>
+                                    <td><strong>BitLocker:</strong> Best option. Encrypts whole drive. Save your recovery key to your Microsoft Account.</td>
+                                    <td>~$800 upgrade</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mac OS</strong></td>
+                                    <td><strong>FileVault:</strong> Turn this on immediately in System Settings. Negligible performance impact on M1/M2/M3 chips.</td>
+                                    <td>Free</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>`;
+            } else {
+                // Computer + SME
+                htmlContent = `
+                    <div class="card" style="border-top: 4px solid var(--danger);">
+                        <h2>🏢 SME Fleet Encryption</h2>
+                        <p><strong>Crucial Difference:</strong> SMEs need "Management". You must manage the recovery keys centrally. If an employee quits or forgets their password, you need a way to access the company data.</p>
+                        <table>
+                            <thead><tr><th>Solution</th><th>Why it's for SMEs</th><th>Est. Cost</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Microsoft Intune / Entra ID</strong></td>
+                                    <td>Automatically enables BitLocker on all staff laptops and stores recovery keys in the cloud (Azure).</td>
+                                    <td>Part of Microsoft 365 Business</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Jamf (for Macs)</strong></td>
+                                    <td>Manages FileVault keys for a fleet of MacBooks. Ensures compliance reporting.</td>
+                                    <td>~$30 HKD / device / mo</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Endpoint Security</strong><br>(Sophos / ESET)</td>
+                                    <td>Antivirus software that also manages encryption keys. Good for mixed Windows/Mac offices.</td>
+                                    <td>~$300 HKD / yr</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="tips-box"><strong>Auditor Tip:</strong> For PDPO compliance, you need a log proving the laptop was encrypted <em>at the time it was lost</em>. Managed tools provide this report; personal tools do not.</div>
+                    </div>`;
+            }
+        } 
+        
+        // 2. STORAGE / CLOUD
+        else if (target === 'storage') {
+            if (user === 'individual') {
+                // Storage + Individual
+                htmlContent = `
+                    <div class="card" style="border-top: 4px solid var(--accent);">
+                        <h2>☁️ Personal Storage Security</h2>
+                        <p>Focus on protecting backups and USB drives from loss.</p>
+                        <table>
+                            <thead><tr><th>Tool</th><th>Best Use Case</th><th>Cost</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>VeraCrypt</strong></td>
+                                    <td>Create an encrypted "Container" (file) on your USB drive. Store sensitive PDFs inside it. Open Source & Free.</td>
+                                    <td>Free</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>7-Zip (AES-256)</strong></td>
+                                    <td>Simplest method. Right-click folder > Add to Archive > Set Password. Good for emailing files securely.</td>
+                                    <td>Free</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cloud Personal Vault</strong></td>
+                                    <td>OneDrive and Dropbox offer a "Vault" folder requiring 2FA to open. Use this for ID copies/Tax docs.</td>
+                                    <td>Free (Limited)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>`;
+            } else {
+                // Storage + SME
+                htmlContent = `
+                    <div class="card" style="border-top: 4px solid var(--danger);">
+                        <h2>🔒 Corporate Data Storage</h2>
+                        <p>SMEs deal with client data (PDPO). Free consumer tools are risky due to lack of access logs.</p>
+                        <table>
+                            <thead><tr><th>Solution</th><th>Compliance Feature</th><th>Est. Cost</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Hardware Encrypted USB</strong><br>(Kingston IronKey)</td>
+                                    <td>Physical chip encryption. If password is guessed wrong 10 times, the drive self-destructs (wipes). No software needed.</td>
+                                    <td>High (~$800 HKD/16GB)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Encrypted NAS</strong><br>(Synology / QNAP)</td>
+                                    <td>Office file server. Enable "Folder Encryption". Ensures physical theft of the server box doesn't leak data.</td>
+                                    <td>~$3000+ HKD</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AWS S3 / Azure Blob</strong></td>
+                                    <td>For app data. Use "Server-Side Encryption" (KMS). You hold the master key, cloud provider holds the encrypted data.</td>
+                                    <td>Pay-as-you-go</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="edu-note"><strong>🎓 Student Note:</strong> Hardware-encrypted USBs are expensive but preferred in Finance/Gov because they remove human error. Software encryption (like VeraCrypt) can be bypassed if the computer used to open it has a virus (Keylogger).</div>
+                    </div>`;
+            }
         }
 
         resultArea.innerHTML = htmlContent;
