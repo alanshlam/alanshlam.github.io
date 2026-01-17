@@ -6,95 +6,214 @@
     <title>安全瀏覽學院</title>
     <style>
         :root {
-            --primary: #0f766e; --secondary: #475569; --accent: #0ea5e9;
-            --bg: #f0f9ff; --card-bg: #ffffff; --danger: #e11d48;
-            --success: #15803d; --warning: #b45309;
+            --primary: #0f766e; /* Teal for Security */
+            --secondary: #475569;
+            --accent: #0ea5e9;
+            --bg: #f0f9ff;
+            --card-bg: #ffffff;
+            --danger: #e11d48;
+            --success: #15803d;
+            --warning: #b45309;
         }
+
         body {
-            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
-            background-color: var(--bg); color: #334155; margin: 0; padding: 0; line-height: 1.6;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #334155;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
         }
+
+        /* Header */
         header {
             background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
-            color: white; padding: 2rem 1rem; text-align: center;
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
         }
+
         header h1 { margin: 0; font-size: 2.5rem; }
         header p { opacity: 0.9; font-size: 1.1rem; }
+
+        /* Navigation */
         nav {
-            background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            display: flex; justify-content: center; gap: 1rem; padding: 1rem;
-            position: sticky; top: 0; z-index: 100;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
         }
+
         button.nav-btn {
-            background: none; border: none; padding: 0.5rem 1.5rem; font-size: 1rem;
-            font-weight: 600; color: var(--secondary); cursor: pointer;
-            border-bottom: 3px solid transparent; transition: all 0.3s;
+            background: none;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
-        button.nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        main { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-        .section { display: none; animation: fadeIn 0.5s; }
-        .section.active { display: block; }
+
+        button.nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Cards */
         .card {
-            background: var(--card-bg); border-radius: 12px; padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
+
         h2 { color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+
+        /* Habit Grid */
         .habit-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
+
         .habit-card {
-            background: white; border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 1.5rem; transition: transform 0.2s;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
         }
         .habit-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+
+        /* Tool Finder Styles */
         .quiz-option {
-            display: block; width: 100%; padding: 1rem; margin: 0.5rem 0;
-            background: white; border: 2px solid #cbd5e1; border-radius: 8px;
-            cursor: pointer; text-align: left; font-size: 1.1rem; transition: 0.2s;
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1.1rem;
+            transition: 0.2s;
         }
+
         .quiz-option:hover { border-color: var(--primary); background: #f0fdfa; }
         .quiz-option.selected { border-color: var(--primary); background: #ccfbf1; font-weight: bold; }
+
         #tool-result {
-            display: none; background: #fff; border: 2px solid var(--primary);
-            padding: 2rem; border-radius: 12px; margin-top: 2rem;
+            display: none;
+            background: #fff;
+            border: 2px solid var(--primary);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
         }
+
+        /* Disclaimer Box */
         .disclaimer-box {
-            margin-top: 1.5rem; padding: 1rem; background-color: #fff7ed;
-            border: 1px solid #ffeeba; border-radius: 8px; font-size: 0.9rem; color: #9a3412;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #9a3412;
         }
+
+        /* Game Styles */
         .scenario-box {
-            background: #1e293b; color: white; padding: 2rem; border-radius: 10px;
-            text-align: center; margin-bottom: 1.5rem;
+            background: #1e293b;
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
+        
         .url-bar {
-            background: #334155; padding: 10px; border-radius: 5px;
-            font-family: monospace; font-size: 1.2rem; margin-bottom: 10px;
-            display: inline-block; width: 80%; word-break: break-all;
+            background: #334155;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: inline-block;
+            width: 80%;
+            word-break: break-all;
         }
+
         .game-btn {
-            padding: 1rem 2rem; font-size: 1.1rem; border: none; border-radius: 8px;
-            cursor: pointer; margin: 10px; font-weight: bold; color: white; transition: 0.2s;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            color: white;
+            transition: 0.2s;
         }
         .btn-trust { background-color: var(--success); }
         .btn-block { background-color: var(--danger); }
         .btn-trust:hover, .btn-block:hover { opacity: 0.9; transform: scale(1.05); }
+
         .game-feedback {
-            display: none; margin-top: 1rem; padding: 1rem;
-            border-radius: 8px; font-weight: bold; text-align: center;
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
         }
+
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.95rem; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; vertical-align: top; }
         th { background-color: #f1f5f9; white-space: nowrap; }
         tr:hover { background-color: #f8fafc; }
+
+        /* Footer */
         footer {
-            text-align: center; padding: 3rem 1rem; color: var(--secondary);
-            font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 3rem;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 3rem;
         }
         .footer-note { font-style: italic; opacity: 0.8; font-size: 0.8rem; max-width: 800px; margin: 10px auto; }
     </style>
@@ -103,60 +222,102 @@
 
 <header>
     <h1>🛡️ 安全瀏覽學院</h1>
-    <p>防禦網路釣魚、惡意軟體和資料外洩</p>
+    <p>防範釣魚、惡意軟體和資料外洩</p>
 </header>
 
 <nav>
     <button class="nav-btn active" onclick="showTab('habits')">1. 核心習慣</button>
-    <button class="nav-btn" onclick="showTab('tools')">2. 工具查找器</button>
+    <button class="nav-btn" onclick="showTab('tools')">2. 工具尋找器</button>
     <button class="nav-btn" onclick="showTab('game')">3. 釣魚道場</button>
 </nav>
 
 <main>
+    <!-- SECTION 1: HABITS -->
     <div id="habits" class="section active">
         <div class="card">
-            <h2>個人與中小企通用提示</h2>
+            <h2>給個人和中小企業的通用提示</h2>
             <p>在安裝工具之前，請先掌握這些行為。它們能阻止 80% 的威脅。</p>
+            
             <div class="habit-grid">
-                <div class="habit-card"><span class="icon">🔄</span><h3>更新所有東西</h3><p>為瀏覽器（Chrome/Edge）和作業系統啟用自動更新。補丁能修復 91% 的漏洞。</p></div>
-                <div class="habit-card"><span class="icon">🔍</span><h3>驗證網址</h3><p>點擊連結前先懸停查看。尋找 <code>https://</code>。對奇怪的連結使用<strong>Scameter</strong>。</p></div>
-                <div class="habit-card"><span class="icon">🚫</span><h3>封鎖廣告</h3><p>廣告可能帶有惡意軟體（「惡意廣告」）。使用廣告攔截器來阻止彈出視窗和追蹤。</p></div>
-                <div class="habit-card"><span class="icon">🔑</span><h3>不要儲存密碼</h3><p>瀏覽器很容易被駭。改用專用的密碼管理器（例如 Bitwarden）。</p></div>
-                <div class="habit-card"><span class="icon">🌐</span><h3>公共 Wi-Fi 風險</h3><p>避免在咖啡店的 Wi-Fi 上進行銀行交易。如果必須，請使用 VPN 加密您的資料。</p></div>
-                <div class="habit-card"><span class="icon">👮</span><h3>最低權限</h3><p>除非 100% 必要，否則拒絕網站對位置/相機的請求。</p></div>
+                <div class="habit-card">
+                    <span class="icon">📲</span>
+                    <h3>開啟雙重認證 (2FA / MFA)</h3>
+                    <p><strong>關鍵：</strong>啟用雙重認證。即使駭客竊取了您的密碼，沒有您的手機他們也無法登入。</p>
+                </div>
+                <div class="habit-card">
+                    <span class="icon">🔄</span>
+                    <h3>更新所有軟體</h3>
+                    <p>為瀏覽器（Chrome/Edge）和作業系統啟用自動更新。修補程式能修復 91% 的安全漏洞。</p>
+                </div>
+                <div class="habit-card">
+                    <span class="icon">🔍</span>
+                    <h3>驗證網址</h3>
+                    <p>點擊前先將滑鼠懸停在連結上。尋找 <code>https://</code>。使用 <strong>VirusTotal</strong> 掃描可疑連結。</p>
+                </div>
+                <div class="habit-card">
+                    <span class="icon">🚫</span>
+                    <h3>封鎖廣告</h3>
+                    <p>廣告可能帶有惡意軟體（「惡意廣告」）。使用廣告攔截器來阻止彈出視窗和追踪腳本。</p>
+                </div>
+                <div class="habit-card">
+                    <span class="icon">🔑</span>
+                    <h3>不要重複使用密碼</h3>
+                    <p>瀏覽器容易被駭。使用專用的密碼管理器（例如 Bitwarden）來生成唯一的密碼。</p>
+                </div>
+                <div class="habit-card">
+                    <span class="icon">🌐</span>
+                    <h3>公共 Wi-Fi 風險</h3>
+                    <p>避免在咖啡店的 Wi-Fi 上進行銀行交易。如果必須使用，請使用 VPN 加密您的資料，以防他人窺視。</p>
+                </div>
+		<div class="habit-card">
+                    <span class="icon">👮</span>
+                    <h3>最小權限原則</h3>
+                    <p>拒絕網站對位置/相機的請求，除非 100% 必要。</p>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- SECTION 2: TOOL FINDER -->
     <div id="tools" class="section">
         <div class="card">
             <h2>尋找合適的安全工具</h2>
-            <p>選擇您的設定檔以取得量身定制的工具和擴充功能清單。</p>
+            <p>選擇您的用戶類型以獲得量身訂製的工具和擴充功能列表。</p>
+
             <div style="margin-bottom: 2rem;">
-                <h3>1. 您是誰？</h3>
-                <button class="quiz-option" onclick="selectOption('userType', 'individual', this)">👤 <strong>個人</strong>（個人裝置，家庭使用）</button>
-                <button class="quiz-option" onclick="selectOption('userType', 'sme', this)">🏢 <strong>中小企/團隊</strong>（辦公室網路，管理員工）</button>
+                <h3>1. 您的身份是？</h3>
+                <button class="quiz-option" onclick="selectOption('userType', 'individual', this)">👤 <strong>個人</strong> (個人裝置，家庭使用)</button>
+                <button class="quiz-option" onclick="selectOption('userType', 'sme', this)">🏢 <strong>中小企業 / 團隊</strong> (辦公室網路，管理員工)</button>
             </div>
+
             <div style="margin-bottom: 2rem;">
-                <h3>2. 您的主要擔憂是什麼？</h3>
-                <button class="quiz-option" onclick="selectOption('concern', 'basic', this)">🛡️ <strong>一般安全</strong>（廣告、釣魚、惡意軟體）</button>
-                <button class="quiz-option" onclick="selectOption('concern', 'privacy', this)">🕵️ <strong>隱私</strong>（阻止追蹤和窺探）</button>
+                <h3>2. 您的主要考量是？</h3>
+                <button class="quiz-option" onclick="selectOption('concern', 'basic', this)">🛡️ <strong>一般安全</strong> (阻止駭客、病毒和釣魚)</button>
+                <button class="quiz-option" onclick="selectOption('concern', 'privacy', this)">🕵️ <strong>隱私</strong> (阻止 Google/Facebook 的追踪和窺探)</button>
             </div>
+
             <button onclick="recommendTools()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">顯示建議</button>
         </div>
-        <div id="tool-result"></div>
+
+        <div id="tool-result">
+            <!-- Results injected via JS -->
+        </div>
     </div>
 
+    <!-- SECTION 3: PHISHING DOJO -->
     <div id="game" class="section">
         <div class="card">
             <h2>釣魚道場：識破騙局</h2>
-            <p>您能分辨哪些網站是安全的，哪些是陷阱嗎？仔細查看網址。</p>
+            <p>您能分辨哪些網站是安全的，哪些是陷阱嗎？請仔細查看網址。</p>
+            
             <div class="scenario-box">
-                <p>您收到一封來自「支援部門」的電子郵件。您點擊了連結。您現在在這裡：</p>
-                <div class="url-bar" id="game-url">https://amazon-support.billing-secure.com/login</div><br><br>
+                <p>您收到一封來自「客服」的郵件。您點擊了連結。您現在位於：</p>
+                <div class="url-bar" id="game-url">https://amazon-support.billing-secure.com/login</div>
+                <br><br>
                 <button class="game-btn btn-trust" onclick="checkScam(true)">✅ 信任它</button>
                 <button class="game-btn btn-block" onclick="checkScam(false)">🛑 封鎖它</button>
             </div>
+
             <div id="game-feedback" class="game-feedback"></div>
             <button id="next-level-btn" style="display:none; margin: 10px auto; padding: 10px 20px; cursor: pointer;" onclick="nextLevel()">下一關 ▶</button>
         </div>
@@ -164,85 +325,153 @@
 </main>
 
 <footer>
-    <p>資料來源：CISA、HKCERT、Google 安全中心。</p>
+    <p>資料來源：CISA、香港電腦保安事故協調中心 (HKCERT)、Google 安全中心。</p>
     <p class="footer-note">
-        <strong>免責聲明：</strong>本指南中提及的工具和軟體（例如 uBlock, VirusTotal, Brave）僅為基於當前行業標準的建議。
-        價格、功能和可靠性可能隨時間而變化。使用者在安裝任何產品或服務前應自行研究或諮詢 IT 專業人員。本指南的創作者對因使用這些策略而導致的軟體效能問題不承擔任何責任。
+        <strong>免責聲明：</strong>本指南中提及的工具和軟體（例如 uBlock、ProtonVPN）是基於當前行業標準的建議。
+        價格、功能和可靠性可能會變動。用戶在安裝前應自行研究或諮詢 IT 專業人士。本指南的創建者對軟體性能不承擔任何責任。
     </p>
 </footer>
 
 <script>
+    // --- Navigation Logic ---
     function showTab(tabId) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        event.target.classList.add('active');
     }
+
+    // --- Tool Finder Logic ---
     let selections = { userType: null, concern: null };
+
     function selectOption(category, value, element) {
         selections[category] = value;
+        // Clear previous selection visually in that group
         element.parentNode.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
     }
+
     function recommendTools() {
-        const resDiv = document.getElementById('tool-result');
         const { userType, concern } = selections;
+        const resDiv = document.getElementById('tool-result');
+
         if (!userType || !concern) {
-            alert("請選擇兩個選項以取得建議。");
+            alert("請選擇兩個選項以獲得建議。");
             return;
         }
-        let title = "", rows = "";
-        const createRow = (name, type, pros, cons, cost) => `<tr><td style="font-weight:bold;">${name}<br><span style="font-weight:normal; font-size:0.85em; color:#64748b;">${type}</span></td><td style="color:var(--success);">${pros}</td><td style="color:var(--warning);">${cons}</td><td style="font-weight:bold;">${cost}</td></tr>`;
 
+        let title = "";
+        let rows = "";
+
+        // Helper to make table rows
+        const createRow = (name, type, pros, cons, cost) => `
+            <tr>
+                <td style="font-weight:bold;">${name}<br><span style="font-weight:normal; font-size:0.85em; color:#64748b;">${type}</span></td>
+                <td style="color:var(--success);">${pros}</td>
+                <td style="color:var(--warning);">${cons}</td>
+                <td style="font-weight:bold;">${cost}</td>
+            </tr>
+        `;
+
+        // Logic Tree
         if (userType === 'individual') {
             if (concern === 'basic') {
-                title = "「基本防禦」組合";
-                rows += createRow("uBlock Origin", "擴充功能", "極其有效的廣告攔截器；輕量級。", "可能破壞某些影片網站/表單。", "免費");
-                rows += createRow("Malwarebytes Browser Guard", "擴充功能", "即時攔截詐騙/技術支援網站。", "偶有誤報。", "免費");
-                rows += createRow("VirusTotal.com", "網站", "用70多種防毒引擎掃描網址。", "僅手動檢查（非自動）。", "免費");
+                title = "「基本防禦」套件";
+                rows += createRow("uBlock Origin", "擴充功能", "頂級的廣告攔截器。記憶體佔用非常低。", "可能需要點幾下才能修復某些網站。", "免費");
+                rows += createRow("HKCERT 詐騙陷阱 / VirusTotal", "驗證工具", "點擊前檢查可疑網址是否安全。", "手動過程：需要複製/貼上。", "免費");
+                rows += createRow("Malwarebytes Browser Guard", "擴充功能", "即時封鎖詐騙網站。", "可能有誤報（過於積極）。", "免費");
             } else {
-                title = "「隱形使用者」組合";
-                rows += createRow("Brave 瀏覽器", "瀏覽器", "內建攔截追蹤器；速度快。", "基於 Chromium（Google 核心）。", "免費");
-                rows += createRow("Privacy Badger", "擴充功能", "自動學習並攔截隱形追蹤器。", "在「學習」階段會遺漏一些追蹤器。", "免費");
-                rows += createRow("ProtonVPN (免費版)", "應用程式", "加密公共 Wi-Fi；無日誌政策。", "免費版速度較慢。", "免費");
+                // Individual + Privacy
+                title = "「隱形用戶」套件";
+                rows += createRow("Firefox 或 Brave", "瀏覽器", "Firefox（強化版）或 Brave 預設封鎖追踪器。", "某些網站可能無法完美載入。", "免費");
+                rows += createRow("ProtonVPN", "應用程式", "總部在瑞士，嚴格的無日誌政策，高安全性。", "免費版限制速度和國家。", "免費 / 付費");
+                rows += createRow("DuckDuckGo Essentials", "擴充功能", "封鎖追踪器並為網站隱私評分。", "只封鎖追踪器，不封鎖所有美觀廣告。", "免費");
             }
         } else {
+            // SME
             if (concern === 'basic') {
-                title = "「團隊安全」堆疊";
-                rows += createRow("Sandboxie", "軟體", "隔離病毒，使其無法觸及作業系統。", "設定需要一些學習曲線。", "免費 / 30美元");
-                rows += createRow("OpenDNS / Quad9", "DNS 設定", "為整個辦公室攔截惡意網域。", "難以在本地將特定網站加入白名單。", "免費");
-                rows += createRow("WOT (Web of Trust)", "擴充功能", "視覺化的紅/綠評分有助於培訓員工。", "評分由使用者產生（可能帶有偏見）。", "免費");
+                title = "「團隊安全」組合";
+                rows += createRow("Quad9 (DNS)", "網路設定", "為整個辦公室網路封鎖惡意域名。", "沒有儀表板可查看誰點擊了什麼。", "免費");
+                rows += createRow("HKCERT 詐騙陷阱 / VirusTotal", "驗證工具", "點擊前檢查可疑網址是否安全。", "手動過程：需要複製/貼上。", "免費");
+                rows += createRow("Bitdefender TrafficLight", "擴充功能", "掃描搜尋結果中的連結以防釣魚。", "會在搜尋頁面添加一個小圖示。", "免費");
             } else {
-                title = "「合規與隱私」堆疊";
-                rows += createRow("企業 VPN", "服務", "為遠端工作者強制加密。", "每位使用者每月需付費。", "每位使用者5-10美元");
-                rows += createRow("NoScript", "擴充功能", "攔截所有腳本/漏洞利用。非常安全。", "會破壞許多現代網站；需要設定。", "免費");
-                rows += createRow("HTTPS-Only 模式", "瀏覽器設定", "強制各處使用加密。", "可能無法存取舊的內部網站。", "免費");
+                // SME + Privacy
+                title = "「合規與隱私」組合";
+                rows += createRow("NextDNS", "DNS 服務", "在網路層級封鎖追踪器，並提供詳細日誌。", "需要在路由器上進行技術設定。", "免費 / 每月 $2");
+                rows += createRow("僅 HTTPS 模式", "瀏覽器政策", "強制各處使用加密；防止資料外洩。", "可能會破壞非常老舊的內部網站。", "免費");
+                rows += createRow("企業 VPN", "服務", "為遠端/出差的員工加密所有流量。", "每位使用者需支付月費。", "$5-10/使用者");
             }
         }
+
         resDiv.style.display = 'block';
         resDiv.innerHTML = `
-            <h3 style="color:var(--primary); margin-top:0;">${title}</h3><p>比較優缺點以決定適合您需求的方案：</p>
-            <table><thead><tr><th style="width:25%">工具/類型</th><th style="width:30%">✅ 優點</th><th style="width:30%">⚠️ 缺點</th><th style="width:15%">費用</th></tr></thead><tbody>${rows}</tbody></table>
-            <div class="disclaimer-box"><strong>⚠️ 免責聲明：</strong>以上建議僅供參考。價格和功能會隨時間變化。如有需要，請尋求專業意見。</div>`;
+            <h3 style="color:var(--primary); margin-top:0;">${title}</h3>
+            <p>比較優缺點以決定最適合您需求的方案：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:25%">工具</th>
+                        <th style="width:30%">✅ 優點</th>
+                        <th style="width:30%">⚠️ 缺點</th>
+                        <th style="width:15%">費用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+            
+            <div class="disclaimer-box">
+                <strong>⚠️ 學生注意事項：</strong>安全是一個過程，而不是一個產品。安裝這些工具是一個很好的開始，
+                但您仍必須養成良好習慣（例如檢查網址和使用雙重認證）。
+            </div>
+        `;
     }
+
+    // --- Game Logic ---
     const levels = [
-        { url: "https://amazon-support.billing-secure.com/login", isSafe: false, msg: "騙局！仔細看：網域是 'billing-secure.com'，不是 'amazon.com'。這是子網域的詭計。" },
-        { url: "https://www.google.com/search?q=cats", isSafe: true, msg: "安全。網域就是 'google.com'。其餘部分只是搜尋查詢。" },
-        { url: "http://www.bankofamerica.com", isSafe: false, msg: "不安全！它顯示 'http'，而不是 'https'。絕不在沒有鎖頭圖示（HTTPS）的情況下進行銀行業務。資料可能被攔截。" },
-        { url: "https://bit.ly/3x89sA", isSafe: false, msg: "有風險！縮短的連結隱藏了目的地。先使用「連結擴展器」或 HKCERT 守網者檢查一下。" }
+        {
+            url: "https://amazon-support.billing-secure.com/login",
+            isSafe: false,
+            msg: "詐騙！主域名是 'billing-secure.com'。'Amazon' 只是子域名前綴。永遠要看 '.com' 前面的單字。"
+        },
+        {
+            url: "https://www.google.com/search?q=cats",
+            isSafe: true,
+            msg: "安全。主域名就是 'google.com'。其餘部分只是搜尋查詢路徑。"
+        },
+        {
+            url: "http://www.bankofamerica.com",
+            isSafe: false,
+            msg: "不安全！網址是 'http'（沒有 S）。絕不在沒有鎖頭圖示 (HTTPS) 的情況下進行銀行業務。同一 Wi-Fi 下的駭客可以看到您的密碼。"
+        },
+        {
+            url: "https://bit.ly/3x89sA",
+            isSafe: false,
+            msg: "有風險！短網址隱藏了最終目的地。在您使用「連結擴展」工具查看它指向何處之前，不能信任它。"
+        }
     ];
+    
     let currentLevel = 0;
+
     function checkScam(userTrusted) {
-        const lvl = levels[currentLevel], feedback = document.getElementById('game-feedback'), nextBtn = document.getElementById('next-level-btn');
+        const lvl = levels[currentLevel];
+        const feedback = document.getElementById('game-feedback');
+        const nextBtn = document.getElementById('next-level-btn');
+        
         let correct = (userTrusted === lvl.isSafe);
+        
         feedback.style.display = 'block';
         if(correct) {
-            feedback.style.background = '#dcfce7'; feedback.style.color = '#15803d';
-            feedback.innerHTML = "🎉 正確！" + lvl.msg;
+            feedback.style.background = '#dcfce7';
+            feedback.style.color = '#15803d';
+            feedback.innerHTML = "🎉 正確！ " + lvl.msg;
         } else {
-            feedback.style.background = '#fee2e2'; feedback.style.color = '#991b1b';
-            feedback.innerHTML = "❌ 錯誤！" + lvl.msg;
+            feedback.style.background = '#fee2e2';
+            feedback.style.color = '#991b1b';
+            feedback.innerHTML = "❌ 錯誤！ " + lvl.msg;
         }
+
         if (currentLevel < levels.length - 1) {
             nextBtn.style.display = 'block';
         } else {
@@ -251,6 +480,7 @@
             nextBtn.onclick = () => location.reload();
         }
     }
+
     function nextLevel() {
         currentLevel++;
         document.getElementById('game-url').innerText = levels[currentLevel].url;
