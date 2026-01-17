@@ -146,6 +146,14 @@
             margin-top: 2rem;
         }
 
+        .tip-box {
+            background-color: #e0f2fe;
+            border-left: 5px solid var(--primary);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+        }
+
         /* Simulator Styles */
         .sim-grid {
             display: grid;
@@ -219,7 +227,7 @@
 <body>
 
 <header>
-    <h1>💾 Data Survival Guide</h1>
+    <h1>💽 Data Survival Guide</h1>
     <p>Understanding Backups: Simple, Effective, & Ransomware-Proof</p>
 </header>
 
@@ -258,10 +266,10 @@
         <div class="card" style="border-left: 5px solid var(--danger);">
             <h2>⚠️ The New Threat: Ransomware</h2>
             <p>Today, the 3-2-1 rule isn't enough because hackers can lock your computer <strong>AND</strong> your attached backup drive.</p>
-            <p><strong>We need two extra numbers:</strong></p>
+            <p><strong>We need two extra numbers (3-2-1-1-0):</strong></p>
             <ul>
                 <li><strong>1 Immutable/Offline Copy:</strong> A backup that cannot be changed (Read-Only) or is physically unplugged (Air-Gapped).</li>
-                <li><strong>0 Errors:</strong> You must TEST your backups to ensure there are zero errors.</li>
+                <li><strong>0 Errors:</strong> You must TEST your backups (Restore Test) to ensure there is no data rot.</li>
             </ul>
         </div>
     </div>
@@ -315,7 +323,7 @@
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-cloud-backup"> 
-                    <span>🛡️ Cloud Backup (Backblaze/IDrive with History)</span>
+                    <span>🛡️ Cloud Backup (Backblaze/IDrive)</span>
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-offline"> 
@@ -372,6 +380,7 @@
 
         let strategyName = "";
         let strategyDesc = "";
+        let studentTip = "";
         let optionsHTML = "";
 
         // HELPER: Function to generate rows for the comparison table
@@ -390,47 +399,63 @@
             if (budget === 'cheap') {
                 strategyName = "Strategy: The 'Manual Hybrid'";
                 strategyDesc = "You don't need expensive software. Use a physical drive for heavy files and free cloud accounts for documents.";
+                studentTip = "💡 <strong>Tip:</strong> Don't rely on USB sticks! They fail often. Buy a proper external Hard Drive (HDD) or SSD.";
                 optionsHTML = `
                     ${createRow("External USB HDD", "One-time cost (HK$500), Fast transfer", "Can break/get lost, Manual work")}
                     ${createRow("Google Drive / iCloud (Free Tier)", "Easy to use, Synced everywhere", "Small storage limit (15GB), Sync ≠ Backup")}
-                    ${createRow("Free Backup Software (e.g., Veeam Free)", "Enterprise reliability for $0", "Slight learning curve")}
+                    ${createRow("Free Backup Software (Veeam Agent Free)", "Enterprise reliability for $0", "Slight learning curve to setup")}
                 `;
             } else {
                 strategyName = "Strategy: Automated Cloud Backup";
                 strategyDesc = "The best protection is one you don't have to think about. Pay a subscription to have your computer back up automatically.";
+                studentTip = "💡 <strong>Tip:</strong> Unlike Google Drive, these tools keep deleted files for 30 days to 1 year, saving you from accidental deletion.";
                 optionsHTML = `
-                    ${createRow("Backblaze Personal", "Unlimited storage, Very simple", "No folder selection (backs up everything), 30-day history limit")}
+                    ${createRow("Backblaze Personal", "Unlimited storage, Very simple", "No folder selection (backs up everything), 1-year history requires extra fee")}
                     ${createRow("IDrive Personal", "Backs up Phones + PCs, Good history", "Storage limit (e.g., 5TB), Interface is complex")}
                     ${createRow("Acronis Cyber Protect", "Includes Antivirus + Backup", "More expensive, Heavy on system resources")}
                 `;
             }
         
-        // 2. CREATOR / POWER USER
+        // 2. CREATOR / POWER USER (UPDATED LOGIC)
         } else if (type === 'creator') {
-             strategyName = "Strategy: The 3-2-1 Power User";
-             strategyDesc = "You have too much data (TB+) for standard cloud plans. You need local speed + cheap 'Cold Storage' in the cloud.";
-             optionsHTML = `
-                ${createRow("NAS Device (e.g., Synology/QNAP)", "Fast local access, RAID protection", "High upfront hardware cost (HK$3,000+)")}
-                ${createRow("Cloud Archive (e.g., AWS S3 / B2)", "Extremely cheap per TB", "Complex setup, Restore costs money")}
-                ${createRow("Off-the-shelf 12TB+ HDD", "Cheapest cost per TB", "High failure risk (Single point of failure)")}
-            `;
+             if (budget === 'cheap') {
+                strategyName = "Strategy: The 'Cold Storage' Hoarder";
+                strategyDesc = "You have TBs of footage. Cloud is too expensive for instant access. Use 'Cold Storage' for archives you rarely touch.";
+                studentTip = "💡 <strong>Concept:</strong> 'Cold Storage' (like Glacier) is cheap because it takes hours to retrieve data. 'Hot Storage' is instant but expensive.";
+                optionsHTML = `
+                    ${createRow("Bare HDD + Dock", "Cheapest per TB (Shucking drives)", "High manual effort, physical risk")}
+                    ${createRow("Amazon S3 Glacier Deep Archive", "Extremely cheap (~$1/TB/month)", "Restore costs money and takes 12+ hours")}
+                    ${createRow("Backblaze B2", "Cheap, S3 Compatible", "Requires 3rd party software (like CyberDuck)")}
+                `;
+             } else {
+                strategyName = "Strategy: The NAS Automator";
+                strategyDesc = "Time is money. Use a NAS (Network Attached Storage) to handle RAID protection locally, then auto-sync to the cloud.";
+                studentTip = "💡 <strong>Warning:</strong> RAID (Redundant Array of Independent Disks) is NOT backup! It only protects against drive failure, not deletion or fire.";
+                optionsHTML = `
+                    ${createRow("Synology NAS (Hardware)", "Fast local editing, Automated ecosystem", "High upfront cost (HK$3,000+)")}
+                    ${createRow("Synology C2 Cloud", "Integrated perfectly with NAS", "More expensive than generic S3 storage")}
+                    ${createRow("Dropbox Professional", "Standard for creative sharing", "Very expensive for large capacities (>3TB)")}
+                `;
+             }
 
         // 3. SME / BUSINESS
         } else { 
             if (budget === 'cheap') {
-                strategyName = "Strategy: The 'Pull' Network Backup";
-                strategyDesc = "Centralize data on a secure office server (NAS) that 'pulls' data from employee laptops, then syncs to cloud.";
+                strategyName = "Strategy: The 'License-Free' Pull";
+                strategyDesc = "Centralize data on a secure office server (NAS) that 'pulls' data from employee laptops using free included software.";
+                studentTip = "💡 <strong>Pro Tip:</strong> Many NAS brands (like Synology) include 'Active Backup for Business' software for free. No monthly fees per laptop.";
                 optionsHTML = `
-                    ${createRow("Synology Active Backup", "Free with hardware, Automated", "Requires hardware maintenance")}
+                    ${createRow("Synology Active Backup", "Free with hardware, Automated, De-duplication", "Requires hardware maintenance")}
                     ${createRow("Wasabi Cloud Storage", "Cheaper than Amazon/Google, Fast", "No native backup app (storage only)")}
                 `;
             } else {
-                strategyName = "Strategy: Managed Fleet Backup";
+                strategyName = "Strategy: Managed Fleet Protection";
                 strategyDesc = "Use a centralized dashboard to manage all employee laptops remotely. Essential for compliance and ransomware protection.";
+                studentTip = "💡 <strong>Concept:</strong> 'Immutable Storage' means even the admin cannot delete the backups for a set time. This defeats ransomware.";
                 optionsHTML = `
                     ${createRow("CrashPlan for Business", "Unlimited storage, deleted file retention", "Java-based app can be slow")}
                     ${createRow("Veeam Data Platform", "Industry standard, Instant Recovery", "Expensive, Requires IT knowledge")}
-                    ${createRow("Microsoft 365 Backup (Third Party)", "Protects Emails/Teams (AFI.ai, Dropsuite)", "Extra cost per user")}
+                    ${createRow("Microsoft 365 Backup (AFI.ai / Dropsuite)", "Protects Emails/Teams (Microsoft doesn't backup!)", "Extra cost per user")}
                 `;
             }
         }
@@ -453,6 +478,11 @@
                     ${optionsHTML}
                 </tbody>
             </table>
+            
+            <div class="tip-box">
+                ${studentTip}
+            </div>
+
             <div style="margin-top:1.5rem; padding:1rem; background-color:#fff3cd; border:1px solid #ffeeba; border-radius:8px; font-size:0.9rem; color:#856404;">
                 <strong>⚠️ Disclaimer:</strong> The recommendations above are for reference only. Prices and features change over time. Please seek professional advice if needed.
             </div>
