@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desktop Security: Complete Edition</title>
+    <title>Desktop Security: 2026 Complete Edition</title>
     <style>
         :root {
             --primary: #0ea5e9; /* Cyber Blue */
@@ -14,7 +14,8 @@
             --text-muted: #94a3b8;
             --success: #22c55e;
             --danger: #ef4444;
-            --accent: #f59e0b; /* Amber for EDR highlight */
+            --warning: #f59e0b;
+            --accent: #8b5cf6; /* Violet for new concepts */
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
 
@@ -150,7 +151,7 @@
             <button class="nav-btn active" id="btn-home">Overview</button>
             <button class="nav-btn" id="btn-setup">Setup Phase</button>
             <button class="nav-btn" id="btn-maint">Maintenance</button>
-            <button class="nav-btn" id="btn-edr">EDR</button>
+            <button class="nav-btn" id="btn-edr">EDR / MDR</button>
             <button class="nav-btn" id="btn-sme">SME vs Individual</button>
             <button class="nav-btn" id="btn-quiz">Quiz</button>
         </div>
@@ -161,7 +162,7 @@
         <section id="home" class="tab-content active-tab">
             <div class="hero">
                 <h1>Desktop Security Fundamentals</h1>
-                <p>Securing a computer is a lifecycle process. From the first setup to advanced threat hunting with EDR.</p>
+                <p>Securing a computer is a lifecycle process. From "Passkeys" to automated "MDR" threat hunting.</p>
                 
                 <div class="stat-row">
                     <div class="stat">
@@ -184,15 +185,15 @@
             <div class="grid-container">
                 <div class="info-card">
                     <h3>🏗️ Setup</h3>
-                    <p>The foundation. Installing the OS, enabling encryption, and creating strong accounts sets the baseline for security.</p>
+                    <p>The foundation. Installing the OS, enabling encryption, and adopting <strong>Passkeys</strong> (the successor to passwords).</p>
                 </div>
                 <div class="info-card">
                     <h3>🔧 Maintenance</h3>
-                    <p>The routine. Updates, scanning, and audits ensure that new vulnerabilities don't compromise your system over time.</p>
+                    <p>The routine. Updates, DNS filtering, and audits ensure that new vulnerabilities don't compromise your system.</p>
                 </div>
                 <div class="info-card">
-                    <h3>🤖 EDR Technology</h3>
-                    <p>Endpoint Detection and Response. A super-smart security guard that watches devices in real-time, detecting advanced threats.</p>
+                    <h3>🤖 EDR / MDR</h3>
+                    <p>Endpoint Detection and Response. A super-smart security guard that watches devices. SMEs should use <strong>MDR</strong> to manage this.</p>
                 </div>
             </div>
         </section>
@@ -204,33 +205,32 @@
                 <div class="info-card">
                     <h3>💿 OS & Encryption</h3>
                     <ul class="checklist">
-                        <li>Start with a clean install of Windows, macOS, or Linux.</li>
+                        <li>Start with a clean install (Windows 11/Mac Sequoia).</li>
                         <li>Enable <strong>Full-Disk Encryption</strong> (BitLocker/FileVault).</li>
-                        <li>Turn on the built-in Firewall immediately.</li>
+                        <li>Create a separate <strong>Standard User</strong> account for daily work.</li>
                     </ul>
                 </div>
                 <div class="info-card">
-                    <h3>🔑 Accounts & Auth</h3>
+                    <h3>🔑 Passkeys & Auth</h3>
                     <ul class="checklist">
-                        <li>Create separate <strong>Admin</strong> and <strong>Standard</strong> accounts.</li>
-                        <li>Use a Password Manager to generate complex (12+ char) passwords.</li>
-                        <li>Enable <strong>MFA (Multi-Factor Authentication)</strong> on everything.</li>
+                        <li><strong>Adopt Passkeys:</strong> Use biometrics (FaceID/Fingerprint) instead of passwords where possible.</li>
+                        <li><strong>Password Manager:</strong> For older sites, use a manager (Bitwarden/1Password).</li>
+                        <li><strong>MFA:</strong> Use an Authenticator App, not SMS.</li>
                     </ul>
                 </div>
                 <div class="info-card">
                     <h3>🛡️ Software Defense</h3>
                     <ul class="checklist">
-                        <li>Install reputable Antivirus/Anti-malware.</li>
-                        <li>For businesses, prepare for EDR deployment.</li>
-                        <li>Secure the Network: Use WPA3 encryption for Wi-Fi.</li>
+                        <li><strong>DNS Filtering:</strong> Set DNS to Quad9 (9.9.9.9) or NextDNS to block malware links automatically.</li>
+                        <li><strong>Uninstall Bloatware:</strong> Remove pre-installed trial software immediately.</li>
                     </ul>
                 </div>
-                <div class="info-card">
-                    <!-- FIXED ICON HERE -->
-                    <h3>☁️ The 3-2-1 Backup Rule</h3>
+                <div class="info-card" style="border-color: var(--accent);">
+                    <h3>☁️ Backup: The "Immutable" Rule</h3>
                     <p><strong>3</strong> Copies of data.</p>
-                    <p><strong>2</strong> Different media types (e.g., Cloud + External Drive).</p>
-                    <p><strong>1</strong> Copy kept Offsite (to protect against fire/theft).</p>
+                    <p><strong>2</strong> Different media types.</p>
+                    <p><strong>1</strong> Copy <strong>Immutable/Offline</strong>.</p>
+                    <p style="font-size:0.9rem; color:var(--accent); margin-top:5px;"><em>*Critical: Ransomware destroys USB/Cloud backups. You need one copy hackers can't delete (Immutable).</em></p>
                 </div>
             </div>
         </section>
@@ -241,60 +241,56 @@
             <div class="grid-container">
                 <div class="info-card">
                     <h3>🔄 Updates & Patches</h3>
-                    <p>Software vulnerabilities are discovered daily. Set OS and Apps to <strong>Auto-Update</strong>. In an SME, test patches before rolling them out.</p>
+                    <p>Software vulnerabilities are discovered daily. Set OS and Apps to <strong>Auto-Update</strong>. <br><em>Gap:</em> Don't forget to update firmware (BIOS) and drivers.</p>
                 </div>
                 <div class="info-card">
-                    <h3>🕵️ Monitoring & Scanning</h3>
-                    <p>Run full system scans weekly. Be paranoid about emails, attachments, and USB drives. Use browser extensions for ad-blocking and privacy.</p>
+                    <h3>🕵️ Real-Time Scanning</h3>
+                    <p><strong>Practical Tip:</strong> Don't rely on "Weekly Full Scans" (they are slow/old school). Ensure <strong>Real-Time Protection</strong> is ON. Run a "Quick Scan" only if you suspect an issue.</p>
                 </div>
                 <div class="info-card">
-                    <h3>🎓 Education</h3>
-                    <p>Technology fails if the human fails. Stay informed on phishing trends. For SMEs, conduct regular <strong>Phishing Simulations</strong>.</p>
+                    <h3>🎓 Human Firewall</h3>
+                    <p>Technology fails if the human fails. Beware of <strong>AI Phishing</strong>: emails that sound professional and mimic your boss perfectly.</p>
                 </div>
                 <div class="info-card">
                     <h3>📋 Audit & Review</h3>
-                    <p>Periodically check logs for strange logins. Delete unused accounts. Verify that your backups can actually be restored (Test them!).</p>
+                    <p>Periodically check logins. <strong>Test your backups!</strong> A backup you haven't tested restoring is just a hope, not a strategy.</p>
                 </div>
             </div>
         </section>
 
         <!-- 4. EDR SECTION -->
         <section id="edr" class="tab-content">
-            <h2>Endpoint Detection and Response (EDR)</h2>
-            <p>Think of EDR as a super-smart security guard that watches over all your gadgets—laptops, desktops, smartphones, and servers.</p>
+            <h2>EDR vs MDR (The Practical Choice)</h2>
+            <p>Traditional Antivirus looks for "Files." EDR looks for "Behavior."</p>
             
             <div class="grid-container">
                 <!-- Definition Card -->
                 <div class="info-card">
-                    <h3>🔍 What are "Endpoints"?</h3>
-                    <p>An "endpoint" is any device that connects to a network.
-                    <br><strong>Individuals:</strong> Your home PC and phone.
-                    <br><strong>SMEs:</strong> Employee laptops, office desktops, and servers.</p>
-                </div>
-
-                <!-- How it Works Card -->
-                <div class="info-card">
                     <h3>⚙️ How EDR Works</h3>
                     <div class="edr-process">
                         <div class="edr-step">
-                            <strong>1. Monitoring:</strong> Runs quietly in the background, collecting data on running programs, files opened, and network connections.
+                            <strong>1. Detection:</strong> Uses AI to spot "Red Flags" (e.g., PowerShell running a script at 3 AM).
                         </div>
                         <div class="edr-step">
-                            <strong>2. Detection:</strong> Uses AI to spot "Red Flags" like programs trying to hide themselves or unusual data transfers.
-                        </div>
-                        <div class="edr-step">
-                            <strong>3. Response:</strong> Automatically isolates infected devices (cuts the internet) or rolls back changes to undo damage.
+                            <strong>2. Response:</strong> Automatically isolates the infected laptop (cuts the internet) to save the network.
                         </div>
                     </div>
                 </div>
 
                 <!-- Benefits Card -->
+                <div class="info-card" style="border-color: var(--warning);">
+                    <h3>🚨 The Problem for SMEs</h3>
+                    <p>EDR tools (like CrowdStrike) generate thousands of alerts. If you don't have a 24/7 security team, you will ignore them.</p>
+                    <p><strong>The Solution: MDR (Managed Detection & Response)</strong>.</p>
+                </div>
+
+                <!-- MDR Solution -->
                 <div class="info-card">
-                    <h3>🚀 Why Use EDR?</h3>
+                    <h3>✅ Why Choose MDR?</h3>
                     <ul class="checklist">
-                        <li><strong>Scalability:</strong> Protects many devices at once from a central dashboard.</li>
-                        <li><strong>Proactive:</strong> Unlike old antivirus (which waits for known viruses), EDR hunts for suspicious <em>behavior</em>.</li>
-                        <li><strong>Examples:</strong> CrowdStrike, Microsoft Defender for Endpoint, SentinelOne.</li>
+                        <li>You pay a subscription.</li>
+                        <li>A team of experts watches your EDR dashboard for you.</li>
+                        <li>They only call you if there is a real fire to put out.</li>
                     </ul>
                 </div>
             </div>
@@ -316,28 +312,28 @@
                 <tbody>
                     <tr>
                         <td><strong>Access Control</strong></td>
-                        <td>Single user or Family accounts</td>
-                        <td><strong>Least Privilege</strong> via Active Directory or IAM</td>
+                        <td>Personal Account</td>
+                        <td><strong>Least Privilege</strong> (No Admin rights for staff)</td>
                     </tr>
                     <tr>
-                        <td><strong>Software</strong></td>
-                        <td>Standard Antivirus</td>
-                        <td><strong>EDR</strong> & Network Monitoring Tools</td>
+                        <td><strong>Defense Tool</strong></td>
+                        <td>Windows Defender (Free)</td>
+                        <td><strong>MDR</strong> (Managed Service)</td>
                     </tr>
                     <tr>
-                        <td><strong>Policies</strong></td>
-                        <td>Common Sense</td>
-                        <td>Formal <strong>Cybersecurity Policy</strong> & Compliance (GDPR)</td>
+                        <td><strong>Network</strong></td>
+                        <td>Home Router</td>
+                        <td><strong>DNS Filtering</strong> & Segmentation</td>
                     </tr>
                     <tr>
                         <td><strong>Updates</strong></td>
-                        <td>Automatic / Immediate</td>
-                        <td>Managed / Tested to prevent downtime</td>
+                        <td>Automatic</td>
+                        <td>Managed (Patch Management Software)</td>
                     </tr>
                     <tr>
-                        <td><strong>Advanced</strong></td>
-                        <td>VPN for public Wi-Fi</td>
-                        <td><strong>Zero-Trust Architecture</strong> & VPN for Remote Work</td>
+                        <td><strong>Philosophy</strong></td>
+                        <td>"Be Careful"</td>
+                        <td><strong>Zero-Trust</strong> (Verify every request)</td>
                     </tr>
                 </tbody>
             </table>
@@ -369,7 +365,7 @@
     </main>
 
     <footer>
-        <p>Desktop Security Educational Module</p>
+        <p>Desktop Security Educational Module (Updated 2026)</p>
     </footer>
 
     <!-- SCRIPT -->
@@ -409,46 +405,46 @@
             const questions = [
                 // SETUP
                 {
-                    q: "1. What is the '3-2-1' Backup Rule?",
-                    options: ["3 backups, 2 years old, 1 password", "3 copies of data, 2 different media types, 1 offsite", "3 hard drives, 2 cloud accounts, 1 user", "3 passwords, 2 users, 1 computer"],
+                    q: "1. What is the updated 'Immutable' Backup Rule?",
+                    options: ["Backups must be in the cloud only", "One copy of data must be offline/immutable so ransomware can't delete it", "Backups should be done yearly", "Use a USB drive always connected to the PC"],
                     a: 1,
-                    exp: "Correct. 3 copies ensure redundancy, 2 media types protect against device failure, and 1 offsite protects against fire/theft."
+                    exp: "Correct. Ransomware often attacks connected backups. An 'Immutable' or offline copy is your last line of defense."
                 },
                 {
-                    q: "2. Why should you use separate 'Admin' and 'Standard' accounts?",
-                    options: ["To organize files better", "Because Admins get faster internet", "If a Standard account is hacked, the malware has limited permissions", "It is required by Windows"],
-                    a: 2,
-                    exp: "Correct. Limiting privileges prevents malware from installing itself system-wide if a user makes a mistake."
+                    q: "2. Why are Passkeys better than Passwords?",
+                    options: ["They are longer to type", "They use public-key cryptography and biometrics, making them un-phishable", "They are only for Apple devices", "They expire every day"],
+                    a: 1,
+                    exp: "Correct. Passkeys cannot be stolen via fake websites (phishing) because the private key never leaves your device."
                 },
                 {
                     q: "3. What does Full-Disk Encryption (like BitLocker) do?",
                     options: ["Speeds up the computer", "Prevents hackers from seeing your screen", "Protects data if the physical computer is stolen", "Stops viruses"],
                     a: 2,
-                    exp: "Correct. Encryption scrambles the data on the drive so it cannot be read without the password, even if the drive is removed."
+                    exp: "Correct. Encryption scrambles the data on the drive so it cannot be read without the key, even if the drive is removed."
                 },
                 // MAINTENANCE
                 {
-                    q: "4. What is the most critical maintenance task to prevent exploits?",
-                    options: ["Defragmenting the disk", "Applying Software/OS Updates and Patches", "Cleaning the keyboard", "Deleting old photos"],
+                    q: "4. What is 'DNS Filtering' (e.g., Quad9)?",
+                    options: ["A way to speed up download", "A 'phonebook' for the internet that automatically blocks known malicious websites", "A virus scanner", "A backup tool"],
                     a: 1,
-                    exp: "Correct. Updates patch known security holes that hackers use to enter systems."
+                    exp: "Correct. It blocks the connection to a bad site before your computer even loads it."
                 },
                 {
-                    q: "5. Why is MFA (Multi-Factor Authentication) important?",
-                    options: ["It adds a layer of security beyond just a password", "It makes logging in faster", "It creates a backup of your data", "It stops spam emails"],
+                    q: "5. Why is a 'Standard User' account safer than an 'Admin' account?",
+                    options: ["It prevents malware from easily installing itself system-wide", "It has faster internet", "It looks better", "It stops spam emails"],
                     a: 0,
-                    exp: "Correct. Even if a hacker steals your password, they cannot login without the second factor (like a code on your phone)."
+                    exp: "Correct. If you get hacked as a Standard User, the hacker usually cannot destroy the whole system."
                 },
                 {
-                    q: "6. What is a recommended password hygiene practice?",
-                    options: ["Write them on a sticky note", "Use the same password for everything so you don't forget", "Use a Password Manager and unique complex passwords", "Change passwords every day"],
+                    q: "6. How should you handle antivirus scanning in 2026?",
+                    options: ["Run manual full scans daily", "Turn it off to save battery", "Rely on Real-Time Protection and auto-scans", "Only scan when you see a virus"],
                     a: 2,
-                    exp: "Correct. Password managers allow you to have unique, un-guessable passwords for every site."
+                    exp: "Correct. Modern engines scan files the moment they are touched (Real-Time). Manual full scans are rarely needed."
                 },
                 // SME vs INDIVIDUAL
                 {
                     q: "7. SME: What is the 'Principle of Least Privilege'?",
-                    options: ["Giving the boss all the access", "Giving users only the access they need to do their job", "Making sure the guest account has admin rights", "Banning internet access"],
+                    options: ["Giving the boss all the access", "Giving users only the minimum access they need to do their job", "Making sure the guest account has admin rights", "Banning internet access"],
                     a: 1,
                     exp: "Correct. Restricting access minimizes the potential damage if an employee account is compromised."
                 },
@@ -460,16 +456,16 @@
                 },
                 // EDR (New Questions)
                 {
-                    q: "9. EDR: What is an 'Endpoint'?",
-                    options: ["The end of a network cable", "Any device connected to a network (laptop, phone, server)", "A type of virus", "The firewall settings"],
-                    a: 1,
-                    exp: "Correct. Endpoints are the devices at the edge of the network that users interact with."
-                },
-                {
-                    q: "10. How is EDR different from traditional Antivirus?",
+                    q: "9. How is EDR different from traditional Antivirus?",
                     options: ["It is cheaper", "It only scans for known viruses", "It proactively monitors behavior and uses AI to spot unknown threats", "It only works on Macs"],
                     a: 2,
                     exp: "Correct. Traditional AV looks for known signatures. EDR looks for suspicious behavior (like a program trying to hide)."
+                },
+                {
+                    q: "10. Why is MDR (Managed Detection Response) better for SMEs than raw EDR?",
+                    options: ["It is free", "SMEs usually lack the security staff to analyze EDR alerts themselves", "It is faster to install", "It works without internet"],
+                    a: 1,
+                    exp: "Correct. EDR tools are complex. MDR provides a human expert to manage the tool for you."
                 },
                 {
                     q: "11. What is an automated 'Response' action an EDR system might take?",
@@ -492,15 +488,15 @@
                 },
                 {
                     q: "14. When disposing of an old computer, what should you do?",
-                    options: ["Throw it in the trash", "Delete the files to the Recycle Bin", "Use a secure deletion tool or destroy the drive", "Give it to a friend"],
+                    options: ["Throw it in the trash", "Delete the files to the Recycle Bin", "Use a secure deletion tool (wipe) or destroy the drive", "Give it to a friend"],
                     a: 2,
                     exp: "Correct. Standard deletion doesn't remove data permanently. Secure wiping or physical destruction is required."
                 },
                 {
-                    q: "15. What is Phishing?",
-                    options: ["Fishing for data on a hard drive", "A social engineering attack via email to steal credentials", "Connecting to Wi-Fi", "Installing a Printer"],
+                    q: "15. What is the danger of AI in Phishing?",
+                    options: ["It makes emails slower", "It allows hackers to create perfect grammar and mimic specific people (Deepfakes)", "It blocks emails", "It costs money"],
                     a: 1,
-                    exp: "Correct. Phishing relies on tricking the user into clicking links or downloading files via deceptive emails."
+                    exp: "Correct. AI removes the typos and bad grammar that used to make phishing easy to spot."
                 }
             ];
 

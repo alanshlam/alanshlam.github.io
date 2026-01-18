@@ -14,6 +14,7 @@
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
 
@@ -197,8 +198,8 @@
                         <span class="stat-label">MDM Tools</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-icon">📱</span>
-                        <span class="stat-label">BYOD</span>
+                        <span class="stat-icon">📷</span>
+                        <span class="stat-label">QR Risks</span>
                     </div>
                 </div>
 
@@ -212,7 +213,7 @@
                 </div>
                 <div class="info-card">
                     <h3><span class="card-icon">🛠️</span> Maintenance</h3>
-                    <p>Security is a habit. Regular updates, scanning for malware, and checking app permissions keep you safe over time.</p>
+                    <p>Security is a habit. Regular updates, scanning for malware, and weekly reboots keep you safe.</p>
                 </div>
                 <div class="info-card">
                     <h3><span class="card-icon">💼</span> For SMEs</h3>
@@ -228,25 +229,25 @@
                 <div class="info-card">
                     <h3>🔐 Auth & Access</h3>
                     <ul class="checklist">
-                        <li><strong>Strong Lock:</strong> Use a 6-digit PIN or complex password. Patterns are easily guessed.</li>
+                        <li><strong>Alphanumeric Passcode:</strong> 6 digits are now easily brute-forced. Use a mix of letters and numbers (e.g., 8+ characters).</li>
                         <li><strong>Biometrics:</strong> Enable FaceID or Fingerprint for convenience and security.</li>
-                        <li><strong>MFA:</strong> Turn on Multi-Factor Authentication for all linked accounts (Google, iCloud).</li>
+                        <li><strong>App-Based MFA:</strong> Do not use SMS for 2-Factor Authentication (Sim Swapping risk). Use an app like <em>Google Authenticator</em>.</li>
                     </ul>
                 </div>
                 <div class="info-card">
                     <h3>🛡️ Software & Encryption</h3>
                     <ul class="checklist">
-                        <li><strong>Encryption:</strong> Ensure full-disk encryption is active (usually default on modern iOS/Android).</li>
-                        <li><strong>Remote Wipe:</strong> Enable "Find My" (iOS) or "Find My Device" (Android) to erase data if stolen.</li>
-                        <li><strong>Security Apps:</strong> Install reputable anti-malware (especially on Android).</li>
+                        <li><strong>Encryption:</strong> Ensure full-disk encryption is active (Default on modern phones).</li>
+                        <li><strong>Remote Wipe:</strong> Setup "Find My" (iOS) or "Find My Device" (Android) immediately.</li>
+                        <li><strong>Anti-Malware:</strong> Highly recommended for <strong>Android</strong>. (iOS is sandboxed, so focus on web filters there).</li>
                     </ul>
                 </div>
                 <div class="info-card">
                     <h3>📶 Network & Privacy</h3>
                     <ul class="checklist">
                         <li><strong>VPN:</strong> Install a VPN for using public Wi-Fi (coffee shops, airports).</li>
-                        <li><strong>Permissions:</strong> Deny unnecessary app permissions (e.g., a Flashlight app doesn't need your Location).</li>
-                        <li><strong>Backups:</strong> Enable automated encrypted cloud backups.</li>
+                        <li><strong>Permissions:</strong> Deny unnecessary permissions. A Flashlight app does NOT need your Contacts.</li>
+                        <li><strong>Backups:</strong> Enable encrypted cloud backups so you don't hesitate to "Remote Wipe" if lost.</li>
                     </ul>
                 </div>
             </div>
@@ -257,16 +258,16 @@
             <h2>Ongoing Maintenance: Daily Habits</h2>
             <div class="grid-container">
                 <div class="info-card">
-                    <h3>🔄 Updates</h3>
-                    <p>OS and App updates contain critical security patches. <br><strong style="color:var(--accent)">Golden Rule:</strong> Enable Automatic Updates and install them as soon as they appear.</p>
+                    <h3>🔄 Updates & Reboots</h3>
+                    <p><strong>The Weekly Reboot:</strong> Restart your phone once a week. This clears temporary memory and breaks non-persistent spyware (like commercial surveillance tools).</p>
                 </div>
                 <div class="info-card">
                     <h3>📥 App Hygiene</h3>
-                    <p>Only download apps from official stores (App Store, Google Play). <br><strong>Sideloading</strong> (installing from websites) bypasses security checks and is a major malware vector.</p>
+                    <p>Only download apps from official stores (App Store, Google Play). <br><strong>Sideloading</strong> (installing from websites) is the #1 way phones get infected.</p>
                 </div>
                 <div class="info-card">
-                    <h3>🧠 Awareness</h3>
-                    <p>Learn to spot <strong>Smishing</strong> (SMS Phishing). Banks and deliveries will never ask for passwords via text. If in doubt, do not click the link.</p>
+                    <h3>🧠 "Quishing" & Smishing</h3>
+                    <p><strong>Quishing:</strong> Malicious QR codes in emails or on parking meters. They bypass email filters. Inspect the URL after scanning before you click!</p>
                 </div>
             </div>
         </section>
@@ -274,7 +275,7 @@
         <!-- 4. MDM & BYOD SECTION -->
         <section id="mdm" class="tab-content">
             <h2>Understanding MDM & BYOD</h2>
-            <p>For businesses (SMEs), managing devices is a balance between security and flexibility. Here is the breakdown.</p>
+            <p>For businesses (SMEs), managing devices is a balance between security and flexibility.</p>
             
             <div class="comparison-wrapper">
                 <!-- MDM CARD -->
@@ -285,7 +286,7 @@
                     <div class="pros-cons">
                         <span class="pc-title">Functions:</span>
                         <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Remote Wipe (if stolen)</div>
-                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Push Updates automatically</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Separate Work/Personal Data</div>
                         <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> Enforce Password Rules</div>
                     </div>
                 </div>
@@ -294,12 +295,11 @@
                 <div class="comp-card byod">
                     <span class="badge badge-byod">The Policy</span>
                     <h3>BYOD (Bring Your Own Device)</h3>
-                    <p>Like bringing your own lunch to work. Employees use their personal phones for work tasks. Convenient, but risky without rules.</p>
+                    <p>Employees use their personal phones for work. Convenient, but risky without rules (Policy) or "Containerization" software.</p>
                     <div class="pros-cons">
                         <span class="pc-title">Pros & Cons:</span>
-                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Saves company money</div>
-                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Employees are comfortable</div>
-                        <div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> Privacy concerns</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Saves company hardware costs</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> Employee comfort</div>
                         <div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> Risk of data leakage</div>
                     </div>
                 </div>
@@ -307,9 +307,14 @@
 
             <h3>Common MDM Software</h3>
             <div class="disclaimer">
-                <strong>⚠️ Disclaimer:</strong> The following software examples are provided for reference purposes only. Every organization has unique needs; please consult a qualified IT professional to determine the best solution for your specific company.
+                <strong>⚠️ Disclaimer:</strong> The following software examples are provided for educational reference. Consult an IT professional for your specific needs.
             </div>
             <div class="software-grid">
+                <div class="soft-card" style="border-color: var(--accent);">
+                    <span class="soft-name">Google Workspace Endpoint</span>
+                    <span class="soft-desc" style="color: white;">Best for SMEs/Startups.</span>
+                    <span class="soft-desc">If you use Gmail for business, you already have this. It's free/included and easy to use.</span>
+                </div>
                 <div class="soft-card">
                     <span class="soft-name">Microsoft Intune</span>
                     <span class="soft-desc">Best for Windows/Office ecosystems.</span>
@@ -321,10 +326,6 @@
                 <div class="soft-card">
                     <span class="soft-name">Hexnode</span>
                     <span class="soft-desc">Affordable, cross-platform, good for kiosks.</span>
-                </div>
-                <div class="soft-card">
-                    <span class="soft-name">Kandji</span>
-                    <span class="soft-desc">Apple-focused, known for easy automation.</span>
                 </div>
             </div>
         </section>
@@ -355,7 +356,7 @@
     </main>
 
     <footer>
-        <p>Mobile Security Educational Module</p>
+        <p>Mobile Security Educational Module | Updated for 2026</p>
     </footer>
 
     <!-- SCRIPT -->
@@ -393,10 +394,10 @@
             const questions = [
                 // SETUP
                 {
-                    q: "1. What is the most effective screen lock method?",
-                    options: ["A 4-digit PIN (e.g., 1234)", "A Pattern Swipe", "Biometrics (Fingerprint/Face) + Strong Password", "No lock for faster access"],
+                    q: "1. What is the most secure screen lock method today?",
+                    options: ["A 4-digit PIN", "A Pattern Swipe", "Alphanumeric Passcode (Letters+Numbers) + Biometrics", "No lock needed"],
                     a: 2,
-                    exp: "Correct. Biometrics offer convenience, while a strong alphanumeric password provides a secure fallback."
+                    exp: "Correct. Simple 4 or 6 digit PINs can be brute-forced quickly by modern tools. Alphanumeric is best."
                 },
                 {
                     q: "2. Why should you enable 'Remote Wipe'?",
@@ -405,10 +406,10 @@
                     exp: "Correct. If a device is lost, Remote Wipe ensures a thief cannot access your personal or company data."
                 },
                 {
-                    q: "3. When should you use a VPN on mobile?",
-                    options: ["Only at home", "When using Public Wi-Fi (Cafes, Airports)", "Never, it slows down the phone", "Only when charging"],
+                    q: "3. What is the safest form of Multi-Factor Authentication (MFA)?",
+                    options: ["SMS Text Message", "Authenticator App (e.g., Google/Microsoft Auth)", "Email code", "Writing it on a post-it"],
                     a: 1,
-                    exp: "Correct. Public Wi-Fi is often unencrypted. A VPN encrypts your traffic so hackers on the same network can't spy on you."
+                    exp: "Correct. Apps generate codes locally. SMS codes can be intercepted via 'SIM Swapping' attacks."
                 },
                 // MAINTENANCE
                 {
@@ -418,18 +419,18 @@
                     exp: "Correct. Sideloading bypasses the security checks of the App Store/Play Store, increasing the risk of malware."
                 },
                 {
-                    q: "5. Why are App Permissions important?",
-                    options: ["They save storage space", "They stop ads", "They limit what data an app can access (e.g., Location, Contacts)", "They make apps run faster"],
-                    a: 2,
-                    exp: "Correct. You should restrict apps to only the permissions they actually need to function."
+                    q: "5. Why should you Reboot your phone weekly?",
+                    options: ["To charge the battery faster", "To clear non-persistent malware (spyware) from memory", "To delete your photos", "To improve the camera"],
+                    a: 1,
+                    exp: "Correct. Sophisticated spyware often lives in temporary memory. A reboot clears this, forcing the attacker to re-infect."
                 },
                 {
-                    q: "6. What is 'Smishing'?",
-                    options: ["Cleaning the screen", "Phishing attacks sent via SMS/Text Message", "A coding error", "Ignoring a call"],
+                    q: "6. What is 'Quishing'?",
+                    options: ["Quick Phishing", "Phishing via malicious QR Codes", "A text message scam", "Ignoring a call"],
                     a: 1,
-                    exp: "Correct. Smishing is phishing via SMS. Scammers send fake links via text pretending to be banks or delivery services."
+                    exp: "Correct. Hackers put fake QR codes on parking meters or emails. They bypass email security filters."
                 },
-                // MDM & BYOD (New Questions)
+                // MDM & BYOD
                 {
                     q: "7. What analogy best describes MDM?",
                     options: ["A wild horse running free", "Reins that control and guide a wild horse", "A stable for horses", "Horse racing"],
@@ -437,10 +438,10 @@
                     exp: "Correct. MDM acts as the 'reins' that allow IT admins to control and protect the device."
                 },
                 {
-                    q: "8. Which MDM software is best for Microsoft-heavy companies?",
-                    options: ["Jamf Pro", "Microsoft Intune", "Addigy", "Kandji"],
+                    q: "8. Which MDM solution is most practical for a small startup using Gmail?",
+                    options: ["Jamf Pro", "Google Workspace Endpoint Management", "Building your own server", "None"],
                     a: 1,
-                    exp: "Correct. Microsoft Intune integrates seamlessly with Windows and Office 365 environments."
+                    exp: "Correct. It is built into the Google suite they are likely already paying for."
                 },
                 {
                     q: "9. Which MDM tool is famous for managing Apple (iOS/Mac) devices?",
