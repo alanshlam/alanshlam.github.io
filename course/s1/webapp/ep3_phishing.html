@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hack Me: Phishing</title>
+    <style>
+        :root {
+            --primary: #d90429; /* Phishing Red */
+            --secondary: #2b2d42; /* Dark Navy */
+            --accent: #ef233c; /* Bright Red */
+            --light: #edf2f4;
+            --white: #ffffff;
+            --nav-height: 60px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            padding-top: var(--nav-height);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- STICKY NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 4px solid transparent;
+            transition: background 0.2s;
+        }
+        nav a:active, nav a:hover { background-color: rgba(255,255,255,0.1); }
+        nav a.highlight-btn { background-color: var(--primary); }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary), #8d99ae);
+            color: var(--white);
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { margin-top: 5px; opacity: 0.9; font-size: 0.9rem; }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 80px;
+        }
+
+        .card h2 { 
+            color: var(--secondary); 
+            border-bottom: 2px solid var(--accent); 
+            padding-bottom: 8px; 
+            margin-top: 0; 
+            font-size: 1.3rem;
+        }
+
+        /* Teaching Elements */
+        .highlight {
+            display: block;
+            background-color: #ffebee; /* Light Red */
+            border-left: 6px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #b71c1c;
+            font-weight: 500;
+        }
+
+        .alert-box {
+            display: block;
+            background-color: #fff3e0;
+            border-left: 6px solid #e65100;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #bf360c;
+            font-weight: 500;
+        }
+
+        .icon-box { display: flex; gap: 15px; align-items: flex-start; }
+        .icon-emoji { font-size: 2rem; min-width: 40px; }
+
+        /* --- QUIZ UI --- */
+        #quiz-section { display: none; }
+        
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        .option-btn {
+            background: var(--white);
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.success { background-color: #d4edda; color: #155724; }
+        .feedback.error { background-color: #fff3cd; color: #856404; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(217, 4, 41, 0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .icon-box { flex-direction: column; align-items: center; text-align: center; }
+            .icon-box div { text-align: left; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <a href="javascript:void(0)" onclick="goToSection('intro-card')">Scenario</a>
+    <a href="javascript:void(0)" onclick="goToSection('social-card')">Social Stalking</a>
+    <a href="javascript:void(0)" onclick="goToSection('clues-card')">Spot the Fake</a>
+    <a href="javascript:void(0)" onclick="goToSection('malware-card')">Ransomware</a>
+    <a href="javascript:void(0)" onclick="startQuiz()" class="highlight-btn">📝 Quiz</a>
+</nav>
+
+<div class="container">
+
+    <header>
+        <h1>🎣 Phishing Attacks</h1>
+        <p class="subtitle">Episode 3: Spear Phishing</p>
+    </header>
+
+    <!-- STUDY SECTION -->
+    <div id="study-section">
+        
+        <div class="card" id="intro-card">
+            <h2>1. The Scenario</h2>
+            <p> Story from <a href="https://www.hkcert.org/page/detail/500038"> HKCERT animation videos </a></p> 
+
+            <p>Ah Chun desperately wants a new <strong>VR Racing Game Console</strong>, but it's sold out everywhere. The Hacker (Keung) sees this and decides to trick him.</p>
+        </div>
+
+        <div class="card" id="social-card">
+            <h2>2. The Trap: Social Engineering</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🕵️</div>
+                <div>
+                    <strong>Stalking Targets</strong>
+                    <p>The hacker didn't guess; he looked at Ah Chun's <strong>Public Social Media</strong>. Ah Chun liked pages about "Electronics" and "Gaming".</p>
+                    <div class="highlight">
+                        🚨 <strong>Spear Phishing:</strong> A phishing attack customized for YOU based on your personal interests, making it much harder to spot than a generic spam email.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="clues-card">
+            <h2>3. Spot the Fake Email</h2>
+            <p>The Hacker sent a fake email claiming Ah Chun won a free console. Here is how to spot the scam:</p>
+            <ul style="padding-left: 20px;">
+                <li><strong>Check the Sender:</strong> The email name claimed to be "Digital Expo," but the actual address didn't match the official website.</li>
+                <li><strong>Typos:</strong> Scams often have spelling mistakes or strange grammar.</li>
+                <li><strong>Too Good to be True:</strong> A free console just for filling out a form? Be suspicious!</li>
+                <li><strong>Sensitive Info:</strong> They asked for passwords and bank info immediately. Legitimate giveaways rarely do this.</li>
+            </ul>
+        </div>
+
+        <div class="card" id="malware-card">
+            <h2>4. What happens if you click?</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🦠</div>
+                <div>
+                    <strong>Ransomware (勒索軟件)</strong>
+                    <p>If you click the link, your computer files get <strong>Encrypted</strong> (locked). The hacker demands money (ransom) to unlock them.</p>
+                    <div class="alert-box">
+                        🛡️ <strong>The Golden Rule:</strong> DO NOT PAY. There is no guarantee they will unlock your files. Contact HKCERT or police instead.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 50px;">
+            <button class="btn" onclick="startQuiz()">I'm Ready! Take the Quiz</button>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section">
+        <div class="card">
+            <h2 style="border:none;">📝 Phishing Quiz</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <!-- Question loads here -->
+            </div>
+            <div id="feedback-box" class="feedback"></div>
+            <br>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">Next Question</button>
+        </div>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="result-section" style="display:none; text-align: center;">
+        <div class="card">
+            <h2>Quiz Complete! 🎉</h2>
+            <p style="font-size: 1.5rem;">You scored: <span id="score" style="color:var(--primary); font-weight:bold;"></span></p>
+            <div id="final-message" style="margin: 20px 0;"></div>
+            <button class="btn" onclick="location.reload()">Restart Lesson</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function goToSection(elementId) {
+        document.getElementById('study-section').style.display = 'block';
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'none';
+
+        const element = document.getElementById(elementId);
+        if(element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('study-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        document.getElementById('result-section').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        if(currentQuestion === 0 && score === 0) {
+            loadQuestion();
+        }
+    }
+
+    // --- QUIZ DATA ---
+    const questions = [
+        {
+            question: "How did the hacker know Ah Chun wanted a game console?",
+            options: [
+                "He hacked Ah Chun's brain.",
+                "He looked at Ah Chun's public social media likes and posts.",
+                "He was Ah Chun's neighbor."
+            ],
+            answer: 1,
+            explanation: "Correct! Oversharing on social media (setting posts to Public) gives hackers the info they need to trick you."
+        },
+        {
+            question: "What is 'Spear Phishing'?",
+            options: [
+                "Fishing with a sharp stick.",
+                "A generic email sent to millions of people.",
+                "A targeted attack customized to your specific interests."
+            ],
+            answer: 2,
+            explanation: "Correct! 'Spear' phishing targets a specific person using their personal details to make the lie convincing."
+        },
+        {
+            question: "Ah Chun received an email from 'Digital Expo' offering a free gift. What was the red flag?",
+            options: [
+                "The email sender address didn't match the company name.",
+                "The email was too short.",
+                "The email was in blue text."
+            ],
+            answer: 0,
+            explanation: "Correct! Always check the *actual* email address (e.g., sender@scam.com), not just the display name."
+        },
+        {
+            question: "If your computer gets infected with Ransomware, what should you do?",
+            options: [
+                "Pay the money immediately.",
+                "Do NOT pay, disconnect from the internet, and seek help.",
+                "Throw the computer out the window."
+            ],
+            answer: 1,
+            explanation: "Correct! Paying encourages hackers and they might not even unlock your files. Disconnect to stop the spread."
+        },
+        {
+            question: "What is a good way to protect your accounts from phishing?",
+            options: [
+                "Use '123456' as a password so you don't forget it.",
+                "Turn on Multi-Factor Authentication (MFA).",
+                "Never use the internet."
+            ],
+            answer: 1,
+            explanation: "Correct! MFA requires a second code (like from your phone). Even if a phisher steals your password, they can't get in."
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const progress = ((currentQuestion) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        nextBtn.style.display = 'none';
+        feedbackBox.style.display = 'none';
+        feedbackBox.className = 'feedback';
+        
+        const q = questions[currentQuestion];
+
+        let html = `<div class="question-box">${currentQuestion + 1}. ${q.question}</div>`;
+        html += `<div class="options-grid">`;
+        q.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        
+        quizContainer.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const correctIndex = questions[currentQuestion].answer;
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            btnElement.classList.add('correct');
+            feedbackBox.innerHTML = questions[currentQuestion].explanation;
+            feedbackBox.classList.add('success', 'show');
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+            feedbackBox.innerHTML = "<strong>Incorrect.</strong> " + questions[currentQuestion].explanation;
+            feedbackBox.classList.add('error', 'show');
+        }
+
+        nextBtn.style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        const scoreSpan = document.getElementById('score');
+        const messageDiv = document.getElementById('final-message');
+        
+        scoreSpan.innerText = `${score} / ${questions.length}`;
+        
+        if (score === questions.length) {
+            messageDiv.innerHTML = "<h3>🌟 Phishing Expert!</h3><p>You can spot a scam from a mile away.</p>";
+        } else if (score > 2) {
+            messageDiv.innerHTML = "<h3>👍 Good job!</h3><p>Remember: Don't click suspicious links!</p>";
+        } else {
+            messageDiv.innerHTML = "<h3>⚠️ Be Careful!</h3><p>You might be vulnerable to scams. Review the 'Clues' section.</p>";
+        }
+    }
+</script>
+
+</body>
+</html>
