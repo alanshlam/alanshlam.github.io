@@ -6,80 +6,141 @@
     <title>行動安全：MDM 與 BYOD 版本</title>
     <style>
         :root {
-            --primary: #8b5cf6; --primary-dark: #6d28d9; --accent: #10b981;
-            --bg-dark: #111827; --card-bg: #1f2937; --text-main: #f3f4f6;
-            --text-muted: #9ca3af; --danger: #ef4444; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --primary: #8b5cf6; /* Vivid Purple */
+            --primary-dark: #6d28d9;
+            --accent: #10b981; /* Success Green */
+            --bg-dark: #111827; /* Deep Charcoal */
+            --card-bg: #1f2937; /* Lighter Charcoal */
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif; }
+        
         body { background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; font-size: 16px; }
+
+        /* --- NAVIGATION --- */
         nav { 
-            background: rgba(31, 41, 55, 0.95); border-bottom: 2px solid var(--primary);
-            padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; 
-            height: 70px; position: sticky; top: 0; z-index: 9999; backdrop-filter: blur(10px);
+            background: rgba(31, 41, 55, 0.95);
+            border-bottom: 2px solid var(--primary);
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 70px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+            backdrop-filter: blur(10px);
         }
+
         .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 0.5px; }
         .logo span { color: var(--text-main); margin-left: 8px; font-size: 0.9rem; background: var(--primary); padding: 2px 8px; border-radius: 6px; }
+
         .nav-links { display: flex; gap: 8px; }
         .nav-btn {
-            background: transparent; border: 1px solid transparent; padding: 8px 14px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 600; color: var(--text-muted); border-radius: 8px; transition: all 0.2s;
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 8px;
+            transition: all 0.2s;
         }
         .nav-btn:hover { color: var(--primary); background: rgba(139, 92, 246, 0.1); }
         .nav-btn.active { background: var(--primary); color: white; font-weight: bold; }
+
+        /* --- MAIN CONTENT --- */
         main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
         .tab-content { display: none; animation: slideUp 0.4s ease-out; }
         .tab-content.active-tab { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         h1 { font-size: 2.2rem; margin-bottom: 1rem; color: white; text-align: center; }
         h2 { color: var(--primary); margin-bottom: 1.2rem; border-left: 4px solid var(--accent); padding-left: 15px; font-size: 1.5rem; }
-        p { margin-bottom: 1.2rem; line-height: 1.6; color: var(--text-muted); }
+        p { margin-bottom: 1.2rem; line-height: 1.7; color: var(--text-muted); }
+
+        /* Hero */
         .hero { 
             background: linear-gradient(135deg, rgba(109, 40, 217, 0.8), rgba(17, 24, 39, 0.9)), url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1000');
-            background-size: cover; background-position: center; padding: 3rem; border-radius: 20px; 
-            box-shadow: var(--shadow); text-align: center; color: white; border: 1px solid var(--primary);
+            background-size: cover; background-position: center;
+            padding: 3rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
         }
+        
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 25px; }
         .stat-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; backdrop-filter: blur(5px); }
         .stat-icon { font-size: 1.8rem; display: block; margin-bottom: 5px; }
         .stat-label { font-size: 0.9rem; font-weight: bold; color: #e5e7eb; }
+
         .action-btn { 
             background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1.1rem; 
             border-radius: 50px; cursor: pointer; transition: 0.3s; margin-top: 25px; font-weight: bold;
             display: inline-block; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
         }
         .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        /* Cards */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .info-card { background: var(--card-bg); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid #374151; transition: transform 0.2s; }
         .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .info-card h3 { color: white; margin-bottom: 10px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
         .card-icon { background: var(--primary); padding: 8px; border-radius: 8px; font-size: 1.2rem; }
+
+        /* MDM & BYOD Comparison Styles */
         .comparison-wrapper { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
         .comp-card { flex: 1; background: var(--card-bg); padding: 20px; border-radius: 12px; border-top: 4px solid var(--text-muted); min-width: 300px; }
         .comp-card.mdm { border-top-color: var(--primary); }
         .comp-card.byod { border-top-color: var(--accent); }
+        
         .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; }
         .badge-mdm { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
         .badge-byod { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
         .pros-cons { margin-top: 15px; font-size: 0.9rem; }
         .pc-title { font-weight: bold; color: white; margin-top: 10px; display: block; }
         .pc-item { display: flex; gap: 8px; margin-bottom: 5px; }
         .pc-icon { font-weight: bold; }
+
+        /* Software Grid & Disclaimer */
         .software-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
         .soft-card { background: #111827; padding: 15px; border-radius: 8px; border: 1px solid #374151; text-align: center; }
         .soft-name { color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.1rem; }
         .soft-desc { font-size: 0.85rem; color: var(--text-muted); }
+
         .disclaimer { 
-            background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); 
-            padding: 15px; margin: 20px 0; border-radius: 4px; font-size: 0.9rem; 
-            color: var(--text-muted); font-style: italic;
+            background: rgba(139, 92, 246, 0.1); 
+            border-left: 4px solid var(--primary); 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            color: var(--text-muted);
+            font-style: italic;
         }
+
+        /* Checklist */
         ul.checklist { list-style: none; }
         ul.checklist li { margin-bottom: 12px; padding-left: 25px; position: relative; color: var(--text-muted); font-size: 0.95rem; }
         ul.checklist li::before { content: "●"; color: var(--accent); position: absolute; left: 0; font-size: 1.2rem; line-height: 1rem; }
+
+        /* Quiz */
         .quiz-container { background: var(--card-bg); padding: 2rem; border-radius: 16px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid #374151; }
         .progress-bar { width: 100%; background: #111827; height: 8px; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
+        
         .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: white; }
+
         .option-btn { 
             display: block; width: 100%; padding: 16px; margin-bottom: 12px; border: 1px solid #374151; 
             background: #111827; color: var(--text-muted); border-radius: 12px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
@@ -87,10 +148,14 @@
         }
         .option-btn:hover { border-color: var(--primary); background: #1f2937; color: white; }
         .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+        
         .feedback { padding: 15px; border-radius: 8px; margin-top: 15px; display: none; font-size: 1rem; font-weight: bold;}
         .feedback.correct { background: rgba(16, 185, 129, 0.2); color: var(--accent); border: 1px solid var(--accent); }
         .feedback.wrong { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
         footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; margin-top: auto; border-top: 1px solid #374151; background: #0f1219; }
+
+        /* Mobile Responsive */
         @media (max-width: 700px) {
             nav { flex-direction: column; height: auto; padding: 1rem; }
             .nav-links { flex-wrap: wrap; justify-content: center; margin-top: 10px; }
@@ -113,72 +178,172 @@
     </nav>
 
     <main>
+        <!-- 1. HOME -->
         <section id="home" class="tab-content active-tab">
             <div class="hero">
-                <h1>行動安全要點</h1>
-                <p>從個人鎖定習慣到企業MDM解決方案。保護您的裝置免受盜竊、惡意軟體和資料外洩的威脅。</p>
+                <h1>行動安全基礎</h1>
+                <p>從個人鎖定習慣到企業 MDM 解決方案。保護您的裝置免受盜竊、惡意軟體和資料外洩的侵害。</p>
+                
                 <div class="stat-grid">
-                    <div class="stat-box"><span class="stat-icon">🔒</span><span class="stat-label">鎖定它</span></div>
-                    <div class="stat-box"><span class="stat-icon">📲</span><span class="stat-label">更新它</span></div>
-                    <div class="stat-box"><span class="stat-icon">🏢</span><span class="stat-label">MDM工具</span></div>
-                    <div class="stat-box"><span class="stat-icon">📱</span><span class="stat-label">BYOD</span></div>
+                    <div class="stat-box">
+                        <span class="stat-icon">🔒</span>
+                        <span class="stat-label">鎖定裝置</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">📲</span>
+                        <span class="stat-label">更新系統</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">🏢</span>
+                        <span class="stat-label">MDM 工具</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-icon">📷</span>
+                        <span class="stat-label">QR 風險</span>
+                    </div>
                 </div>
+
                 <button class="action-btn" id="jump-setup">開始設定指南</button>
             </div>
             <br>
             <div class="grid-container">
-                <div class="info-card"><h3><span class="card-icon">⚙️</span> 設定階段</h3><p>使用裝置的前30分鐘至關重要。從第一天起就正確設定生物辨識、加密和帳戶。</p></div>
-                <div class="info-card"><h3><span class="card-icon">🛠️</span> 維護</h3><p>安全是一種習慣。定期更新、掃描惡意軟體和檢查應用程式權限能讓您長期保持安全。</p></div>
-                <div class="info-card"><h3><span class="card-icon">💼</span> 為中小企而設</h3><p>了解 <strong>MDM</strong>（行動裝置管理）和 <strong>BYOD</strong>（自攜裝置）政策。</p></div>
+                <div class="info-card">
+                    <h3><span class="card-icon">⚙️</span> 設定階段</h3>
+                    <p>拿到新裝置的頭 30 分鐘至關重要。從第一天起就正確配置生物辨識、加密和帳戶。</p>
+                </div>
+                <div class="info-card">
+                    <h3><span class="card-icon">🛠️</span> 維護</h3>
+                    <p>安全是一種習慣。定期更新、掃描惡意軟體和每週重新啟動可確保您的安全。</p>
+                </div>
+                <div class="info-card">
+                    <h3><span class="card-icon">💼</span> 給中小型企業</h3>
+                    <p>了解 <strong>MDM</strong>（行動裝置管理）和 <strong>BYOD</strong>（自攜裝置）政策。</p>
+                </div>
             </div>
         </section>
 
+        <!-- 2. SETUP PHASE -->
         <section id="setup" class="tab-content">
             <h2>初始設定：基礎</h2>
             <div class="grid-container">
-                <div class="info-card"><h3>🔐 驗證與存取</h3><ul class="checklist"><li><strong>強密碼鎖：</strong>使用6位數PIN碼或複雜密碼。圖案鎖容易被猜到。</li><li><strong>生物辨識：</strong>啟用FaceID或指紋以方便和安全。</li><li><strong>多重因素驗證：</strong>為所有連結的帳戶（Google、iCloud）開啟多重因素驗證。</li></ul></div>
-                <div class="info-card"><h3>🛡️ 軟體與加密</h3><ul class="checklist"><li><strong>加密：</strong>確保全磁碟加密已啟用（通常在現代iOS/Android上為預設）。</li><li><strong>遠端清除：</strong>啟用「尋找我的iPhone」（iOS）或「尋找我的裝置」（Android），以便在裝置被盜時清除資料。</li><li><strong>安全應用程式：</strong>安裝信譽良好的防惡意軟體（尤其是在Android上）。</li></ul></div>
-                <div class="info-card"><h3>📶 網路與隱私</h3><ul class="checklist"><li><strong>VPN：</strong>安裝VPN以使用公共Wi-Fi（咖啡店、機場）。</li><li><strong>權限：</strong>拒絕不必要的應用程式權限（例如，手電筒應用程式不需要您的位置）。</li><li><strong>備份：</strong>啟用自動加密的雲端備份。</li></ul></div>
+                <div class="info-card">
+                    <h3>🔐 驗證與存取</h3>
+                    <ul class="checklist">
+                        <li><strong>字母數字密碼：</strong> 6 位數字現在很容易被暴力破解。請使用字母和數字的組合（例如 8 個字元以上）。</li>
+                        <li><strong>生物辨識：</strong>啟用 FaceID 或指紋以方便和安全。</li>
+                        <li><strong>基於應用程式的 MFA：</strong>不要使用簡訊進行雙重驗證（有 SIM 卡交換攻擊風險）。請使用像 <em>Google Authenticator</em> 這樣的應用程式。</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🛡️ 軟體與加密</h3>
+                    <ul class="checklist">
+                        <li><strong>加密：</strong>確保全碟加密已啟用（現代手機預設開啟）。</li>
+                        <li><strong>遠端清除：</strong>立即設定「尋找我的」(iOS) 或「尋找我的裝置」(Android)。</li>
+                        <li><strong>反惡意軟體：</strong>強烈建議 <strong>Android</strong> 使用。（iOS 是沙盒環境，因此請專注於網路過濾器）。</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>📶 網路與隱私</h3>
+                    <ul class="checklist">
+                        <li><strong>VPN：</strong>安裝 VPN 以便在公共 Wi-Fi（咖啡店、機場）上使用。</li>
+                        <li><strong>權限：</strong>拒絕不必要的權限。手電筒應用程式不需要您的聯絡人權限。</li>
+                        <li><strong>備份：</strong>啟用加密的雲端備份，這樣如果裝置遺失，您就可以毫不猶豫地進行「遠端清除」。</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
+        <!-- 3. MAINTENANCE PHASE -->
         <section id="maint" class="tab-content">
             <h2>持續維護：日常習慣</h2>
             <div class="grid-container">
-                <div class="info-card"><h3>🔄 更新</h3><p>作業系統和應用程式更新包含關鍵的安全修補程式。<br><strong style="color:var(--accent)">黃金法則：</strong>啟用自動更新並在它們出現時立即安裝。</p></div>
-                <div class="info-card"><h3>📥 應用程式衛生</h3><p>僅從官方商店（App Store、Google Play）下載應用程式。<br><strong>側載</strong>（從網站安裝）會繞過安全檢查，是主要的惡意軟體載體。</p></div>
-                <div class="info-card"><h3>🧠 意識</h3><p>學習識別<strong>簡訊釣魚</strong>。銀行和快遞公司絕不會透過簡訊索取密碼。如有疑問，切勿點擊連結。</p></div>
+                <div class="info-card">
+                    <h3>🔄 更新與重啟</h3>
+                    <p><strong>每週重啟：</strong>每週重新啟動您的手機。這可以清除暫存記憶體並中斷非持續性間諜軟體（如商業監控工具）的運作。</p>
+                </div>
+                <div class="info-card">
+                    <h3>📥 應用程式健康</h3>
+                    <p>僅從官方商店（App Store、Google Play）下載應用程式。<br><strong>旁載</strong>（從網站安裝）是手機感染的第一大途徑。</p>
+                </div>
+                <div class="info-card">
+                    <h3>🧠 QR Code 釣魚與簡訊釣魚</h3>
+                    <p><strong>Quishing：</strong>電子郵件或停車計時器上的惡意 QR Code。它們會繞過電子郵件過濾器。掃描後在點擊前請檢查網址！</p>
+                </div>
             </div>
         </section>
 
+        <!-- 4. MDM & BYOD SECTION -->
         <section id="mdm" class="tab-content">
             <h2>了解 MDM 與 BYOD</h2>
-            <p>對於企業（中小企）而言，管理裝置是在安全性與靈活性之間取得平衡。以下是詳細說明。</p>
+            <p>對於企業（中小型企業）來說，管理裝置是在安全性與靈活性之間取得平衡。</p>
+            
             <div class="comparison-wrapper">
-                <div class="comp-card mdm"><span class="badge badge-mdm">韁繩</span><h3>MDM（行動裝置管理）</h3><p>想像您的裝置是一匹野馬。MDM就是韁繩。它是一種軟體，允許IT管理員遠端控制、保護和監控裝置。</p><div class="pros-cons"><span class="pc-title">功能：</span><div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 遠端清除（若被盜）</div><div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 自動推送更新</div><div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 強制密碼規則</div></div></div>
-                <div class="comp-card byod"><span class="badge badge-byod">政策</span><h3>BYOD（自攜裝置）</h3><p>就像帶自己的午餐上班一樣。員工使用個人手機處理工作事務。方便，但沒有規則就很危險。</p><div class="pros-cons"><span class="pc-title">優缺點：</span><div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> 節省公司資金</div><div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> 員工感到舒適</div><div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> 隱私問題</div><div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> 資料外洩風險</div></div></div>
+                <!-- MDM CARD -->
+                <div class="comp-card mdm">
+                    <span class="badge badge-mdm">缰繩</span>
+                    <h3>MDM (行動裝置管理)</h3>
+                    <p>想像您的裝置是一匹野馬。MDM 就是缰繩。它是允許 IT 管理員遠端控制、保護和監控裝置的軟體。</p>
+                    <div class="pros-cons">
+                        <span class="pc-title">功能：</span>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 遠端清除（若被盜）</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 區分工作/個人資料</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">✔</span> 強制執行密碼規則</div>
+                    </div>
+                </div>
+
+                <!-- BYOD CARD -->
+                <div class="comp-card byod">
+                    <span class="badge badge-byod">政策</span>
+                    <h3>BYOD (自攜裝置)</h3>
+                    <p>員工使用個人手機辦公。方便，但若無規則（政策）或「容器化」軟體則有風險。</p>
+                    <div class="pros-cons">
+                        <span class="pc-title">優點與缺點：</span>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> 節省公司硬體成本</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--accent)">+</span> 員工舒適度</div>
+                        <div class="pc-item"><span class="pc-icon" style="color:var(--danger)">-</span> 資料外洩風險</div>
+                    </div>
+                </div>
             </div>
+
             <h3>常見的 MDM 軟體</h3>
-            <div class="disclaimer"><strong>⚠️ 免責聲明：</strong>以下軟體範例僅供參考。每個組織都有獨特的需求；請諮詢合格的IT專業人員以確定最適合您公司的解決方案。</div>
+            <div class="disclaimer">
+                <strong>⚠️ 免責聲明：</strong> 以下軟體範例僅供教育參考。請諮詢 IT 專業人士以滿足您的特定需求。本指南的創建者對因使用這些策略而導致的資料遺失或損壞不承擔任何責任。 
+            </div>
             <div class="software-grid">
-                <div class="soft-card"><span class="soft-name">Microsoft Intune</span><span class="soft-desc">最適合以 Windows/Office 為主的生態系統。</span></div>
-                <div class="soft-card"><span class="soft-name">Jamf Pro</span><span class="soft-desc">Apple（iOS/Mac）重度辦公室的標準。</span></div>
-                <div class="soft-card"><span class="soft-name">Hexnode</span><span class="soft-desc">價格實惠、跨平台，適合資訊站。</span></div>
-                <div class="soft-card"><span class="soft-name">Kandji</span><span class="soft-desc">專注於Apple，以易於自動化聞名。</span></div>
+                <div class="soft-card" style="border-color: var(--accent);">
+                    <span class="soft-name">Google Workspace Endpoint</span>
+                    <span class="soft-desc" style="color: white;">最適合中小企業/新創公司。</span>
+                    <span class="soft-desc">如果您使用 Gmail 企業版，您就已經擁有此功能。它免費/內含且易於使用。</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Microsoft Intune</span>
+                    <span class="soft-desc">最適合 Windows/Office 生態系統。</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Jamf Pro</span>
+                    <span class="soft-desc">大量使用 Apple (iOS/Mac) 設備的辦公室標準。</span>
+                </div>
+                <div class="soft-card">
+                    <span class="soft-name">Hexnode</span>
+                    <span class="soft-desc">價格實惠，跨平台，適合資訊站。</span>
+                </div>
             </div>
         </section>
 
+        <!-- 5. QUIZ -->
         <section id="quiz" class="tab-content">
             <h2>知識測驗</h2>
-            <p>測試您的行動安全智商。您能保護好口袋裡的電腦嗎？</p>
+            <p>測試您的行動安全智商。您能保護好這台口袋電腦嗎？</p>
             <div class="quiz-container">
                 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
                 <div id="quiz-block">
                     <div class="question-text" id="question-text">載入中...</div>
                     <div id="options-container"></div>
                     <div id="feedback-display" class="feedback"></div>
                     <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:20px;">下一題</button>
                 </div>
+
                 <div id="score-block" style="display:none; text-align: center;">
                     <h3>測驗完成！</h3>
                     <p style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="final-score">0/0</p>
@@ -187,101 +352,224 @@
                 </div>
             </div>
         </section>
+
     </main>
 
-    <footer><p>行動安全教育模組</p></footer>
+    <footer>
+        <p>行動安全教育模組 | 更新於 2026</p>
+    </footer>
 
+    <!-- SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            function switchTab(tabId) {
-                document.querySelectorAll('.tab-content, .nav-btn').forEach(el => el.classList.remove('active', 'active-tab'));
+            // --- 1. NAVIGATION LOGIC (Refactored) ---
+            function switchTab(tabId, btnElement) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
                 const target = document.getElementById(tabId);
                 if(target) target.classList.add('active-tab');
-                const btnMap = { 'home': 'btn-home', 'setup': 'btn-setup', 'maint': 'btn-maint', 'mdm': 'btn-mdm', 'quiz': 'btn-quiz' };
-                const activeBtn = document.getElementById(btnMap[tabId]);
-                if(activeBtn) activeBtn.classList.add('active');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                if (btnElement) {
+                    btnElement.classList.add('active');
+                } else {
+                    // Fallback for jump button
+                    const activeBtn = document.getElementById('btn-' + tabId);
+                    if(activeBtn) activeBtn.classList.add('active');
+                }
                 window.scrollTo(0,0);
             }
-            ['home', 'setup', 'maint', 'mdm', 'quiz'].forEach(id => {
-                const btn = document.getElementById(`btn-${id}`);
-                if(btn) btn.onclick = () => switchTab(id);
-            });
+
+            document.getElementById('btn-home').onclick = (e) => switchTab('home', e.currentTarget);
+            document.getElementById('btn-setup').onclick = (e) => switchTab('setup', e.currentTarget);
+            document.getElementById('btn-maint').onclick = (e) => switchTab('maint', e.currentTarget);
+            document.getElementById('btn-mdm').onclick = (e) => switchTab('mdm', e.currentTarget);
+            document.getElementById('btn-quiz').onclick = (e) => switchTab('quiz', e.currentTarget);
+            
             document.getElementById('jump-setup').onclick = () => switchTab('setup');
 
+            // --- 2. QUIZ DATA (15 Questions) ---
             const questions = [
-                { q: "1. 最有效的螢幕鎖定方法是什麼？", options: ["4位數PIN碼（例如1234）", "圖案滑動", "生物辨識（指紋/臉部）+ 強密碼", "為求快速存取而不設鎖"], a: 2, exp: "正確。生物辨識提供便利性，而強大的字母數字密碼則提供安全的後備方案。" },
-                { q: "2. 為何應啟用「遠端清除」？", options: ["遠端清潔螢幕", "在裝置遺失或被盜時刪除資料", "自動更新應用程式", "節省電池"], a: 1, exp: "正確。如果裝置遺失，遠端清除可確保竊賊無法存取您的個人或公司資料。" },
-                { q: "3. 何時應在手機上使用VPN？", options: ["只在家裡", "使用公共Wi-Fi時（咖啡店、機場）", "從不，它會減慢手機速度", "只在充電時"], a: 1, exp: "正確。公共Wi-Fi通常未加密。VPN會加密您的流量，使同一網路上的駭客無法窺探。" },
-                { q: "4. 什麼是「側載」？", options: ["將手機側放充電", "從官方應用商店以外的地方安裝應用程式", "將資料傳輸到電腦", "躺著用手機"], a: 1, exp: "正確。側載會繞過App Store/Play Store的安全檢查，從而增加惡意軟體的風險。" },
-                { q: "5. 為何應用程式權限很重要？", options: ["它們節省儲存空間", "它們能阻擋廣告", "它們限制應用程式可以存取的資料（例如位置、聯絡人）", "它們使應用程式運行得更快"], a: 2, exp: "正確。您應將應用程式的權限限制在它們實際運作所需。"},
-                { q: "6. 什麼是「簡訊釣魚」？", options: ["清潔螢幕", "透過簡訊/文字訊息發送的釣魚攻擊", "程式碼錯誤", "忽略來電"], a: 1, exp: "正確。簡訊釣魚是透過簡訊進行的釣魚。詐騙者會假冒銀行或快遞服務，透過文字訊息發送假連結。"},
-                { q: "7. 哪個比喻最能描述MDM？", options: ["脫韁野馬", "控制和引導野馬的韁繩", "馬廄", "賽馬"], a: 1, exp: "正確。MDM就像「韁繩」，讓IT管理員能夠控制和保護裝置。" },
-                { q: "8. 對於以Microsoft為主的企業，哪款MDM軟體最好？", options: ["Jamf Pro", "Microsoft Intune", "Addigy", "Kandji"], a: 1, exp: "正確。Microsoft Intune與Windows和Office 365環境無縫整合。" },
-                { q: "9. 哪款MDM工具以管理Apple（iOS/Mac）裝置而聞名？", options: ["Microsoft Intune", "Jamf Pro", "NinjaOne", "Android Enterprise"], a: 1, exp: "正確。Jamf Pro是管理Apple生態系統的行業標準。" },
-                { q: "10. 對員工而言，BYOD的主要缺點是什麼？", options: ["節省金錢", "他們可以使用自己的手機", "隱私問題以及工作與生活平衡的模糊", "更快的更新"], a: 2, exp: "正確。員工經常擔心雇主看到個人資料，以及在個人時間收到工作電子郵件。"},
-                { q: "11. 為何中小企要使用MDM？", options: ["為了監視員工", "為了集中執行密碼和加密等安全策略", "為了讓手機更快", "為了賣手機"], a: 1, exp: "正確。MDM能自動化安全措施，確保每台裝置都遵守規則，無需手動檢查。"},
-                { q: "12. 在手機上使用密碼管理器有什麼好處？", options: ["它能記住複雜的密碼，所以您不必輸入", "它能加快網路速度", "它會刪除舊郵件", "它能阻止電話"], a: 0, exp: "正確。在觸控螢幕上輸入長密碼很困難。密碼管理器會安全地自動填寫它們。"},
-                { q: "13. 如果您要出售或回收您的手機，您首先必須做什麼？", options: ["手動刪除照片", "恢復原廠設定/安全清除", "登出Facebook", "取下手機殼"], a: 1, exp: "正確。恢復原廠設定會清除加密金鑰和資料，使下一位擁有者無法讀取。"},
-                { q: "14. 您應該多久更新一次您的行動作業系統？", options: ["一年一次", "從不，它會改變外觀", "一有更新就立即更新", "只有當它停止運作時"], a: 2, exp: "正確。更新通常包含駭客利用的關鍵安全漏洞的修復程式。"},
-                { q: "15. 應用程式衛生的「黃金法則」是什麼？", options: ["下載所有東西", "只從官方商店下載", "使用免費的破解版應用程式", "從不更新應用程式"], a: 1, exp: "正確。官方商店（Apple/Google）會掃描應用程式是否存在惡意軟體。第三方網站通常不會。"}
+                // SETUP
+                {
+                    q: "1. 現今最安全的螢幕鎖定方法是什麼？",
+                    options: ["4 位數字 PIN 碼", "圖形滑動解鎖", "字母數字密碼（字母+數字）+ 生物辨識", "不需要鎖定"],
+                    a: 2,
+                    exp: "正確。現代工具可以快速暴力破解簡單的 4 或 6 位 PIN 碼。字母數字密碼是最好的。"
+                },
+                {
+                    q: "2. 為什麼要啟用「遠端清除」？",
+                    options: ["遠端清潔螢幕", "在裝置遺失或被盜時刪除資料", "自動更新應用程式", "節省電池"],
+                    a: 1,
+                    exp: "正確。如果裝置遺失，遠端清除可確保小偷無法存取您的個人或公司資料。"
+                },
+                {
+                    q: "3. 最安全的多重驗證（MFA）形式是什麼？",
+                    options: ["簡訊驗證碼", "驗證器應用程式（例如 Google/Microsoft Auth）", "電子郵件驗證碼", "寫在便利貼上"],
+                    a: 1,
+                    exp: "正確。應用程式在本機生成驗證碼。簡訊驗證碼可透過「SIM 卡交換」攻擊被攔截。"
+                },
+                // MAINTENANCE
+                {
+                    q: "4. 什麼是「旁載」(Sideloading)？",
+                    options: ["側著為手機充電", "從官方應用程式商店以外的地方安裝應用程式", "將資料傳輸到電腦", "躺著使用手機"],
+                    a: 1,
+                    exp: "正確。旁載會繞過 App Store/Play Store 的安全檢查，增加惡意軟體的風險。"
+                },
+                {
+                    q: "5. 為什麼您應該每週重新啟動手機？",
+                    options: ["為了讓電池充電更快", "清除記憶體中的非持續性惡意軟體（間諜軟體）", "刪除您的照片", "改善相機"],
+                    a: 1,
+                    exp: "正確。複雜的間諜軟體通常存在於暫存記憶體中。重新啟動會清除它，迫使攻擊者重新感染。"
+                },
+                {
+                    q: "6. 什麼是「Quishing」？",
+                    options: ["快速釣魚", "透過惡意 QR Code 進行的釣魚", "簡訊詐騙", "忽略來電"],
+                    a: 1,
+                    exp: "正確。駭客在停車計時器或電子郵件中放置假的 QR Code。它們能繞過郵件安全過濾器。"
+                },
+                // MDM & BYOD
+                {
+                    q: "7. 哪個比喻最能描述 MDM？",
+                    options: ["自由奔跑的野馬", "控制和引導野馬的缰繩", "馬廄", "賽馬"],
+                    a: 1,
+                    exp: "正確。MDM 就像「缰繩」，允許 IT 管理員控制和保護裝置。"
+                },
+                {
+                    q: "8. 對於使用 Gmail 的小型新創公司，哪種 MDM 解決方案最實用？",
+                    options: ["Jamf Pro", "Google Workspace Endpoint Management", "自己建立伺服器", "以上皆非"],
+                    a: 1,
+                    exp: "正確。它內建於他們可能已經在付費使用的 Google 套件中。"
+                },
+                {
+                    q: "9. 哪個 MDM 工具以管理 Apple (iOS/Mac) 裝置而聞名？",
+                    options: ["Microsoft Intune", "Jamf Pro", "NinjaOne", "Android Enterprise"],
+                    a: 1,
+                    exp: "正確。Jamf Pro 是管理 Apple 生態系統的行業標準。"
+                },
+                {
+                    q: "10. 對員工而言，BYOD 的一個主要缺點是什麼？",
+                    options: ["省錢", "他們可以使用自己的手機", "隱私問題以及工作與生活平衡模糊化", "更快的更新"],
+                    a: 2,
+                    exp: "正確。員工常常擔心雇主看到個人資料，以及在個人時間收到工作郵件。"
+                },
+                {
+                    q: "11. 為什麼中小企業要使用 MDM？",
+                    options: ["為了監視員工", "集中強制執行密碼和加密等安全策略", "讓手機更快", "賣手機"],
+                    a: 1,
+                    exp: "正確。MDM 自動化安全管理，確保每台裝置都遵守規則，無需手動檢查。"
+                },
+                // GENERAL
+                {
+                    q: "12. 在手機上使用密碼管理器有什麼好處？",
+                    options: ["它能記住複雜的密碼，所以您不必輸入", "它能加速網路", "它能刪除舊郵件", "它能阻擋電話"],
+                    a: 0,
+                    exp: "正確。在觸控螢幕上輸入長密碼很困難。密碼管理器可以安全地自動填寫它們。"
+                },
+                {
+                    q: "13. 如果您要出售或回收您的手機，您必須先做什麼？",
+                    options: ["手動刪除照片", "恢復原廠設定/安全清除", "登出 Facebook", "取下手機殼"],
+                    a: 1,
+                    exp: "正確。恢復原廠設定會清除加密金鑰和資料，使下一位擁有者無法讀取。"
+                },
+                {
+                    q: "14. 您應該多久更新一次您的行動作業系統？",
+                    options: ["一年一次", "從不，它會改變外觀", "一有更新就立即更新", "只有當它停止運作時"],
+                    a: 2,
+                    exp: "正確。更新通常包含駭客利用的關鍵安全漏洞的修補程式。"
+                },
+                {
+                    q: "15. 應用程式健康的「黃金法則」是什麼？",
+                    options: ["下載所有東西", "僅從官方商店下載", "使用免費的破解版應用程式", "從不更新應用程式"],
+                    a: 1,
+                    exp: "正確。官方商店（Apple/Google）會掃描應用程式以檢測惡意軟體。第三方網站通常不會。"
+                }
             ];
-            let currentQIndex = 0, score = 0;
-            const qText = document.getElementById('question-text'), optsContainer = document.getElementById('options-container'),
-                  feedback = document.getElementById('feedback-display'), nextBtn = document.getElementById('next-btn'),
-                  progressBar = document.getElementById('progress'), finalScore = document.getElementById('final-score'),
-                  scoreMsg = document.getElementById('score-message'), quizBlock = document.getElementById('quiz-block'),
-                  scoreBlock = document.getElementById('score-block'), restartBtn = document.getElementById('restart-btn');
+
+            let currentQIndex = 0;
+            let score = 0;
+
+            const qText = document.getElementById('question-text');
+            const optsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback-display');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress');
+            const finalScore = document.getElementById('final-score');
+            const scoreMsg = document.getElementById('score-message');
+            const quizBlock = document.getElementById('quiz-block');
+            const scoreBlock = document.getElementById('score-block');
+            const restartBtn = document.getElementById('restart-btn');
+
             function loadQuestion() {
                 const q = questions[currentQIndex];
                 qText.innerText = q.q;
                 optsContainer.innerHTML = '';
                 feedback.style.display = 'none';
                 nextBtn.style.display = 'none';
-                progressBar.style.width = `${((currentQIndex) / questions.length) * 100}%`;
+
+                const pct = ((currentQIndex) / questions.length) * 100;
+                progressBar.style.width = pct + "%";
+
                 q.options.forEach((optText, idx) => {
                     const btn = document.createElement('button');
                     btn.className = 'option-btn';
                     btn.innerText = optText;
-                    btn.onclick = () => handleAnswer(idx, btn);
+                    btn.onclick = function() { handleAnswer(idx, btn); };
                     optsContainer.appendChild(btn);
                 });
             }
+
             function handleAnswer(selectedIndex, btnElement) {
                 const q = questions[currentQIndex];
-                optsContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+                const allBtns = optsContainer.querySelectorAll('button');
+                allBtns.forEach(b => b.disabled = true);
+
                 if (selectedIndex === q.a) {
                     score++;
                     btnElement.style.background = "rgba(16, 185, 129, 0.2)";
                     btnElement.style.color = "#10b981";
                     btnElement.style.borderColor = "#10b981";
                     feedback.className = "feedback correct";
-                    feedback.innerHTML = `<strong>✅ 正確！</strong> ${q.exp}`;
+                    feedback.innerHTML = "<strong>✅ 正確！</strong> " + q.exp;
                 } else {
                     btnElement.style.background = "rgba(239, 68, 68, 0.2)";
                     btnElement.style.color = "#ef4444";
                     btnElement.style.borderColor = "#ef4444";
                     feedback.className = "feedback wrong";
-                    feedback.innerHTML = `<strong>❌ 錯誤。</strong> ${q.exp}`;
+                    feedback.innerHTML = "<strong>❌ 不正確。</strong> " + q.exp;
                 }
                 feedback.style.display = 'block';
                 nextBtn.style.display = 'block';
             }
-            nextBtn.onclick = () => { currentQIndex++; if (currentQIndex < questions.length) loadQuestion(); else showResults(); };
-            restartBtn.onclick = () => {
-                currentQIndex = 0; score = 0;
+
+            nextBtn.onclick = function() {
+                currentQIndex++;
+                if (currentQIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            restartBtn.onclick = function() {
+                currentQIndex = 0;
+                score = 0;
                 scoreBlock.style.display = 'none';
                 quizBlock.style.display = 'block';
                 loadQuestion();
             };
+
             function showResults() {
                 quizBlock.style.display = 'none';
                 scoreBlock.style.display = 'block';
                 progressBar.style.width = "100%";
                 finalScore.innerText = `${score} / ${questions.length}`;
-                if (score === questions.length) scoreMsg.innerText = "🏆 滿分！行動裝置已強化。";
-                else if (score > 10) scoreMsg.innerText = "👍 做得好！您的裝置很安全。";
+                
+                if(score === questions.length) scoreMsg.innerText = "🏆 滿分！行動裝置已強化。";
+                else if(score > 10) scoreMsg.innerText = "👍 做得好！您的裝置是安全的。";
                 else scoreMsg.innerText = "📚 複習提示後再試一次。";
             }
+
+            // Init
             loadQuestion();
         });
     </script>
