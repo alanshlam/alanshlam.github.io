@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>駭客任務：遠端工作</title>
+    <style>
+        :root {
+            --primary: #2ca58d; /* HKCERT Green */
+            --secondary: #0a2342; /* Navy */
+            --accent: #f46036; /* Orange */
+            --light: #f4f7f6;
+            --white: #ffffff;
+            --nav-height: 60px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            padding-top: var(--nav-height);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- STICKY NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 4px solid transparent;
+            transition: background 0.2s;
+        }
+        nav a:active, nav a:hover { background-color: rgba(255,255,255,0.1); }
+        nav a.highlight-btn { background-color: var(--primary); }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--secondary), #163b65);
+            color: var(--white);
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { margin-top: 5px; opacity: 0.8; font-size: 0.9rem; }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 80px;
+        }
+
+        .card h2 { 
+            color: var(--secondary); 
+            border-bottom: 2px solid var(--primary); 
+            padding-bottom: 8px; 
+            margin-top: 0; 
+            font-size: 1.3rem;
+        }
+
+        .highlight {
+            display: block;
+            background-color: #e8f5e9;
+            border-left: 6px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #1b5e20;
+            font-weight: 500;
+        }
+
+        .alert-box {
+            display: block;
+            background-color: #fff3e0;
+            border-left: 6px solid var(--accent);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #e65100;
+            font-weight: 500;
+        }
+
+        .icon-box { display: flex; gap: 15px; align-items: flex-start; }
+        .icon-emoji { font-size: 2rem; min-width: 40px; }
+
+        /* --- QUIZ UI --- */
+        #quiz-section { display: none; }
+        
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        .option-btn {
+            background: var(--white);
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.success { background-color: #d4edda; color: #155724; }
+        .feedback.error { background-color: #fff3cd; color: #856404; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(44, 165, 141, 0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .icon-box { flex-direction: column; align-items: center; text-align: center; }
+            .icon-box div { text-align: left; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <a href="javascript:void(0)" onclick="goToSection('intro-card')">簡介</a>
+    <a href="javascript:void(0)" onclick="goToSection('wifi-card')">Wi-Fi 陷阱</a>
+    <a href="javascript:void(0)" onclick="goToSection('vpn-card')">VPN</a>
+    <a href="javascript:void(0)" onclick="goToSection('zoom-card')">視訊會議</a>
+    <a href="javascript:void(0)" onclick="goToSection('encrypt-card')">加密</a>
+    <a href="javascript:void(0)" onclick="startQuiz()" class="highlight-btn">📝 測驗</a>
+</nav>
+
+<div class="container">
+
+    <header>
+        <h1>🏠 遠端工作安全</h1>
+        <p class="subtitle">第一集：線上會議安全</p>
+    </header>
+
+    <!-- STUDY SECTION -->
+    <div id="study-section">
+        
+        <div class="card" id="intro-card">
+            <h2>1. 問題所在</h2>
+            <p> 故事來自 <a href="https://www.hkcert.org/page/detail/500038"> HKCERT 動畫影片 </a></p> 
+            <p>阿俊的員工正在家工作 (WFH)。駭客強哥對此感到興奮，因為家用電腦通常缺乏公司級別的安全性，這讓他更容易竊取商業機密。</p>
+        </div>
+
+        <div class="card" id="wifi-card">
+            <h2>2. 咖啡店陷阱</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">☕</div>
+                <div>
+                    <strong>假 Wi-Fi (邪惡雙胞胎)</strong>
+                    <p>駭客會建立假的 Wi-Fi 熱點（例如「免費咖啡店 Wi-Fi」）來攔截您的資料。如果您連線，他們就可以複製您的檔案。</p>
+                    <div class="alert-box">
+                        🛡️ <strong>現代提示：</strong>不要使用公共 Wi-Fi 工作。改為開啟您手機的 <strong>4G/5G 熱點</strong>。這樣安全得多！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="vpn-card">
+            <h2>3. 安全通道 (VPN)</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🚇</div>
+                <div>
+                    <strong>虛擬私人網路</strong>
+                    <p>VPN 就像一條在您家和辦公室之間的安全、加密的通道。它能阻止駭客窺探您在網路上傳送的內容。</p>
+                    <div class="highlight">
+                        ⚠️ <strong>警告：</strong>如果您的家用電腦有病毒，VPN 可能會將該病毒帶到辦公室！請確保您家中的防毒軟體已更新。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="zoom-card">
+            <h2>4. 安全的視訊會議</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">📹</div>
+                <div>
+                    <strong>防止「會議轟炸」</strong>
+                    <p>駭客喜歡闖入會議。為了安全起見：</p>
+                    <ul style="padding-left: 20px;">
+                        <li>為每次會議使用<strong>唯一的會議 ID 和密碼</strong>。</li>
+                        <li>開啟<strong>等候室</strong>功能以驗證與會者。</li>
+                        <li>一旦所有人都加入後，<strong>鎖定</strong>會議。</li>
+                        <li>定期更新軟體。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="encrypt-card">
+            <h2>5. 最後一道防線</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🔐</div>
+                <div>
+                    <strong>加密</strong>
+                    <p>在影片中，駭客偷了一個檔案但無法打開，因為它被<strong>加密</strong>了。</p>
+                    <div class="highlight">
+                        💡 <strong>教訓：</strong>務必加密敏感檔案。即使 USB 隨身碟遺失或駭客偷了檔案，資料對他們來說仍然是無法讀取的亂碼。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 50px;">
+            <button class="btn" onclick="startQuiz()">我準備好了！參加測驗</button>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section">
+        <div class="card">
+            <h2 style="border:none;">📝 安全測驗</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <!-- Question loads here -->
+            </div>
+            <div id="feedback-box" class="feedback"></div>
+            <br>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">下一題</button>
+        </div>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="result-section" style="display:none; text-align: center;">
+        <div class="card">
+            <h2>測驗完成！ 🎉</h2>
+            <p style="font-size: 1.5rem;">您的得分： <span id="score" style="color:var(--primary); font-weight:bold;"></span></p>
+            <div id="final-message" style="margin: 20px 0;"></div>
+            <button class="btn" onclick="location.reload()">重新開始課程</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function goToSection(elementId) {
+        document.getElementById('study-section').style.display = 'block';
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'none';
+
+        const element = document.getElementById(elementId);
+        if(element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('study-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        document.getElementById('result-section').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        if(currentQuestion === 0 && score === 0) {
+            loadQuestion();
+        }
+    }
+
+    // --- QUIZ DATA ---
+    const questions = [
+        {
+            question: "為什麼您應該小心使用公共 Wi-Fi（例如在咖啡店）？",
+            options: [
+                "通常太貴了。",
+                "駭客可以建立「假的 Wi-Fi」名稱來攔截您的資料。",
+                "它會更快地耗盡您的電池。"
+            ],
+            answer: 1,
+            explanation: "正確！駭客使用帶有假名稱的「邪惡雙胞胎」攻擊。請改用您手機的 4G/5G 熱點！"
+        },
+        {
+            question: "VPN 在遠端工作中的用途是什麼？",
+            options: [
+                "讓您的網路速度更快。",
+                "在您家和辦公室之間建立一個加密的通道。",
+                "自動刪除病毒。"
+            ],
+            answer: 1,
+            explanation: "正確！VPN 會加密您的連線，使駭客無法看到來回傳輸的資料。"
+        },
+        {
+            question: "駭客從 USB 隨身碟偷了一個檔案，但無法讀取。為什麼？",
+            options: [
+                "檔案被加密了。",
+                "駭客的電腦壞了。",
+                "檔案是空的。"
+            ],
+            answer: 0,
+            explanation: "正確！加密會將資料打亂。沒有密碼/金鑰，檔案對小偷來說是無用的。"
+        },
+        {
+            question: "以下哪項是保護視訊會議安全的好習慣？",
+            options: [
+                "在公開的社交媒體上發布會議連結。",
+                "使用「等候室」功能來批准與會者。",
+                "為每次會議使用相同的密碼以便記憶。"
+            ],
+            answer: 1,
+            explanation: "正確！使用等候室允許主持人在讓每個人進入之前驗證他們的身份。"
+        },
+        {
+            question: "如果您使用 VPN，您的辦公室網路是否 100% 安全？",
+            options: [
+                "是的，VPN 能阻擋所有威脅。",
+                "不，如果您的家用電腦有病毒，它仍然可能透過 VPN 傳播。",
+                "是的，但僅限於星期二。"
+            ],
+            answer: 1,
+            explanation: "正確！VPN 能安全地連接您，但它不會清潔您的電腦。您的家用電腦上仍然需要防毒軟體。"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const progress = ((currentQuestion) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        nextBtn.style.display = 'none';
+        feedbackBox.style.display = 'none';
+        feedbackBox.className = 'feedback';
+        
+        const q = questions[currentQuestion];
+
+        let html = `<div class="question-box">${currentQuestion + 1}. ${q.question}</div>`;
+        html += `<div class="options-grid">`;
+        q.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        
+        quizContainer.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const correctIndex = questions[currentQuestion].answer;
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            btnElement.classList.add('correct');
+            feedbackBox.innerHTML = questions[currentQuestion].explanation;
+            feedbackBox.classList.add('success', 'show');
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+            feedbackBox.innerHTML = "<strong>不正確。</strong> " + questions[currentQuestion].explanation;
+            feedbackBox.classList.add('error', 'show');
+        }
+
+        nextBtn.style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        const scoreSpan = document.getElementById('score');
+        const messageDiv = document.getElementById('final-message');
+        
+        scoreSpan.innerText = `${score} / ${questions.length}`;
+        
+        if (score === questions.length) {
+            messageDiv.innerHTML = "<h3>🌟 遠端工作專家！</h3><p>您知道如何在辦公室外保持安全。</p>";
+        } else if (score > 2) {
+            messageDiv.innerHTML = "<h3>👍 做得好！</h3><p>記得使用加密和強密碼。</p>";
+        } else {
+            messageDiv.innerHTML = "<h3>⚠️ 請小心！</h3><p>請再次複習「咖啡店陷阱」部分。</p>";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>駭客任務：智慧家庭</title>
+    <style>
+        :root {
+            --primary: #2ca58d; /* HKCERT Green */
+            --secondary: #0a2342; /* Navy */
+            --accent: #f46036; /* Orange */
+            --light: #f4f7f6;
+            --white: #ffffff;
+            --nav-height: 60px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            padding-top: var(--nav-height);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- STICKY NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 4px solid transparent;
+            transition: background 0.2s;
+        }
+        nav a:active, nav a:hover { background-color: rgba(255,255,255,0.1); }
+        nav a.highlight-btn { background-color: var(--primary); }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--accent), #d1401b);
+            color: var(--white);
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { margin-top: 5px; opacity: 0.9; font-size: 0.9rem; }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 80px;
+        }
+
+        .card h2 { 
+            color: var(--secondary); 
+            border-bottom: 2px solid var(--accent); 
+            padding-bottom: 8px; 
+            margin-top: 0; 
+            font-size: 1.3rem;
+        }
+
+        /* Teaching Elements */
+        .highlight {
+            display: block;
+            background-color: #e8f5e9;
+            border-left: 6px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #1b5e20;
+            font-weight: 500;
+        }
+
+        .alert-box {
+            display: block;
+            background-color: #fff3e0;
+            border-left: 6px solid #e65100;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #bf360c;
+            font-weight: 500;
+        }
+
+        .icon-box { display: flex; gap: 15px; align-items: flex-start; }
+        .icon-emoji { font-size: 2rem; min-width: 40px; }
+
+        /* --- QUIZ UI --- */
+        #quiz-section { display: none; }
+        
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        .option-btn {
+            background: var(--white);
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.success { background-color: #d4edda; color: #155724; }
+        .feedback.error { background-color: #fff3cd; color: #856404; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(44, 165, 141, 0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .icon-box { flex-direction: column; align-items: center; text-align: center; }
+            .icon-box div { text-align: left; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <a href="javascript:void(0)" onclick="goToSection('intro-card')">情境</a>
+    <a href="javascript:void(0)" onclick="goToSection('iot-card')">什麼是物聯網？</a>
+    <a href="javascript:void(0)" onclick="goToSection('trap-card')">陷阱</a>
+    <a href="javascript:void(0)" onclick="goToSection('fix-card')">解決方案</a>
+    <a href="javascript:void(0)" onclick="startQuiz()" class="highlight-btn">📝 測驗</a>
+</nav>
+
+<div class="container">
+
+    <header>
+        <h1>🏠 智慧家庭安全</h1>
+        <p class="subtitle">第四集：物聯網安全</p>
+    </header>
+
+    <!-- STUDY SECTION -->
+    <div id="study-section">
+        
+        <div class="card" id="intro-card">
+            <h2>1. 情境</h2>
+            <p> 故事來自 <a href="https://www.hkcert.org/page/detail/500038"> HKCERT 動畫影片 </a></p> 
+            <p>阿俊有一個高科技的家，裡面有由 5G 控制的智慧窗簾、電飯煲和網路攝影機。駭客（強哥）試圖侵入這些設備來監視他和竊取資料。</p>
+        </div>
+
+        <div class="card" id="iot-card">
+            <h2>2. 什麼是物聯網？</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🌐</div>
+                <div>
+                    <strong>物聯網 (Internet of Things)</strong>
+                    <p>物聯網指的是日常物品（攝影機、冰箱、感應器）連接到網際網路。借助 <strong>5G</strong>，我們可以高速連接數百萬台設備。</p>
+                    <div class="alert-box">
+                        ⚠️ <strong>風險：</strong>駭客使用「殭屍網路」(Botnets)。他們感染數千個脆弱的物聯網設備，並利用它們來攻擊其他目標。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="trap-card">
+            <h2>3. 陷阱：「隨插即用」</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🔓</div>
+                <div>
+                    <strong>預設密碼</strong>
+                    <p>阿俊插入他的設備後立即使用，沒有更改任何設定。駭客使用「暴力破解」工具輕鬆猜出了密碼。</p>
+                    <p>為什麼？因為許多設備出廠時都帶有像 <code>admin / admin</code> 或 <code>123456</code> 這樣的預設密碼。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="fix-card">
+            <h2>4. 解決方案</h2>
+            <p>要保護您的智慧家庭，請遵循以下 4 個規則：</p>
+            <ul style="padding-left: 20px;">
+                <li><strong>更改預設密碼：</strong>絕對不要使用出廠密碼。建立一個強大且獨特的密碼。</li>
+                <li><strong>更新韌體：</strong>就像您的手機需要 iOS/Android 更新一樣，您的網路攝影機也需要「韌體」更新來修補安全漏洞。</li>
+                <li><strong>使用 WPA2/WPA3：</strong>確保您的 Wi-Fi 路由器使用這些加密標準。</li>
+                <li><strong>網路分割（專業提示）：</strong>將智慧設備放在「訪客網路」上，這樣它們就與您的筆記型電腦/銀行資料分開。</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 50px;">
+            <button class="btn" onclick="startQuiz()">我準備好了！參加測驗</button>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section">
+        <div class="card">
+            <h2 style="border:none;">📝 物聯網安全測驗</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <!-- Question loads here -->
+            </div>
+            <div id="feedback-box" class="feedback"></div>
+            <br>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">下一題</button>
+        </div>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="result-section" style="display:none; text-align: center;">
+        <div class="card">
+            <h2>測驗完成！ 🎉</h2>
+            <p style="font-size: 1.5rem;">您的得分： <span id="score" style="color:var(--primary); font-weight:bold;"></span></p>
+            <div id="final-message" style="margin: 20px 0;"></div>
+            <button class="btn" onclick="location.reload()">重新開始課程</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function goToSection(elementId) {
+        document.getElementById('study-section').style.display = 'block';
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'none';
+
+        const element = document.getElementById(elementId);
+        if(element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('study-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        document.getElementById('result-section').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        if(currentQuestion === 0 && score === 0) {
+            loadQuestion();
+        }
+    }
+
+    // --- QUIZ DATA ---
+    const questions = [
+        {
+            question: "阿俊的網路攝影機差點被駭。他最大的錯誤是什麼？",
+            options: [
+                "他買了一個便宜的品牌。",
+                "他使用了「預設密碼」（例如 admin/admin）。",
+                "他使用了 5G 而不是 4G。"
+            ],
+            answer: 1,
+            explanation: "正確！預設密碼是公開的資訊。駭客會首先嘗試這些密碼。務必立即更改！"
+        },
+        {
+            question: "什麼是「殭屍網路」(Botnet)？",
+            options: [
+                "在智慧冰箱上玩的電玩遊戲。",
+                "一群被駭客控制以攻擊他人的受感染設備。",
+                "一個只在晚上運作的網路。"
+            ],
+            answer: 1,
+            explanation: "正確！駭客接管脆弱的物聯網設備，以創建一支龐大的軍隊（殭屍網路）來發動網路攻擊。"
+        },
+        {
+            question: "為什麼「韌體更新」對智慧設備很重要？",
+            options: [
+                "它讓設備看起來更有光澤。",
+                "它修復了安全漏洞和錯誤。",
+                "它增加了轉售價值。"
+            ],
+            answer: 1,
+            explanation: "正確！韌體是硬體內部的軟體。更新可以修補駭客已發現的安全漏洞。"
+        },
+        {
+            question: "您應該在您的路由器上尋找哪種 Wi-Fi 安全標準？",
+            options: [
+                "WEP（舊標準）。",
+                "開放網路（無密碼）。",
+                "WPA2 或 WPA3。"
+            ],
+            answer: 2,
+            explanation: "正確！WPA2 是最低標準，而 WPA3 是最新且最安全的。"
+        },
+        {
+            question: "專業提示：連接您的智慧冰箱最安全的地方是哪裡？",
+            options: [
+                "與您用於銀行業務的筆記型電腦相同的 Wi-Fi。",
+                "與您的主要設備分開的「訪客網路」。",
+                "您鄰居的 Wi-Fi。"
+            ],
+            answer: 1,
+            explanation: "正確！使用訪客網路可以建立一道牆。如果冰箱被駭，駭客無法輕易地跳到您的電腦上。"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const progress = ((currentQuestion) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        nextBtn.style.display = 'none';
+        feedbackBox.style.display = 'none';
+        feedbackBox.className = 'feedback';
+        
+        const q = questions[currentQuestion];
+
+        let html = `<div class="question-box">${currentQuestion + 1}. ${q.question}</div>`;
+        html += `<div class="options-grid">`;
+        q.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        
+        quizContainer.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const correctIndex = questions[currentQuestion].answer;
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            btnElement.classList.add('correct');
+            feedbackBox.innerHTML = questions[currentQuestion].explanation;
+            feedbackBox.classList.add('success', 'show');
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+            feedbackBox.innerHTML = "<strong>不正確。</strong> " + questions[currentQuestion].explanation;
+            feedbackBox.classList.add('error', 'show');
+        }
+
+        nextBtn.style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        const scoreSpan = document.getElementById('score');
+        const messageDiv = document.getElementById('final-message');
+        
+        scoreSpan.innerText = `${score} / ${questions.length}`;
+        
+        if (score === questions.length) {
+            messageDiv.innerHTML = "<h3>🌟 智慧家庭專家！</h3><p>您的數位家庭現在是一座堡壘。</p>";
+        } else if (score > 2) {
+            messageDiv.innerHTML = "<h3>👍 做得好！</h3><p>記得定期檢查更新。</p>";
+        } else {
+            messageDiv.innerHTML = "<h3>⚠️ 請小心！</h3><p>您可能有風險。請再次複習「陷阱」部分。</p>";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>駭客任務：釣魚</title>
+    <style>
+        :root {
+            --primary: #d90429; /* Phishing Red */
+            --secondary: #2b2d42; /* Dark Navy */
+            --accent: #ef233c; /* Bright Red */
+            --light: #edf2f4;
+            --white: #ffffff;
+            --nav-height: 60px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            padding-top: var(--nav-height);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- STICKY NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 4px solid transparent;
+            transition: background 0.2s;
+        }
+        nav a:active, nav a:hover { background-color: rgba(255,255,255,0.1); }
+        nav a.highlight-btn { background-color: var(--primary); }
+
+        /* --- LAYOUT --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary), #8d99ae);
+            color: var(--white);
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        p.subtitle { margin-top: 5px; opacity: 0.9; font-size: 0.9rem; }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 80px;
+        }
+
+        .card h2 { 
+            color: var(--secondary); 
+            border-bottom: 2px solid var(--accent); 
+            padding-bottom: 8px; 
+            margin-top: 0; 
+            font-size: 1.3rem;
+        }
+
+        /* Teaching Elements */
+        .highlight {
+            display: block;
+            background-color: #ffebee; /* Light Red */
+            border-left: 6px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #b71c1c;
+            font-weight: 500;
+        }
+
+        .alert-box {
+            display: block;
+            background-color: #fff3e0;
+            border-left: 6px solid #e65100;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #bf360c;
+            font-weight: 500;
+        }
+
+        .icon-box { display: flex; gap: 15px; align-items: flex-start; }
+        .icon-emoji { font-size: 2rem; min-width: 40px; }
+
+        /* --- QUIZ UI --- */
+        #quiz-section { display: none; }
+        
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+
+        .option-btn {
+            background: var(--white);
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .option-btn.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.success { background-color: #d4edda; color: #155724; }
+        .feedback.error { background-color: #fff3cd; color: #856404; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(217, 4, 41, 0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .icon-box { flex-direction: column; align-items: center; text-align: center; }
+            .icon-box div { text-align: left; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <a href="javascript:void(0)" onclick="goToSection('intro-card')">情境</a>
+    <a href="javascript:void(0)" onclick="goToSection('social-card')">社交跟蹤</a>
+    <a href="javascript:void(0)" onclick="goToSection('clues-card')">識破偽冒</a>
+    <a href="javascript:void(0)" onclick="goToSection('malware-card')">勒索軟體</a>
+    <a href="javascript:void(0)" onclick="startQuiz()" class="highlight-btn">📝 測驗</a>
+</nav>
+
+<div class="container">
+
+    <header>
+        <h1>🎣 釣魚攻擊</h1>
+        <p class="subtitle">第三集：魚叉式釣魚</p>
+    </header>
+
+    <!-- STUDY SECTION -->
+    <div id="study-section">
+        
+        <div class="card" id="intro-card">
+            <h2>1. 情境</h2>
+            <p> 故事來自 <a href="https://www.hkcert.org/page/detail/500038"> HKCERT 動畫影片 </a></p> 
+
+            <p>阿俊非常想要一台新的 <strong>VR 賽車遊戲機</strong>，但到處都賣光了。駭客（強哥）看到了這一點，決定設下圈套來欺騙他。</p>
+        </div>
+
+        <div class="card" id="social-card">
+            <h2>2. 陷阱：社交工程</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🕵️</div>
+                <div>
+                    <strong>跟蹤目標</strong>
+                    <p>駭客不是靠猜的；他查看了阿俊的<strong>公開社交媒體</strong>。阿俊按讚了關於「電子產品」和「遊戲」的頁面。</p>
+                    <div class="highlight">
+                        🚨 <strong>魚叉式釣魚：</strong>一種根據您的個人興趣為您量身訂製的釣魚攻擊，使其比一般的垃圾郵件更難以識破。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="clues-card">
+            <h2>3. 識破偽冒郵件</h2>
+            <p>駭客發送了一封假郵件，聲稱阿俊贏得了一台免費的遊戲機。以下是如何識破這個騙局：</p>
+            <ul style="padding-left: 20px;">
+                <li><strong>檢查寄件人：</strong>郵件名稱聲稱是「Digital Expo」，但實際地址與官方網站不符。</li>
+                <li><strong>拼字錯誤：</strong>詐騙郵件通常有拼寫錯誤或奇怪的語法。</li>
+                <li><strong>好到不像話：</strong>只需填寫一份表格就能獲得免費遊戲機？請保持懷疑！</li>
+                <li><strong>敏感資訊：</strong>他們立即索取密碼和銀行資訊。合法的贈品活動很少這樣做。</li>
+            </ul>
+        </div>
+
+        <div class="card" id="malware-card">
+            <h2>4. 如果您點擊了會怎樣？</h2>
+            <div class="icon-box">
+                <div class="icon-emoji">🦠</div>
+                <div>
+                    <strong>勒索軟體 (Ransomware)</strong>
+                    <p>如果您點擊了連結，您的電腦檔案會被<strong>加密</strong>（鎖定）。駭客會要求金錢（贖金）來解鎖它們。</p>
+                    <div class="alert-box">
+                        🛡️ <strong>黃金法則：</strong>不要支付。無法保證他們會解鎖您的檔案。請聯繫 HKCERT 或警方。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 50px;">
+            <button class="btn" onclick="startQuiz()">我準備好了！參加測驗</button>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section">
+        <div class="card">
+            <h2 style="border:none;">📝 釣魚測驗</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <!-- Question loads here -->
+            </div>
+            <div id="feedback-box" class="feedback"></div>
+            <br>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">下一題</button>
+        </div>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="result-section" style="display:none; text-align: center;">
+        <div class="card">
+            <h2>測驗完成！ 🎉</h2>
+            <p style="font-size: 1.5rem;">您的得分： <span id="score" style="color:var(--primary); font-weight:bold;"></span></p>
+            <div id="final-message" style="margin: 20px 0;"></div>
+            <button class="btn" onclick="location.reload()">重新開始課程</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function goToSection(elementId) {
+        document.getElementById('study-section').style.display = 'block';
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'none';
+
+        const element = document.getElementById(elementId);
+        if(element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('study-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        document.getElementById('result-section').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        if(currentQuestion === 0 && score === 0) {
+            loadQuestion();
+        }
+    }
+
+    // --- QUIZ DATA ---
+    const questions = [
+        {
+            question: "駭客是如何知道阿俊想要一台遊戲機的？",
+            options: [
+                "他駭入了阿俊的大腦。",
+                "他查看了阿俊公開的社交媒體按讚和貼文。",
+                "他是阿俊的鄰居。"
+            ],
+            answer: 1,
+            explanation: "正確！過度在社交媒體上分享（將貼文設為公開）會給駭客用來欺騙您的資訊。"
+        },
+        {
+            question: "什麼是「魚叉式釣魚」？",
+            options: [
+                "用尖銳的棍子釣魚。",
+                "一封發送給數百萬人的通用郵件。",
+                "一種根據您的特定興趣量身訂製的針對性攻擊。"
+            ],
+            answer: 2,
+            explanation: "正確！「魚叉式」釣魚針對特定個人，利用他們的個人詳細資料使謊言更具說服力。"
+        },
+        {
+            question: "阿俊收到一封來自『Digital Expo』的郵件，提供一份免費禮物。其中的危險信號是什麼？",
+            options: [
+                "寄件人的電子郵件地址與公司名稱不符。",
+                "郵件太短了。",
+                "郵件的文字是藍色的。"
+            ],
+            answer: 0,
+            explanation: "正確！務必檢查*實際的*電子郵件地址（例如 sender@scam.com），而不僅僅是顯示名稱。"
+        },
+        {
+            question: "如果您的電腦感染了勒索軟體，您該怎麼辦？",
+            options: [
+                "立即支付贖金。",
+                "不要支付，斷開網路連線，並尋求幫助。",
+                "把電腦扔出窗外。"
+            ],
+            answer: 1,
+            explanation: "正確！支付贖金會助長駭客，而且他們甚至可能不會解鎖您的檔案。斷開連線以阻止傳播。"
+        },
+        {
+            question: "保護您的帳戶免受釣魚攻擊的好方法是什麼？",
+            options: [
+                "使用「123456」作為密碼，這樣您就不會忘記。",
+                "開啟多重要素驗證（MFA）。",
+                "永遠不要使用網際網路。"
+            ],
+            answer: 1,
+            explanation: "正確！MFA 需要第二個驗證碼（例如來自您手機的驗證碼）。即使釣魚者偷了您的密碼，他們也無法登入。"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const progress = ((currentQuestion) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        nextBtn.style.display = 'none';
+        feedbackBox.style.display = 'none';
+        feedbackBox.className = 'feedback';
+        
+        const q = questions[currentQuestion];
+
+        let html = `<div class="question-box">${currentQuestion + 1}. ${q.question}</div>`;
+        html += `<div class="options-grid">`;
+        q.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+        html += `</div>`;
+        
+        quizContainer.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const correctIndex = questions[currentQuestion].answer;
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            btnElement.classList.add('correct');
+            feedbackBox.innerHTML = questions[currentQuestion].explanation;
+            feedbackBox.classList.add('success', 'show');
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+            feedbackBox.innerHTML = "<strong>不正確。</strong> " + questions[currentQuestion].explanation;
+            feedbackBox.classList.add('error', 'show');
+        }
+
+        nextBtn.style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        const scoreSpan = document.getElementById('score');
+        const messageDiv = document.getElementById('final-message');
+        
+        scoreSpan.innerText = `${score} / ${questions.length}`;
+        
+        if (score === questions.length) {
+            messageDiv.innerHTML = "<h3>🌟 釣魚專家！</h3><p>您能從一英里外識破騙局。</p>";
+        } else if (score > 2) {
+            messageDiv.innerHTML = "<h3>👍 做得好！</h3><p>請記住：不要點擊可疑連結！</p>";
+        } else {
+            messageDiv.innerHTML = "<h3>⚠️ 請小心！</h3><p>您可能容易受到詐騙的攻擊。請再次複習「識破偽冒」部分。</p>";
+        }
+    }
+</script>
+
+</body>
+</html>
