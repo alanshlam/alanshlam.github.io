@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日常網路安全要點與緊急應變</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --warning-color: #e74c3c;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        body:fullscreen { background-color: #000; }
+        body:-webkit-full-screen { background-color: #000; }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol { line-height: 1.7; }
+        li { margin-bottom: 10px; }
+
+        /* --- Grid Layout for Overview Slides --- */
+        .lecture-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .lecture-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        /* --- Question Slide --- */
+        .question-slide { text-align: center; }
+        .question-slide h1 { font-size: 3em; color: var(--accent-color); }
+
+        /* --- Controls Bar --- */
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        #fullscreenBtn { background-color: #2c3e50; }
+        #fullscreenBtn:hover { background-color: #1a252f; }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content { flex-direction: column; }
+            .visual-container { border-right: none; border-bottom: 1px solid #ddd; min-height: 250px; }
+            .text-container { padding: 20px; }
+            .lecture-grid { grid-template-columns: 1fr; }
+            .controls { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <!-- Image Area -->
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="簡報視覺圖">
+        </div>
+
+        <!-- Text Area (Right Side) -->
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Fixed Footnote -->
+            <div class="slide-footer">
+                日常網路安全要點與緊急應變
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; 上一張</button>
+        <span class="progress" id="slide-counter">1 / 9</span>
+        <button id="nextBtn" onclick="changeSlide(1)">下一張 &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; 全螢幕</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    // Images expected: p0-1.jpg, p0-2.jpg ... p0-7.jpg, p0-disclaimer.jpg, p0-8.jpg
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p0-";
+    
+    // --- Slide Content Data ---
+    const slides = [
+        {
+            id: '1', 
+            html: `
+                <h1>日常網路安全要點與緊急應變</h1>
+                <hr>
+                <h2>課程總覽</h2>
+                <p><strong>您的數位安全藍圖</strong></p>
+                <p>在這 10 個單元的課程中，我們將把您從一個脆弱的使用者轉變為一個有能力的數位防禦者。</p>
+            `
+        },
+        {
+            id: '2',
+            html: `
+                <h3>模組 1：基礎</h3>
+                <p>我們從理解我們所居住的「數位房屋」以及如何鎖門開始。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>單元 1：理解整體環境</strong><br>
+                        機密性、完整性、可用性，以及「數位房屋」的比喻。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>單元 2：建立您的防禦</strong><br>
+                        4 個基本習慣：鎖、更新、安全軟體和安全應用程式。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>單元 3：密碼與多重要素驗證</strong><br>
+                        為什麼密碼會失效，以及為什麼多重要素驗證是終極的鎖。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '3', 
+            html: `
+                <h3>模組 2：安全的上網習慣</h3>
+                <p>在不被欺騙的情況下瀏覽網路和處理交易。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>單元 4：安全瀏覽</strong><br>
+                        識別假連結、理解 HTTPS 和使用 VPN。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>單元 5：電子郵件與交易</strong><br>
+                        識別魚叉式釣魚以及為什麼信用卡比簽帳卡更安全。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '4', 
+            html: `
+                <h3>模組 3：維護與彈性</h3>
+                <p>確保您的設備持久耐用，您的資料能在災難中倖存。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>單元 6：更新與備份</strong><br>
+                        3-2-1 備份策略以及為什麼更新是您的免費安全服務。
+                    </div>
+                </div>
+                <p style="margin-top:20px;"><em>「更新是維護，備份是保險。」</em></p>
+            `
+        },
+        {
+            id: '5', 
+            html: `
+                <h3>模組 4：事故應變</h3>
+                <p>了解威脅並確切知道發生時該怎麼做。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>單元 7：威脅簡報</strong><br>
+                        深入探討釣魚、勒索軟體和資料外洩。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>單元 8：急救措施</strong><br>
+                        黃金法則：不要驚慌，不要刪除。逐步恢復指南。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '6', 
+            html: `
+                <h3>模組 5：現實世界與未來</h3>
+                <p>從歷史中學習並為 AI 時代做準備。</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>單元 9：案例研究</strong><br>
+                        分析 Target、Colonial Pipeline 和 Twitter 的駭客事件以學習真實的教訓。
+                    </div>
+                    <div class="lecture-item">
+                        <strong>單元 10：AI 與詐騙</strong><br>
+                        語音複製、Deepfake，以及如何在 AI 時代驗證現實。
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '7', 
+            html: `
+                <h3>為何這很重要</h3>
+                <h2 style="color:var(--primary-color);">安全不是偏執。</h2>
+                <h2 style="color:var(--accent-color);">而是做好準備。</h2>
+                <hr>
+                <p>在本課程結束時，您將擁有一個完整的<strong>行動計畫</strong>來保護您自己、您的家人和您的工作場所。</p>
+            `
+        },
+        {
+            id: 'disclaimer',
+            html: `
+                <h2 style="color:var(--primary-color);">重要實施指南</h2>
+                <hr>
+                <ul style="font-size: 1em; line-height: 1.8;">
+                    <li><strong>一般參考：</strong>本課程中的建議涵蓋了大多數使用者的一般最佳實踐。</li>
+                    <li><strong>獨特環境：</strong>每個電腦系統都是獨一無二的。適用於家用筆記型電腦的設定可能需要為辦公室伺服器進行調整。</li>
+                    <li><strong>專業建議：</strong>如果您不確定某個特定設定，或者您正在管理一個複雜的商業網路，請諮詢您的 IT 支援提供商。</li>
+                    <li><strong>安全第一：</strong><span style="color:var(--accent-color); font-weight:bold;">在進行重大的系統變更之前，請務必備份您的資料並在非生產環境中測試您的部署。</span></li>
+                </ul>
+            `
+        },
+        {
+            id: '8', 
+            html: `
+                <div class="question-slide">
+                    <h1>有任何問題嗎？</h1>
+                    <hr>
+                    <p>讓我們開始這段旅程。</p>
+                </div>
+            `
+        }
+    ];
+
+    // --- Logic ---
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    // DOM Elements
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        // Load Text
+        textElement.innerHTML = slides[index].html;
+        
+        // Load Image
+        const slideId = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideId}.jpg`;
+        imgElement.alt = `簡報投影片 ${index + 1}`;
+
+        // Update UI
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; 退出全螢幕";
+        } else {
+            fsBtn.innerHTML = "&#9974; 全螢幕";
+        }
+    });
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    // Initialize the first slide
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>
