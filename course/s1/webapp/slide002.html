@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Cyber Security Essentials and Emergency Response</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --warning-color: #e74c3c;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --footer-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        body:fullscreen { background-color: #000; }
+        body:-webkit-full-screen { background-color: #000; }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; 
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+            overflow: hidden; 
+        }
+
+        .visual-container {
+            flex: 1;
+            background-color: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .visual-container img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        .text-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: white;
+        }
+
+        .dynamic-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .slide-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: var(--footer-color);
+            text-align: right;
+            font-style: italic;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        ul, ol { line-height: 1.6; }
+        li { margin-bottom: 10px; }
+
+        /* --- Grid Layout for Overview Slides --- */
+        .lecture-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .lecture-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        /* --- Question Slide --- */
+        .question-slide { text-align: center; }
+        .question-slide h1 { font-size: 3em; color: var(--accent-color); }
+
+        /* --- Controls Bar --- */
+        .controls {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        #fullscreenBtn { background-color: #2c3e50; }
+        #fullscreenBtn:hover { background-color: #1a252f; }
+
+        .progress {
+            font-weight: bold;
+            color: #7f8c8d;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .slide-content { flex-direction: column; }
+            .visual-container { border-right: none; border-bottom: 1px solid #ddd; min-height: 250px; }
+            .text-container { padding: 20px; }
+            .lecture-grid { grid-template-columns: 1fr; }
+            .controls { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slide-content">
+        <!-- Image Area -->
+        <div class="visual-container">
+            <img id="slide-img" src="" alt="Presentation Visual">
+        </div>
+
+        <!-- Text Area (Right Side) -->
+        <div class="text-container">
+            <div id="slide-text-content" class="dynamic-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Fixed Footnote -->
+            <div class="slide-footer">
+                Daily Cyber Security Essentials and Emergency Response
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">&#8592; Previous</button>
+        <span class="progress" id="slide-counter">1 / 9</span>
+        <button id="nextBtn" onclick="changeSlide(1)">Next &#8594;</button>
+        <div style="flex-grow:1"></div>
+        <button id="fullscreenBtn" onclick="toggleFullScreen()">&#9974; Full Screen</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+    // Images expected: p0-1.jpg, p0-2.jpg ... p0-7.jpg, p0-disclaimer.jpg, p0-8.jpg
+    const imageBaseUrl = "https://alanshlam.github.io/course/s1/img/p0-";
+    
+    // --- Slide Content Data ---
+    const slides = [
+        {
+            id: '1', 
+            html: `
+                <h1>Daily Cyber Security Essentials and Emergency Response</h1>
+                <hr>
+                <h2>Course Overview</h2>
+                <p><strong>A Roadmap to Your Digital Safety</strong></p>
+                <p>In this 10-unit course, we will transform you from a vulnerable user into an empowered digital defender.</p>
+            `
+        },
+        {
+            id: '2',
+            html: `
+                <h3>Module 1: The Foundations</h3>
+                <p>We start by understanding the "Digital House" we live in and how to lock the doors.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 1: Understanding the Landscape</strong><br>
+                        Confidentiality, Integrity, Availability, and the "Digital House" analogy.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 2: Building Your Defenses</strong><br>
+                        The 4 Essential Habits: Locks, Updates, Security Software, and Safe Apps.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 3: Password & MFA</strong><br>
+                        Why passwords fail and why Multi-Factor Authentication is the ultimate lock.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '3', 
+            html: `
+                <h3>Module 2: Safe Habits Online</h3>
+                <p>Navigating the internet and handling transactions without getting tricked.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 4: Secure Browsing</strong><br>
+                        Spotting fake links, understanding HTTPS, and using VPNs.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 5: Email & Transactions</strong><br>
+                        Recognizing spear phishing and why Credit Cards are safer than Debit Cards.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '4', 
+            html: `
+                <h3>Module 3: Maintenance & Resilience</h3>
+                <p>Ensuring your devices last and your data survives disasters.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 6: Updates & Backups</strong><br>
+                        The 3-2-1 Backup Strategy and why updates are your free security service.
+                    </div>
+                </div>
+                <p style="margin-top:20px;"><em>"Updates are maintenance. Backups are insurance."</em></p>
+            `
+        },
+        {
+            id: '5', 
+            html: `
+                <h3>Module 4: Incident Response</h3>
+                <p>Understanding threats and knowing exactly what to do when they happen.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 7: Threat Briefing</strong><br>
+                        Deep dive into Phishing, Ransomware, and Data Breaches.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 8: First Aid</strong><br>
+                        Golden Rules: Don't Panic, Don't Delete. Step-by-step recovery guides.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '6', 
+            html: `
+                <h3>Module 5: Real World & Future</h3>
+                <p>Learning from history and preparing for the age of AI.</p>
+                <div class="lecture-grid">
+                    <div class="lecture-item">
+                        <strong>Unit 9: Case Studies</strong><br>
+                        Analyzing Target, Colonial Pipeline, and Twitter hacks to learn real lessons.
+                    </div>
+                    <div class="lecture-item">
+                        <strong>Unit 10: AI & Fraud</strong><br>
+                        Voice cloning, Deepfakes, and how to verify reality in the AI era.
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: '7', 
+            html: `
+                <h3>Why This Matters</h3>
+                <h2 style="color:var(--primary-color);">Security is not about being paranoid.</h2>
+                <h2 style="color:var(--accent-color);">It is about being prepared.</h2>
+                <hr>
+                <p>By the end of this course, you will have a complete <strong>Action Plan</strong> to protect yourself, your family, and your workplace.</p>
+            `
+        },
+        {
+            id: 'disclaimer',
+            html: `
+                <h2 style="color:var(--primary-color);">Important Implementation Guidelines</h2>
+                <hr>
+                <ul style="font-size: 1em; line-height: 1.8;">
+                    <li><strong>General Reference:</strong> The recommendations in this course cover general best practices for most users.</li>
+                    <li><strong>Unique Environments:</strong> Every computer system is unique. A setting that works for a home laptop might require adjustment for an office server.</li>
+                    <li><strong>Professional Advice:</strong> If you are unsure about a specific setting, or if you are managing a complex business network, please consult your IT support provider.</li>
+                    <li><strong>Safety First:</strong> <span style="color:var(--accent-color); font-weight:bold;">Always back up your data and test your deployment in a non-production environment </span> before making significant system changes.</li>
+                </ul>
+            `
+        },
+        {
+            id: '8', 
+            html: `
+                <div class="question-slide">
+                    <h1>Any Questions?</h1>
+                    <hr>
+                    <p>Let's begin the journey.</p>
+                </div>
+            `
+        }
+    ];
+
+    // --- Logic ---
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    // DOM Elements
+    const imgElement = document.getElementById('slide-img');
+    const textElement = document.getElementById('slide-text-content');
+    const counterElement = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+
+    function loadSlide(index) {
+        // Load Text
+        textElement.innerHTML = slides[index].html;
+        
+        // Load Image
+        const slideId = slides[index].id;
+        imgElement.src = `${imageBaseUrl}${slideId}.jpg`;
+
+        // Update UI
+        counterElement.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < totalSlides) {
+            currentIndex = newIndex;
+            loadSlide(currentIndex);
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(err.message);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            fsBtn.innerHTML = "&#10005; Exit Full Screen";
+        } else {
+            fsBtn.innerHTML = "&#9974; Full Screen";
+        }
+    });
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "ArrowRight") {
+            changeSlide(1);
+        } else if(event.key === "ArrowLeft") {
+            changeSlide(-1);
+        }
+    });
+
+    // Initialize the first slide
+    loadSlide(currentIndex);
+
+</script>
+
+</body>
+</html>
