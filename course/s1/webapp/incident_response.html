@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Cyber Response Guide (SME/Layman)</title>
+    <style>
+        /* CSS STYLES */
+        :root {
+            --primary: #0056b3; /* Professional Blue */
+            --accent: #e6f2ff;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --text: #333;
+            --bg: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        nav button {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav button:hover, nav button.active {
+            background-color: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1; /* Pushes footer to bottom */
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            min-height: 60vh;
+        }
+
+        /* Sections */
+        .content-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active-section {
+            display: block; /* Show when active */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Components */
+        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 20px; }
+        
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 5px solid var(--warning);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .action-step {
+            background-color: var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .danger-step {
+            background-color: #ffe6e6;
+            border-left: 5px solid var(--danger);
+        }
+
+        /* Disclaimer Box */
+        .disclaimer {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Interactive Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .checklist-item:hover { background: #eee; }
+        .checklist-item input { margin-right: 15px; transform: scale(1.2); }
+        .checklist-item.checked { text-decoration: line-through; color: #888; }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; }
+            nav button { width: 100%; margin: 2px 0; }
+            h1 { font-size: 1.2rem; }
+        }
+
+        footer {
+            background-color: #333;
+            color: #ccc;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🚨 Incident Response Training (SME/Layman)</h1>
+    <nav>
+        <button onclick="showSection('home')" class="active" id="btn-home">Start Here</button>
+        <button onclick="showSection('phase1')" id="btn-phase1">1. Containment</button>
+        <button onclick="showSection('phase2')" id="btn-phase2">2. Decision</button>
+        <button onclick="showSection('phase3')" id="btn-phase3">3. Recovery</button>
+        <button onclick="showSection('insurance')" id="btn-insurance">HK Insurance</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container-box">
+        <!-- HOME SECTION -->
+        <section id="home" class="content-section active-section">
+            <h2>Welcome to Emergency Response</h2>
+            <p>This tool is designed for <strong>Laymen, Students, and SME Owners</strong> who do not have an internal IT staff to call during a security breach.</p>
+            
+            <div class="alert-box">
+                <strong>The Golden Rule:</strong> Standard corporate advice is "Don't touch anything, call forensics." 
+                <br><br>
+                But if you have no budget and no IT staff, your priority is <strong>stopping the damage</strong>, not preserving evidence for court.
+            </div>
+
+            <h3>How to use this app:</h3>
+            <ul>
+                <li>Use the menu buttons above to navigate through the phases of an attack.</li>
+                <li>Follow the steps in order.</li>
+                <li>Check the "HK Insurance" tab for local resources.</li>
+            </ul>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="showSection('phase1')" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">Start Phase 1 &rarr;</button>
+            </div>
+        </section>
+
+        <!-- PHASE 1: CONTAINMENT -->
+        <section id="phase1" class="content-section">
+            <h2>Phase 1: Immediate Containment</h2>
+            <p>Do this immediately. Every second counts.</p>
+
+            <div class="action-step">
+                <h3>🔌 Step 1: Pull the Plug</h3>
+                <p>Do not shut down the computer yet. <strong>Physically disconnect the internet.</strong></p>
+                <ul>
+                    <li>Unplug the Ethernet cable.</li>
+                    <li>Toggle the Wi-Fi switch off.</li>
+                    <li>If unsure, turn off the main office/home Router to kill internet for the building.</li>
+                </ul>
+            </div>
+
+            <div class="action-step">
+                <h3>📷 Step 2: Photograph Evidence</h3>
+                <p>Use your mobile phone. Take clear photos of:</p>
+                <ul>
+                    <li>Ransom notes.</li>
+                    <li>Error messages.</li>
+                    <li>Suspicious pop-ups.</li>
+                </ul>
+                <p><em>Reason: You need this info later, but you don't want to touch the infected keyboard.</em></p>
+            </div>
+        </section>
+
+        <!-- PHASE 2: DECISION -->
+        <section id="phase2" class="content-section">
+            <h2>Phase 2: The Decision Fork</h2>
+            <p>You must choose a path based on your <strong>Budget</strong> and <strong>Data Value</strong>.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                
+                <!-- Scenario A -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: green; margin-top:0;">Scenario A: Insured</h3>
+                    <p>You have Cyber Insurance.</p>
+                    <hr>
+                    <strong>ACTION:</strong> Stop everything. Call your insurance hotline immediately. Do not try to fix it yourself or you void the claim.
+                </div>
+
+                <!-- Scenario B -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: orange; margin-top:0;">Scenario B: Critical Data</h3>
+                    <p>No insurance, but data is worth $$$ (Client info, IP).</p>
+                    <hr>
+                    <strong>ACTION:</strong> Hire an external MSSP (Managed Security Service Provider). Do not go to a local PC repair shop.
+                </div>
+
+                <!-- Scenario C -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: red; margin-top:0;">Scenario C: Scorched Earth</h3>
+                    <p>No insurance, no budget, just need the PC back.</p>
+                    <hr>
+                    <strong>ACTION:</strong> Proceed to Phase 3 (DIY Recovery). Accept that current data on the drive may be lost.
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 3: RECOVERY -->
+        <section id="phase3" class="content-section">
+            <h2>Phase 3: The "Scorched Earth" Recovery</h2>
+            <p>Only strictly for Scenario C (No budget, DIY approach).</p>
+
+            <div class="action-step danger-step">
+                <h3>☢️ The "Nuke and Pave"</h3>
+                <p>Antivirus is often not enough. You must wipe the drive.</p>
+                <ol>
+                    <li>Get a clean computer and a USB drive.</li>
+                    <li>Download Windows/macOS installer to the USB.</li>
+                    <li>Boot the infected PC from the USB.</li>
+                    <li><strong>Format/Delete</strong> the hard drive partitions.</li>
+                    <li>Reinstall the OS fresh.</li>
+                </ol>
+            </div>
+
+            <div class="action-step">
+                <h3>🔐 Post-Recovery Checklist</h3>
+                <p>Click to mark as done:</p>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> Change Email Passwords (Priority #1)
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> Change Banking Passwords
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> Enable 2FA / MFA on all accounts
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> Restore files from Cloud Backup (Scan first!)
+                </div>
+            </div>
+        </section>
+
+        <!-- INSURANCE SECTION -->
+        <section id="insurance" class="content-section">
+            <h2>Cyber Insurance in Hong Kong</h2>
+            
+            <div class="disclaimer">
+                <strong>⚠️ DISCLAIMER:</strong> 
+                This information is for educational reference only. Insurance products, coverage details, and prices change frequently. Users must conduct their own research and consult with professional brokers or insurance agents to verify details suitable for their specific situation. We are not affiliated with any providers listed below.
+            </div>
+
+            <p>In Hong Kong, "Laymen" and SMEs have specific options tailored to low budgets.</p>
+
+            <h3>For Individuals (Personal)</h3>
+            <p>Focuses on: <em>Online Shopping Fraud, Identity Theft, Ransomware Extortion.</em></p>
+            <ul>
+                <li><strong>Standard Chartered / Allianz:</strong> Often ~HK$25-30/month. Good for general personal protection.</li>
+                <li><strong>Zurich CyberSide:</strong> Includes support for cyberbullying and data restoration.</li>
+                <li><strong>AIG Personal Cyber:</strong> Often covers unauthorized e-wallet transactions.</li>
+            </ul>
+
+            <h3>For SMEs (Business)</h3>
+            <p>Focuses on: <em>Data Liability, Business Interruption, and <strong>Incident Response Hotline</strong>.</em></p>
+            <ul>
+                <li><strong>HKBN (Hong Kong Broadband Network):</strong> Often bundles free/cheap AXA insurance with business broadband plans. Check your contract!</li>
+                <li><strong>Chubb SME:</strong> Known for having a strong, dedicated Incident Response team you can call 24/7.</li>
+                <li><strong>OneDegree:</strong> Virtual insurer offering modern plans for digital assets and tech-focused SMEs.</li>
+            </ul>
+
+            <div class="alert-box">
+                <strong>Tip for Students:</strong> When buying SME insurance, the most valuable feature is the <strong>24/7 Hotline</strong>. It's like paying to have an IT expert on speed dial.
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <p>
+        &copy; <span id="currentYear"></span> Educational Incident Response Module. 
+        <br>Designed for classroom use.
+    </p>
+</footer>
+
+<script>
+    // 1. DYNAMIC YEAR SCRIPT
+    // Grabs the current year (2026) and updates the footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // 2. NAVIGATION LOGIC
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active-section');
+        });
+
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).classList.add('active-section');
+
+        // Highlight the button
+        document.getElementById('btn-' + sectionId).classList.add('active');
+        
+        // Scroll to top of main on mobile
+        window.scrollTo(0, 0);
+    }
+
+    // 3. CHECKLIST LOGIC
+    function toggleCheck(element) {
+        const checkbox = element.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        
+        if(checkbox.checked) {
+            element.classList.add('checked');
+        } else {
+            element.classList.remove('checked');
+        }
+    }
+</script>
+
+</body>
+</html>
