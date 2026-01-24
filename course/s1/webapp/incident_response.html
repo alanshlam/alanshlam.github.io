@@ -267,39 +267,75 @@
         </section>
 
         <!-- PHASE 3: RECOVERY -->
-        <section id="phase3" class="content-section">
-            <h2>Phase 3: The "Scorched Earth" Recovery</h2>
-            <p>Only strictly for Scenario C (No budget, DIY approach).</p>
+    <section id="phase3" class="content-section">
+        <h2>Phase 3: The "Scorched Earth" Recovery</h2>
+        <p>Only strictly for Scenario C (No budget, DIY approach).</p>
 
-            <div class="action-step danger-step">
-                <h3>☢️ The "Nuke and Pave"</h3>
-                <p>Antivirus is often not enough. You must wipe the drive.</p>
-                <ol>
-                    <li>Get a clean computer and a USB drive.</li>
-                    <li>Download Windows/macOS installer to the USB.</li>
-                    <li>Boot the infected PC from the USB.</li>
-                    <li><strong>Format/Delete</strong> the hard drive partitions.</li>
-                    <li>Reinstall the OS fresh.</li>
-                </ol>
-            </div>
+        <div class="action-step danger-step">
+            <h3>☢️ Step 1: The "Nuke and Pave"</h3>
+            <p>Antivirus is often not enough. You must wipe the drive.</p>
+            <ol>
+                <li>Get a clean computer and a USB drive.</li>
+                <li>Download Windows/macOS installer to the USB.</li>
+                <li>Boot the infected PC from the USB.</li>
+                <li><strong>Format/Delete</strong> the hard drive partitions.</li>
+                <li>Reinstall the OS fresh.</li>
+            </ol>
+        </div>
 
-            <div class="action-step">
-                <h3>🔐 Post-Recovery Checklist</h3>
-                <p>Click to mark as done:</p>
-                <div class="checklist-item" onclick="toggleCheck(this)">
-                    <input type="checkbox"> Change Email Passwords (Priority #1)
-                </div>
-                <div class="checklist-item" onclick="toggleCheck(this)">
-                    <input type="checkbox"> Change Banking Passwords
-                </div>
-                <div class="checklist-item" onclick="toggleCheck(this)">
-                    <input type="checkbox"> Enable 2FA / MFA on all accounts
-                </div>
-                <div class="checklist-item" onclick="toggleCheck(this)">
-                    <input type="checkbox"> Restore files from Cloud Backup (Scan first!)
-                </div>
+        <div class="alert-box" style="background-color: #e2e3e5; border-left: 5px solid #6c757d;">
+            <strong>💡 Windows License Tip:</strong>
+            <br>
+            If asked for a key, click <em>"I don't have a product key."</em> Windows usually reactivates automatically once it connects to the internet (Digital License).
+        </div>
+
+        <div class="action-step" style="background-color: #fff8e1; border-left: 5px solid #ffa000;">
+            <h3>🛡️ Step 2: The Safe Restoration Protocol</h3>
+            
+            <p><strong>A. Files (Docs, Photos, PDFs)</strong></p>
+            <ul>
+                <li>Plug in your backup drive, but <strong>do not open files yet.</strong></li>
+                <li>Right-click the drive -> <strong>"Scan with Microsoft Defender"</strong>.</li>
+                <li>Only copy files after the scan says "0 Threats Found."</li>
+            </ul>
+
+            <p><strong>B. Programs (Word, Chrome, Zoom)</strong></p>
+            <ul>
+                <li>❌ <strong>NEVER restore programs from backup.</strong></li>
+                <li>✅ <strong>ALWAYS download fresh installers</strong> from the official websites.</li>
+            </ul>
+
+            <!-- NEW SECTION FOR IMAGE BACKUPS & SETTINGS -->
+            <div style="background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;">
+                <strong>⚠️ "What about my Backup Image & Settings?"</strong>
+                
+                <p><strong>1. Full System Images:</strong><br>
+                Do not use "Restore/Recover Computer." This will put the virus back. <br>
+                Instead, use your backup software to <strong>"Mount"</strong> the image as a drive. Open it like a folder, grab <em>only</em> your documents, and ignore the rest.</p>
+
+                <p><strong>2. Bookmarks & Saved Passwords:</strong><br>
+                <span style="color:red"><strong>DANGER:</strong></span> Do not manually copy "AppData" or "Library" folders. Viruses hide there.<br>
+                <strong>Safe Method:</strong> Sign in to your browser (Chrome/Edge) on the clean PC. If you had Cloud Sync active, your data will reappear safely. If not, accept the loss—it is better than being hacked again.</p>
             </div>
-        </section>
+        </div>
+
+        <div class="action-step">
+            <h3>🔐 Step 3: Post-Recovery Checklist</h3>
+            <p>Click to mark as done:</p>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <input type="checkbox"> Change Email Passwords (Priority #1)
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <input type="checkbox"> Change Banking Passwords
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <input type="checkbox"> Enable 2FA / MFA on all accounts
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <input type="checkbox"> Run final Full Antivirus Scan
+            </div>
+        </div>
+    </section>
 
         <!-- INSURANCE SECTION -->
         <section id="insurance" class="content-section">
