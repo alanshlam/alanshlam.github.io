@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>緊急網路應變指南 (中小企/非專業人士)</title>
+    <style>
+        /* CSS STYLES */
+        :root {
+            --primary: #0056b3; /* Professional Blue */
+            --accent: #e6f2ff;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --text: #333;
+            --bg: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        nav button {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav button:hover, nav button.active {
+            background-color: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1; /* Pushes footer to bottom */
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            min-height: 60vh;
+        }
+
+        /* Sections */
+        .content-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active-section {
+            display: block; /* Show when active */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Components */
+        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 20px; }
+        
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 5px solid var(--warning);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .action-step {
+            background-color: var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .danger-step {
+            background-color: #ffe6e6;
+            border-left: 5px solid var(--danger);
+        }
+
+        /* Disclaimer Box */
+        .disclaimer {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Interactive Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .checklist-item:hover { background: #eee; }
+        .checklist-item input { margin-right: 15px; transform: scale(1.2); }
+        .checklist-item.checked { text-decoration: line-through; color: #888; }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; }
+            nav button { width: 100%; margin: 2px 0; }
+            h1 { font-size: 1.2rem; }
+        }
+
+        footer {
+            background-color: #333;
+            color: #ccc;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🚨 事故應變演練 (中小企/非專業人士)</h1>
+    <nav>
+        <button onclick="showSection('home')" class="active" id="btn-home">由此開始</button>
+        <button onclick="showSection('phase1')" id="btn-phase1">1. 控制</button>
+        <button onclick="showSection('phase2')" id="btn-phase2">2. 決策</button>
+        <button onclick="showSection('phase3')" id="btn-phase3">3. 復原</button>
+        <button onclick="showSection('insurance')" id="btn-insurance">香港保險</button>
+    </nav>
+</header>
+
+<main>
+    <div class="container-box">
+        <!-- HOME SECTION -->
+        <section id="home" class="content-section active-section">
+            <h2>歡迎來到緊急應變中心</h2>
+            <p>此工具專為在發生安全漏洞時沒有內部IT人員可求助的<strong>非專業人士、學生和中小企業主</strong>而設計。</p>
+            
+            <div class="alert-box">
+                <strong>黃金法則：</strong>標準的企業建議是「不要碰任何東西，立即致電鑑證專家。」
+                <br><br>
+                但如果您沒有預算也沒有IT人員，您的首要任務是<strong>阻止損害擴大</strong>，而不是為法庭保全證據。
+            </div>
+
+            <h3>如何使用此應用程式：</h3>
+            <ul>
+                <li>使用上方的選單按鈕在攻擊的各個階段之間導航。</li>
+                <li>請按順序執行步驟。</li>
+                <li>查看「香港保險」分頁以獲取本地資源。</li>
+            </ul>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="showSection('phase1')" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">開始第一階段 &rarr;</button>
+            </div>
+        </section>
+
+        <!-- PHASE 1: CONTAINMENT -->
+        <section id="phase1" class="content-section">
+            <h2>第一階段：立即控制</h2>
+            <p>請立即執行。分秒必爭。</p>
+
+            <div class="action-step">
+                <h3>🔌 步驟一：拔掉插頭</h3>
+                <p>先不要關閉電腦。<strong>立即切斷實體網路連線。</strong></p>
+                <ul>
+                    <li>拔掉網路線。</li>
+                    <li>關閉Wi-Fi開關。</li>
+                    <li>如果不確定，請關閉辦公室/家中的主路由器以切斷整棟建築的網路。</li>
+                </ul>
+            </div>
+
+            <div class="action-step">
+                <h3>📷 步驟二：拍照存證</h3>
+                <p>使用您的手機，清楚拍攝以下畫面：</p>
+                <ul>
+                    <li>勒索訊息。</li>
+                    <li>錯誤訊息。</li>
+                    <li>可疑的彈出視窗。</li>
+                </ul>
+                <p><em>原因：您稍後會需要這些資訊，但您不想碰觸受感染的鍵盤。</em></p>
+            </div>
+        </section>
+
+        <!-- PHASE 2: DECISION -->
+        <section id="phase2" class="content-section">
+            <h2>第二階段：決策分歧點</h2>
+            <p>您必須根據您的<strong>預算</strong>和<strong>資料價值</strong>選擇一條路。</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                
+                <!-- Scenario A -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: green; margin-top:0;">情境 A：已投保</h3>
+                    <p>您擁有網路安全保險。</p>
+                    <hr>
+                    <strong>行動：</strong>停止一切動作。立即致電您的保險熱線。請勿嘗試自行修復，否則可能導致保單失效。
+                </div>
+
+                <!-- Scenario B -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: orange; margin-top:0;">情境 B：關鍵資料</h3>
+                    <p>沒有保險，但資料價值連城（客戶資訊、智慧財產權）。</p>
+                    <hr>
+                    <strong>行動：</strong>聘請外部的MSSP（託管式安全服務供應商）。不要去當地的電腦維修店。
+                </div>
+
+                <!-- Scenario C -->
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background: #fff;">
+                    <h3 style="color: red; margin-top:0;">情境 C：焦土策略</h3>
+                    <p>沒有保險，沒有預算，只需要讓電腦恢復運作。</p>
+                    <hr>
+                    <strong>行動：</strong>進入第三階段（自行復原）。接受硬碟上的現有資料可能會遺失。
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 3: RECOVERY -->
+        <section id="phase3" class="content-section">
+            <h2>第三階段：「焦土策略」復原</h2>
+            <p>僅適用於情境 C（沒有預算，自行處理）。</p>
+
+            <div class="action-step danger-step">
+                <h3>☢️「核平後重建」</h3>
+                <p>防毒軟體通常不足夠。您必須清除整個硬碟。</p>
+                <ol>
+                    <li>準備一台乾淨的電腦和一個USB隨身碟。</li>
+                    <li>將Windows/macOS安裝程式下載到USB中。</li>
+                    <li>從USB啟動受感染的電腦。</li>
+                    <li><strong>格式化/刪除</strong>硬碟分割區。</li>
+                    <li>重新安裝全新的作業系統。</li>
+                </ol>
+            </div>
+
+            <div class="action-step">
+                <h3>🔐 復原後檢查清單</h3>
+                <p>點擊以標示為完成：</p>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> 更改電子郵件密碼（第一優先）
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> 更改銀行密碼
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> 在所有帳戶上啟用兩步驟驗證 / 多重要素驗證
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <input type="checkbox"> 從雲端備份還原檔案（先掃描！）
+                </div>
+            </div>
+        </section>
+
+        <!-- INSURANCE SECTION -->
+        <section id="insurance" class="content-section">
+            <h2>香港的網路安全保險</h2>
+            
+            <div class="disclaimer">
+                <strong>⚠️ 免責聲明：</strong> 
+                此資訊僅供教育參考。保險產品、保障範圍和價格經常變動。使用者必須自行研究並諮詢專業經紀人或保險代理人，以核實適合其具體情況的詳細資訊。我們與以下列出的任何供應商均無關聯。
+            </div>
+
+            <p>在香港，非專業人士和中小企業有專為低預算量身訂製的特定選項。</p>
+
+            <h3>個人保險</h3>
+            <p>主要保障：<em>網路購物詐騙、身份盜竊、勒索軟體勒索。</em></p>
+            <ul>
+                <li><strong>Standard Chartered / Allianz：</strong>通常每月約25-30港元。適合一般的個人保障。</li>
+                <li><strong>Zurich CyberSide：</strong>包含對網路霸凌和資料復原的支援。</li>
+                <li><strong>AIG Personal Cyber：</strong>通常涵蓋未經授權的電子錢包交易。</li>
+            </ul>
+
+            <h3>中小企保險 (商業)</h3>
+            <p>主要保障：<em>資料外洩責任、業務中斷，以及<strong>事故應變熱線</strong>。</em></p>
+            <ul>
+                <li><strong>HKBN (Hong Kong Broadband Network)：</strong> AXA保險通常與企業寬頻套餐捆綁銷售，且價格低廉或免費。請查看您的合約！</li>
+                <li><strong>Chubb SME：</strong>以擁有強大、專業的24/7事故應變團隊而聞名。</li>
+                <li><strong>OneDegree：</strong>提供針對數位資產和科技型中小企業的現代化計劃的虛擬保險公司。</li>
+            </ul>
+
+            <div class="alert-box">
+                <strong>給學生的提示：</strong>在購買中小企保險時，最有價值的功能是<strong>24/7全天候熱線</strong>。這就像付費讓一位IT專家隨時待命。
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <p>
+        &copy; <span id="currentYear"></span> 教育性事故應變模組。
+        <br>為課堂使用而設計。
+    </p>
+</footer>
+
+<script>
+    // 1. DYNAMIC YEAR SCRIPT
+    // Grabs the current year (2026) and updates the footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // 2. NAVIGATION LOGIC
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active-section');
+        });
+
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).classList.add('active-section');
+
+        // Highlight the button
+        document.getElementById('btn-' + sectionId).classList.add('active');
+        
+        // Scroll to top of main on mobile
+        window.scrollTo(0, 0);
+    }
+
+    // 3. CHECKLIST LOGIC
+    function toggleCheck(element) {
+        const checkbox = element.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        
+        if(checkbox.checked) {
+            element.classList.add('checked');
+        } else {
+            element.classList.remove('checked');
+        }
+    }
+</script>
+
+</body>
+</html>
