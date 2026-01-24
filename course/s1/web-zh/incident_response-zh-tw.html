@@ -190,7 +190,7 @@
             <p>此工具專為在發生安全漏洞時沒有內部IT人員可求助的<strong>非專業人士、學生和中小企業主</strong>而設計。</p>
             
             <div class="alert-box">
-                <strong>黃金法則：</strong>標準的企業建議是「不要碰任何東西，立即致電鑑證專家。」
+                <strong>黃金法則：</strong>標準的企業建議是「不要碰任何東西，立即致電鑑證專家。」 
                 <br><br>
                 但如果您沒有預算也沒有IT人員，您的首要任務是<strong>阻止損害擴大</strong>，而不是為法庭保全證據。
             </div>
@@ -272,7 +272,7 @@
             <p>僅適用於情境 C（沒有預算，自行處理）。</p>
 
             <div class="action-step danger-step">
-                <h3>☢️「核平後重建」</h3>
+                <h3>☢️ 步驟一：「核平後重建」</h3>
                 <p>防毒軟體通常不足夠。您必須清除整個硬碟。</p>
                 <ol>
                     <li>準備一台乾淨的電腦和一個USB隨身碟。</li>
@@ -283,8 +283,43 @@
                 </ol>
             </div>
 
+            <div class="alert-box" style="background-color: #e2e3e5; border-left: 5px solid #6c757d;">
+                <strong>💡 Windows 授權提示：</strong>
+                <br>
+                如果被要求輸入金鑰，請點擊<em>「我沒有產品金鑰」。</em>Windows 通常在連接到網路後會自動重新啟用（數位授權）。
+            </div>
+
+            <div class="action-step" style="background-color: #fff8e1; border-left: 5px solid #ffa000;">
+                <h3>🛡️ 步驟二：安全還原協議</h3>
+                
+                <p><strong>A. 檔案 (文件, 照片, PDF)</strong></p>
+                <ul>
+                    <li>插入您的備份硬碟，但<strong>先不要打開任何檔案。</strong></li>
+                    <li>右鍵點擊磁碟機 -> <strong>「使用 Microsoft Defender 掃描」</strong>。</li>
+                    <li>僅在掃描顯示「找不到威脅」後才複製檔案。</li>
+                </ul>
+
+                <p><strong>B. 程式 (Word, Chrome, Zoom)</strong></p>
+                <ul>
+                    <li>❌ <strong>絕不</strong>從備份中還原程式。</li>
+                    <li>✅ <strong>務必</strong>從官方網站下載全新的安裝程式。</li>
+                </ul>
+
+                <div style="background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;">
+                    <strong>⚠️ 「我的備份映像檔和設定怎麼辦？」</strong>
+                    
+                    <p><strong>1. 完整系統映像檔：</strong><br>
+                    不要使用「還原/復原電腦」。這會將病毒還原回來。<br>
+                    您應該使用您的備份軟體將映像檔<strong>「掛載」</strong>為一個磁碟機。像資料夾一樣打開它，只拿取您的文件，忽略其餘部分。</p>
+
+                    <p><strong>2. 書籤和已存密碼：</strong><br>
+                    <span style="color:red"><strong>危險：</strong></span>不要手動複製 "AppData" 或 "Library" 資料夾。病毒會隱藏在那裡。<br>
+                    <strong>安全方法：</strong>在乾淨的電腦上登入您的瀏覽器 (Chrome/Edge)。如果您之前啟用了雲端同步，您的資料將會安全地重新出現。如果沒有，請接受損失——這總比再次被駭好。</p>
+                </div>
+            </div>
+
             <div class="action-step">
-                <h3>🔐 復原後檢查清單</h3>
+                <h3>🔐 步驟三：復原後檢查清單</h3>
                 <p>點擊以標示為完成：</p>
                 <div class="checklist-item" onclick="toggleCheck(this)">
                     <input type="checkbox"> 更改電子郵件密碼（第一優先）
@@ -296,7 +331,7 @@
                     <input type="checkbox"> 在所有帳戶上啟用兩步驟驗證 / 多重要素驗證
                 </div>
                 <div class="checklist-item" onclick="toggleCheck(this)">
-                    <input type="checkbox"> 從雲端備份還原檔案（先掃描！）
+                    <input type="checkbox"> 執行最終的完整防毒掃描
                 </div>
             </div>
         </section>
@@ -323,7 +358,7 @@
             <h3>中小企保險 (商業)</h3>
             <p>主要保障：<em>資料外洩責任、業務中斷，以及<strong>事故應變熱線</strong>。</em></p>
             <ul>
-                <li><strong>HKBN (Hong Kong Broadband Network)：</strong> AXA保險通常與企業寬頻套餐捆綁銷售，且價格低廉或免費。請查看您的合約！</li>
+                <li><strong>HKBN (Hong Kong Broadband Network)：</strong>通常在商業寬頻計劃中捆綁免費/廉價的AXA insurance。請檢查您的合約！</li>
                 <li><strong>Chubb SME：</strong>以擁有強大、專業的24/7事故應變團隊而聞名。</li>
                 <li><strong>OneDegree：</strong>提供針對數位資產和科技型中小企業的現代化計劃的虛擬保險公司。</li>
             </ul>
@@ -337,7 +372,7 @@
 
 <footer>
     <p>
-        &copy; <span id="currentYear"></span> 教育性事故應變模組。
+        &copy; <span id="currentYear"></span> 教育性事故應變模組。 
         <br>為課堂使用而設計。
     </p>
 </footer>
