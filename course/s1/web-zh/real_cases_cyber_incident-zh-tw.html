@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全案例研究與測驗</title>
+    <style>
+        /* BASE STYLES */
+        :root {
+            --primary: #2c3e50; /* Dark Blue */
+            --secondary: #34495e;
+            --accent: #3498db;
+            --timeline-bg: #e8f4f8;
+            --mistake-bg: #f9e9e9;
+            --action-bg: #e9f7ef;
+            --text: #333;
+            --white: #ffffff;
+            --correct: #27ae60;
+            --wrong: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: var(--text);
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVIGATION HEADER */
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* SCROLLABLE MENU FOR MOBILE */
+        nav {
+            display: flex;
+            overflow-x: auto; /* Allows scrolling on small phones */
+            white-space: nowrap;
+            padding-bottom: 5px;
+            gap: 10px;
+            justify-content: center; /* Center on desktop */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            flex-shrink: 0; /* Prevents button squishing */
+        }
+
+        nav button:hover, nav button.active {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            font-weight: bold;
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .case-section {
+            display: none; /* Hidden by default */
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .case-section.active-section {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADINGS */
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: #555;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* CONTENT BLOCKS */
+        .block {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ccc;
+        }
+
+        .timeline { background: var(--timeline-bg); border-left-color: #3498db; }
+        .technique { background: #fff8e1; border-left-color: #ffa000; }
+        .mistake { background: var(--mistake-bg); border-left-color: #e74c3c; }
+        .action { background: var(--action-bg); border-left-color: #27ae60; }
+        
+        .lesson-box {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* QUIZ SPECIFIC STYLES */
+        .quiz-question {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .quiz-question p { font-weight: bold; margin-top: 0; }
+        .quiz-options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .quiz-options label:hover { background: #f0f0f0; }
+        
+        .quiz-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none; /* Hidden initially */
+        }
+        .correct-feedback { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong-feedback { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .btn-check {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-check:hover { background-color: #2980b9; }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #eee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* ICONS */
+        .icon { margin-right: 8px; font-size: 1.2rem; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.8rem;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* RESPONSIVE TWEAKS */
+        @media (max-width: 600px) {
+            nav { justify-content: flex-start; } /* Align left to show scroll hint */
+            h1 { font-size: 1rem; }
+            .case-section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📂 真實世界網路事件</h1>
+    <nav>
+        <button onclick="showCase('case1')" class="active" id="btn-case1">消費者委員會</button>
+        <button onclick="showCase('case2')" id="btn-case2">CloudNordic</button>
+        <button onclick="showCase('case3')" id="btn-case3">技術支援恐慌</button>
+        <button onclick="showCase('case4')" id="btn-case4">假冒技術支援</button>
+        <button onclick="showCase('case5')" id="btn-case5">診所備份</button>
+        <button onclick="showCase('quiz')" id="btn-quiz" style="background: var(--accent); color: white;">📝 參加測驗</button>
+    </nav>
+</header>
+
+<main>
+
+    <!-- CASE 1: Consumer Council -->
+    <section id="case1" class="case-section active-section">
+        <h2>案例一：「絕不付款」的立場</h2>
+        <p><strong>受害者：</strong>消費者委員會 (等同香港的中小企/非政府組織)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>時間線 (2023年9月)</strong>
+            <ul>
+                <li><strong>第0天：</strong>駭客入侵伺服器，竊取了8000人的資料。</li>
+                <li><strong>第1天：</strong>「LockBit」集團要求支付50萬美元（約390萬港元）的贖金。</li>
+                <li><strong>第2天：</strong>消委會總幹事召開記者會，公開拒絕支付贖金。</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>使用的技術</strong>
+            <p><strong>雙重勒索：</strong>攻擊者不僅鎖定了檔案，還先竊取了它們。他們威脅說，如果不付錢，就會公開敏感資料。</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>錯誤（預防措施）</strong>
+            <p>一個遠端存取帳戶的漏洞讓駭客得以進入。系統未及時修補。</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>採取的正確行動</strong>
+            <p><strong>零談判：</strong>消委會拒絕支付。支付贖金等於資助犯罪活動，且無法保證任何結果。相反，他們立即通知了警方和公眾（透明化處理）。</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 教訓：支付贖金是一場賭博。誠信和透明度能挽救您的聲譽，即使復原資料需要更長的時間。
+        </div>
+    </section>
+
+    <!-- CASE 2: CloudNordic -->
+    <section id="case2" class="case-section">
+        <h2>案例二：「完全抹除」</h2>
+        <p><strong>受害者：</strong>CloudNordic (丹麥雲端主機公司)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>時間線 (2023年8月)</strong>
+            <ul>
+                <li><strong>第0天：</strong>IT團隊開始將伺服器從一個資料中心遷移到另一個。</li>
+                <li><strong>凌晨02:00：</strong>在遷移過程中，他們將受感染的伺服器連接到內部網路。</li>
+                <li><strong>凌晨04:00：</strong>勒索軟體立即擴散到管理系統和備份系統。</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>使用的技術</strong>
+            <p><strong>橫向移動：</strong>病毒利用公司自己的內部網路管理員工具，將自身複製到每一個連接的磁碟機，包括備份。</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>錯誤</strong>
+            <p><strong>網路分割失敗：</strong>備份伺服器與線上伺服器位於同一網路。沒有「氣隙隔離」（實體隔離）。</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>應採取的正確行動（錯失）</strong>
+            <p>他們應該要有未連接到主網路的「離線備份」（磁帶機或不可變雲端儲存）。</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 教訓：如果您的備份連接到網際網路/網路，它們也可能被摧毀。請保留一份離線副本。
+        </div>
+    </section>
+
+    <!-- CASE 3: Tech Support Panic -->
+    <section id="case3" class="case-section">
+        <h2>案例三：「技術支援」恐慌</h2>
+        <p><strong>受害者：</strong>51歲女性 (香港居民)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>時間線 (2024年1月)</strong>
+            <ul>
+                <li><strong>事件A：</strong>受害者瀏覽網頁時，螢幕凍結並發出響亮的警報。</li>
+                <li><strong>事件B：</strong>訊息顯示「已感染！請致電技術支援。」受害者撥打了該號碼。</li>
+                <li><strong>事件C：</strong>詐騙者指示她安裝遠端控制應用程式。</li>
+                <li><strong>結果：</strong>120萬港元從她的銀行帳戶中被轉走。</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>使用的技術</strong>
+            <p><strong>社交工程（恐懼）：</strong>駭客在技術上並未入侵電腦；他們利用巨大的噪音和對法律後果的恐懼來攻擊人類心理。</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>錯誤</strong>
+            <p><strong>順從：</strong>受害者遵從了螢幕上的指示，為詐騙者安裝了「TeamViewer/AnyDesk」。</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>應採取的正確行動</strong>
+            <p><strong>掛斷電話並拔掉網路線：</strong>切勿撥打彈出視窗上的號碼。立即斷開網路以中斷連線。</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 教訓：恐懼是武器。如果一則訊息讓您恐慌，那它就是詐騙。行動前請先暫停並深呼吸。
+        </div>
+    </section>
+
+    <!-- CASE 4: Fake Microsoft Call -->
+    <section id="case4" class="case-section">
+        <h2>案例四：假的「微軟」警報</h2>
+        <p><strong>受害者：</strong>一般大眾 / 辦公室職員</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>典型時間線</strong>
+            <ul>
+                <li><strong>觸發：</strong>使用者點擊錯誤廣告或訪問了被入侵的網站。</li>
+                <li><strong>鎖定：</strong>瀏覽器進入「全螢幕」模式。滑鼠游標消失或卡住。</li>
+                <li><strong>音訊：</strong>機器人語音循環播放：「不要重新啟動您的電腦。Windows已被鎖定。請致電微軟...」</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>使用的技術</strong>
+            <p><strong>「瀏覽器鎖定器」（惡意廣告）：</strong>這不是病毒。這只是一個執行腳本的網頁，讓您無法輕易關閉分頁。</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>錯誤</strong>
+            <p><strong>誤信瀏覽器就是作業系統：</strong>使用者以為<em>整台電腦</em>都壞了。他們強制關機（這沒問題）或撥打電話（這是致命的）。</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>正確的行動</strong>
+            <p><strong>工作管理員終止：</strong>按下 Ctrl + Alt + Delete。打開工作管理員。選擇網頁瀏覽器 (Chrome/Edge)。點擊「結束工作」。所謂的「病毒」就會立即消失。</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 教訓：微軟、蘋果和谷歌絕不會在錯誤訊息中包含電話號碼。
+        </div>
+    </section>
+
+    <!-- CASE 5: Infected Backup -->
+    <section id="case5" class="case-section">
+        <h2>案例五：「被感染的備份」</h2>
+        <p><strong>受害者：</strong>Wood Ranch Medical (小型診所)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>時間線 (2019年12月)</strong>
+            <ul>
+                <li><strong>第0天：</strong>勒索軟體透過電子郵件感染了診所的接待處電腦。</li>
+                <li><strong>應對：</strong>員工發現檔案被鎖定，決定從備份中還原。</li>
+                <li><strong>錯誤：</strong>他們將備份磁碟機插入<em>受感染的</em>電腦。</li>
+                <li><strong>結果：</strong>勒索軟體立即加密了備份磁碟機。</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>使用的技術</strong>
+            <p><strong>自動加密：</strong>現代勒索軟體會持續掃描新的磁碟機（USB、網路共享）。一旦偵測到新的磁碟機，就會對其進行加密。</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>錯誤</strong>
+            <p><strong>在「不乾淨」的環境中還原：</strong>員工試圖使用受感染的機器來解決問題。他們沒有先確認環境是否乾淨。</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>應採取的正確行動</strong>
+            <p><strong>「第三階段」協議：</strong>將備份磁碟機帶到一台<strong>獨立、乾淨</strong>的電腦上。在那裡掃描它。在插入備份磁碟機之前，<strong>先清除</strong>受感染的診所電腦。</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 教訓：切勿將救命的備份插入被入侵的機器。復原需要一個乾淨的環境。
+        </div>
+    </section>
+
+    <!-- QUIZ SECTION -->
+    <section id="quiz" class="case-section">
+        <h2>📝 知識測驗</h2>
+        <p>測試您對以上案例研究的理解。</p>
+        
+        <div class="score-display" id="score-box"></div>
+
+        <form id="quiz-form">
+            
+            <div class="quiz-question" data-answer="b">
+                <p>1. 在消費者委員會的案例中（案例一），拒絕支付贖金的結果是什麼？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q1" value="a"> 他們永遠失去了公眾的信任。</label>
+                    <label><input type="radio" name="q1" value="b"> 他們維持了誠信，並且沒有資助犯罪分子。</label>
+                    <label><input type="radio" name="q1" value="c"> 駭客立即免費解鎖了檔案。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-question" data-answer="c">
+                <p>2. 為什麼CloudNordic（案例二）會損失100%的資料？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q2" value="a"> 駭客猜對了他們的密碼。</label>
+                    <label><input type="radio" name="q2" value="b"> 他們的硬碟被實體盜走。</label>
+                    <label><input type="radio" name="q2" value="c"> 他們的備份連接到同一個被感染的網路。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-question" data-answer="a">
+                <p>3. 您看到一個彈出視窗顯示「系統已感染！請致電微軟 555-0199」（案例四）。最好的立即行動是什麼？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q3" value="a"> 不要打電話。強制關閉瀏覽器（工作管理員）或重新啟動。</label>
+                    <label><input type="radio" name="q3" value="b"> 打電話確認號碼是否真實。</label>
+                    <label><input type="radio" name="q3" value="c"> 下載他們建議的遠端支援工具。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-question" data-answer="b">
+                <p>4. 您如何判斷一個「技術支援」警報是假的？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q4" value="a"> 它有紅色的顏色。</label>
+                    <label><input type="radio" name="q4" value="b"> 真正的公司（微軟/蘋果）絕不會在錯誤訊息中提供電話號碼。</label>
+                    <label><input type="radio" name="q4" value="c"> 它會發出巨大的噪音。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-question" data-answer="c">
+                <p>5. 在醫療診所的案例中（案例五），為什麼還原會失敗？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q5" value="a"> 備份磁碟機太小。</label>
+                    <label><input type="radio" name="q5" value="b"> 他們忘記了密碼。</label>
+                    <label><input type="radio" name="q5" value="c"> 他們將備份磁碟機插入了受感染的電腦。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <div class="quiz-question" data-answer="b">
+                <p>6. 案例二中提到的備份「黃金法則」是什麼？</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q6" value="a"> 每年備份一次。</label>
+                    <label><input type="radio" name="q6" value="b"> 保留一份離線副本（氣隙隔離）。</label>
+                    <label><input type="radio" name="q6" value="c"> 將備份儲存在桌面上。</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <button type="button" class="btn-check" onclick="checkQuiz()">檢查結果</button>
+            <button type="button" class="btn-check" onclick="resetQuiz()" style="background-color: #7f8c8d; margin-top: 10px; display:none;" id="btn-reset">再試一次</button>
+
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; <span id="year"></span> 教育性安全案例研究模組</p>
+</footer>
+
+<script>
+    // Set dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Tab Switching Logic
+    function showCase(caseId) {
+        // 1. Hide all sections
+        const sections = document.querySelectorAll('.case-section');
+        sections.forEach(section => {
+            section.classList.remove('active-section');
+        });
+
+        // 2. Deactivate all buttons
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // 3. Show target section
+        document.getElementById(caseId).classList.add('active-section');
+
+        // 4. Activate target button
+        document.getElementById('btn-' + caseId).classList.add('active');
+
+        // 5. Scroll to top (helpful for mobile)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // QUIZ LOGIC
+    function checkQuiz() {
+        let score = 0;
+        const total = 6;
+        const questions = document.querySelectorAll('.quiz-question');
+
+        questions.forEach((q, index) => {
+            const correctAnswer = q.getAttribute('data-answer');
+            const selectedOption = q.querySelector('input[type="radio"]:checked');
+            const feedbackBox = q.querySelector('.quiz-feedback');
+
+            feedbackBox.classList.remove('correct-feedback', 'wrong-feedback');
+            feedbackBox.style.display = 'block';
+
+            if (selectedOption) {
+                if (selectedOption.value === correctAnswer) {
+                    score++;
+                    feedbackBox.innerHTML = "✅ <strong>正確！</strong>";
+                    feedbackBox.classList.add('correct-feedback');
+                } else {
+                    feedbackBox.innerHTML = "❌ <strong>不正確。</strong> 請複習案例研究。";
+                    feedbackBox.classList.add('wrong-feedback');
+                }
+            } else {
+                feedbackBox.innerHTML = "⚠️ 請選擇一個答案。";
+                feedbackBox.classList.add('wrong-feedback');
+            }
+        });
+
+        // Show Score
+        const scoreBox = document.getElementById('score-box');
+        scoreBox.style.display = 'block';
+        scoreBox.innerHTML = `您的得分是 ${total} 分之 ${score}`;
+        
+        if(score === total) {
+            scoreBox.style.backgroundColor = '#d4edda';
+            scoreBox.innerHTML += "<br>🎉 太棒了！您已準備好應對。";
+        } else {
+            scoreBox.style.backgroundColor = '#f8d7da';
+        }
+
+        document.getElementById('btn-reset').style.display = 'block';
+    }
+
+    function resetQuiz() {
+        document.getElementById('quiz-form').reset();
+        document.querySelectorAll('.quiz-feedback').forEach(f => f.style.display = 'none');
+        document.getElementById('score-box').style.display = 'none';
+        document.getElementById('btn-reset').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
