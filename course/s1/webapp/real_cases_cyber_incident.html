@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Case Studies & Quiz</title>
+    <style>
+        /* BASE STYLES */
+        :root {
+            --primary: #2c3e50; /* Dark Blue */
+            --secondary: #34495e;
+            --accent: #3498db;
+            --timeline-bg: #e8f4f8;
+            --mistake-bg: #f9e9e9;
+            --action-bg: #e9f7ef;
+            --text: #333;
+            --white: #ffffff;
+            --correct: #27ae60;
+            --wrong: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVIGATION HEADER */
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* SCROLLABLE MENU FOR MOBILE */
+        nav {
+            display: flex;
+            overflow-x: auto; /* Allows scrolling on small phones */
+            white-space: nowrap;
+            padding-bottom: 5px;
+            gap: 10px;
+            justify-content: center; /* Center on desktop */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+        nav button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            flex-shrink: 0; /* Prevents button squishing */
+        }
+
+        nav button:hover, nav button.active {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            font-weight: bold;
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .case-section {
+            display: none; /* Hidden by default */
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .case-section.active-section {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADINGS */
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: #555;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* CONTENT BLOCKS */
+        .block {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ccc;
+        }
+
+        .timeline { background: var(--timeline-bg); border-left-color: #3498db; }
+        .technique { background: #fff8e1; border-left-color: #ffa000; }
+        .mistake { background: var(--mistake-bg); border-left-color: #e74c3c; }
+        .action { background: var(--action-bg); border-left-color: #27ae60; }
+        
+        .lesson-box {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* QUIZ SPECIFIC STYLES */
+        .quiz-question {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .quiz-question p { font-weight: bold; margin-top: 0; }
+        .quiz-options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .quiz-options label:hover { background: #f0f0f0; }
+        
+        .quiz-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none; /* Hidden initially */
+        }
+        .correct-feedback { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong-feedback { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .btn-check {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-check:hover { background-color: #2980b9; }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #eee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* ICONS */
+        .icon { margin-right: 8px; font-size: 1.2rem; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.8rem;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        /* RESPONSIVE TWEAKS */
+        @media (max-width: 600px) {
+            nav { justify-content: flex-start; } /* Align left to show scroll hint */
+            h1 { font-size: 1rem; }
+            .case-section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📂 Real-World Cyber Incidents</h1>
+    <nav>
+        <button onclick="showCase('case1')" class="active" id="btn-case1">Consumer Council</button>
+        <button onclick="showCase('case2')" id="btn-case2">CloudNordic</button>
+        <button onclick="showCase('case3')" id="btn-case3">Tech Panic</button>
+        <button onclick="showCase('case4')" id="btn-case4">Fake Support</button>
+        <button onclick="showCase('case5')" id="btn-case5">Clinic Backup</button>
+        <!-- NEW QUIZ BUTTON -->
+        <button onclick="showCase('quiz')" id="btn-quiz" style="background: var(--accent); color: white;">📝 Take Quiz</button>
+    </nav>
+</header>
+
+<main>
+
+    <!-- CASE 1: Consumer Council -->
+    <section id="case1" class="case-section active-section">
+        <h2>Case 1: The "No Pay" Stand</h2>
+        <p><strong>Victim:</strong> Consumer Council (Hong Kong SME/NGO equivalent)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>Timeline (Sept 2023)</strong>
+            <ul>
+                <li><strong>Day 0:</strong> Hackers breached the server and stole data of 8,000 people.</li>
+                <li><strong>Day 1:</strong> "LockBit" gang demanded US$500,000 (HK$3.9M) ransom.</li>
+                <li><strong>Day 2:</strong> Council Chief holds press conference, publicly refuses to pay.</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>Technique Used</strong>
+            <p><strong>Double Extortion:</strong> The attackers didn't just lock the files; they stole them first. They threatened to release sensitive data if the money wasn't paid.</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>The Mistake (Prevention)</strong>
+            <p>A vulnerability in a remote access account allowed the hackers to enter. The system was not patched quickly enough.</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>Correct Action Taken</strong>
+            <p><strong>Zero Negotiation:</strong> The Council refused to pay. Paying funds criminal activity and guarantees nothing. Instead, they notified the police and the public immediately (Transparency).</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 Lesson: Paying ransom is a gamble. Integrity and transparency save your reputation, even if restoring data takes longer.
+        </div>
+    </section>
+
+    <!-- CASE 2: CloudNordic -->
+    <section id="case2" class="case-section">
+        <h2>Case 2: The "Total Wipeout"</h2>
+        <p><strong>Victim:</strong> CloudNordic (Danish Cloud Hosting Firm)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>Timeline (Aug 2023)</strong>
+            <ul>
+                <li><strong>Day 0:</strong> IT team started migrating servers from one data center to another.</li>
+                <li><strong>02:00 AM:</strong> During migration, they connected infected servers to the internal network.</li>
+                <li><strong>04:00 AM:</strong> Ransomware spread to the Admin Systems AND the Backup Systems instantly.</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>Technique Used</strong>
+            <p><strong>Lateral Movement:</strong> The virus used the company's own internal network administrator tools to copy itself to every connected drive, including the backups.</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>The Mistake</strong>
+            <p><strong>Network Segmentation Failure:</strong> The backup servers were on the same network as the live servers. There was no "Air Gap" (physical separation).</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>Correct Action (Missed)</strong>
+            <p>They should have had "Offline Backups" (Tape drives or immutable cloud storage) that were not connected to the main network.</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 Lesson: If your backups are connected to the internet/network, they can be killed. Keep one copy OFFLINE.
+        </div>
+    </section>
+
+    <!-- CASE 3: Tech Support Panic -->
+    <section id="case3" class="case-section">
+        <h2>Case 3: The "Tech Support" Panic</h2>
+        <p><strong>Victim:</strong> 51-year-old Woman (Hong Kong Resident)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>Timeline (Jan 2024)</strong>
+            <ul>
+                <li><strong>Event A:</strong> Victim browsing web; screen freezes with loud alarm.</li>
+                <li><strong>Event B:</strong> Message says "Infected! Call Support." Victim calls the number.</li>
+                <li><strong>Event C:</strong> Scammers instruct her to install remote control app.</li>
+                <li><strong>Result:</strong> HK$1.2 Million transferred out of her bank account.</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>Technique Used</strong>
+            <p><strong>Social Engineering (Fear):</strong> The hackers did not hack the computer technically; they hacked the human mind using loud noises and fear of legal consequences.</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>The Mistake</strong>
+            <p><strong>Compliance:</strong> The victim obeyed the instructions on the screen and installed "TeamViewer/AnyDesk" for the scammers.</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>Correct Action Should Be</strong>
+            <p><strong>Hang Up & Pull Plug:</strong> Never call numbers on pop-ups. Disconnect the internet immediately to break the connection.</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 Lesson: Fear is the weapon. If a message makes you panic, it is a scam. Pause and breathe before acting.
+        </div>
+    </section>
+
+    <!-- CASE 4: Fake Microsoft Call -->
+    <section id="case4" class="case-section">
+        <h2>Case 4: The Fake "Microsoft" Alert</h2>
+        <p><strong>Victim:</strong> General Public / Office Workers</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>Typical Timeline</strong>
+            <ul>
+                <li><strong>Trigger:</strong> User clicks a wrong ad or visits a compromised website.</li>
+                <li><strong>Lock:</strong> Browser goes "Full Screen." Mouse cursor disappears or gets stuck.</li>
+                <li><strong>Audio:</strong> A robotic voice loops: "Do not restart your computer. Windows is locked. Call Microsoft..."</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>Technique Used</strong>
+            <p><strong>"Browser Locker" (Malvertising):</strong> This is NOT a virus. It is just a web page running a script that prevents you from closing the tab easily.</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>The Mistake</strong>
+            <p><strong>Believing the Browser is the OS:</strong> Users think the <em>entire computer</em> is broken. They force shutdown the PC (which is okay) or call the number (which is fatal).</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>Correct Action</strong>
+            <p><strong>Task Manager Kill:</strong> Press Ctrl + Alt + Delete. Open Task Manager. Select the Web Browser (Chrome/Edge). Click "End Task." The "virus" disappears instantly.</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 Lesson: Microsoft, Apple, and Google NEVER include phone numbers in error messages.
+        </div>
+    </section>
+
+    <!-- CASE 5: Infected Backup -->
+    <section id="case5" class="case-section">
+        <h2>Case 5: The "Infected Backup"</h2>
+        <p><strong>Victim:</strong> Wood Ranch Medical (Small Clinic)</p>
+
+        <div class="block timeline">
+            <span class="icon">🕒</span> <strong>Timeline (Dec 2019)</strong>
+            <ul>
+                <li><strong>Day 0:</strong> Ransomware infects the clinic's reception computer via email.</li>
+                <li><strong>Response:</strong> Staff realizes files are locked. They decide to restore from backup.</li>
+                <li><strong>The Error:</strong> They plug the backup drive into the <em>infected</em> computer.</li>
+                <li><strong>Result:</strong> Ransomware encrypts the backup drive immediately.</li>
+            </ul>
+        </div>
+
+        <div class="block technique">
+            <span class="icon">😈</span> <strong>Technique Used</strong>
+            <p><strong>Automated Encryption:</strong> Modern ransomware constantly scans for new drives (USB, Network Shares). As soon as a new drive is detected, it encrypts it.</p>
+        </div>
+
+        <div class="block mistake">
+            <span class="icon">❌</span> <strong>The Mistake</strong>
+            <p><strong>Restoring to a "Dirty" Environment:</strong> The staff tried to solve the problem using the infected machine. They did not verify the environment was clean first.</p>
+        </div>
+
+        <div class="block action">
+            <span class="icon">✅</span> <strong>Correct Action Should Be</strong>
+            <p><strong>The "Phase 3" Protocol:</strong> Take the backup drive to a SEPARATE, CLEAN computer. Scan it there. Wipe the infected clinic computer <em>before</em> plugging the backup drive in.</p>
+        </div>
+
+        <div class="lesson-box">
+            🎓 Lesson: Never plug a life-saving backup into a compromised machine. Recovery requires a clean environment.
+        </div>
+    </section>
+
+    <!-- QUIZ SECTION -->
+    <section id="quiz" class="case-section">
+        <h2>📝 Knowledge Check</h2>
+        <p>Test your understanding of the case studies above.</p>
+        
+        <div class="score-display" id="score-box"></div>
+
+        <form id="quiz-form">
+            
+            <!-- Q1 -->
+            <div class="quiz-question" data-answer="b">
+                <p>1. In the Consumer Council case (Case 1), what was the result of refusing to pay the ransom?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q1" value="a"> They lost public trust forever.</label>
+                    <label><input type="radio" name="q1" value="b"> They maintained integrity and did not fund criminals.</label>
+                    <label><input type="radio" name="q1" value="c"> The hackers immediately unlocked the files for free.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-question" data-answer="c">
+                <p>2. Why did CloudNordic (Case 2) lose 100% of their data?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q2" value="a"> The hackers guessed their passwords.</label>
+                    <label><input type="radio" name="q2" value="b"> Their hard drives were physically stolen.</label>
+                    <label><input type="radio" name="q2" value="c"> Their backups were connected to the same infected network.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <!-- Q3 (CORRECTED) -->
+            <div class="quiz-question" data-answer="a">
+                <p>3. You see a pop-up saying "System Infected! Call Microsoft at 555-0199" (Case 4). What is the best immediate action?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q3" value="a"> Do not call. Force close the browser (Task Manager) or Restart.</label>
+                    <label><input type="radio" name="q3" value="b"> Call the number to check if it's real.</label>
+                    <label><input type="radio" name="q3" value="c"> Download the remote support tool they suggest.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-question" data-answer="b">
+                <p>4. How can you tell a "Tech Support" alert is FAKE?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q4" value="a"> It has red colors.</label>
+                    <label><input type="radio" name="q4" value="b"> Real companies (Microsoft/Apple) never put phone numbers in error messages.</label>
+                    <label><input type="radio" name="q4" value="c"> It makes a loud noise.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-question" data-answer="c">
+                <p>5. In the Medical Clinic case (Case 5), why did the restore fail?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q5" value="a"> The backup drive was too small.</label>
+                    <label><input type="radio" name="q5" value="b"> They forgot the password.</label>
+                    <label><input type="radio" name="q5" value="c"> They plugged the backup drive into the infected computer.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="quiz-question" data-answer="b">
+                <p>6. What is the "Golden Rule" for backups mentioned in Case 2?</p>
+                <div class="quiz-options">
+                    <label><input type="radio" name="q6" value="a"> Backup once a year.</label>
+                    <label><input type="radio" name="q6" value="b"> Keep one copy OFFLINE (Air-gapped).</label>
+                    <label><input type="radio" name="q6" value="c"> Store backups on the desktop.</label>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+
+            <button type="button" class="btn-check" onclick="checkQuiz()">Check Results</button>
+            <button type="button" class="btn-check" onclick="resetQuiz()" style="background-color: #7f8c8d; margin-top: 10px; display:none;" id="btn-reset">Try Again</button>
+
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; <span id="year"></span> Educational Security Case Studies Module</p>
+</footer>
+
+<script>
+    // Set dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Tab Switching Logic
+    function showCase(caseId) {
+        // 1. Hide all sections
+        const sections = document.querySelectorAll('.case-section');
+        sections.forEach(section => {
+            section.classList.remove('active-section');
+        });
+
+        // 2. Deactivate all buttons
+        const buttons = document.querySelectorAll('nav button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // 3. Show target section
+        document.getElementById(caseId).classList.add('active-section');
+
+        // 4. Activate target button
+        document.getElementById('btn-' + caseId).classList.add('active');
+
+        // 5. Scroll to top (helpful for mobile)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // QUIZ LOGIC
+    function checkQuiz() {
+        let score = 0;
+        const total = 6;
+        const questions = document.querySelectorAll('.quiz-question');
+
+        questions.forEach((q, index) => {
+            const correctAnswer = q.getAttribute('data-answer');
+            const selectedOption = q.querySelector('input[type="radio"]:checked');
+            const feedbackBox = q.querySelector('.quiz-feedback');
+
+            // Reset classes
+            feedbackBox.classList.remove('correct-feedback', 'wrong-feedback');
+            feedbackBox.style.display = 'block';
+
+            if (selectedOption) {
+                if (selectedOption.value === correctAnswer) {
+                    score++;
+                    feedbackBox.innerHTML = "✅ <strong>Correct!</strong>";
+                    feedbackBox.classList.add('correct-feedback');
+                } else {
+                    feedbackBox.innerHTML = "❌ <strong>Incorrect.</strong> Review the Case Studies.";
+                    feedbackBox.classList.add('wrong-feedback');
+                }
+            } else {
+                feedbackBox.innerHTML = "⚠️ Please select an answer.";
+                feedbackBox.classList.add('wrong-feedback');
+            }
+        });
+
+        // Show Score
+        const scoreBox = document.getElementById('score-box');
+        scoreBox.style.display = 'block';
+        scoreBox.innerHTML = `You scored ${score} out of ${total}`;
+        
+        if(score === total) {
+            scoreBox.style.backgroundColor = '#d4edda';
+            scoreBox.innerHTML += "<br>🎉 Excellent! You are ready to respond.";
+        } else {
+            scoreBox.style.backgroundColor = '#f8d7da';
+        }
+
+        // Show Reset Button
+        document.getElementById('btn-reset').style.display = 'block';
+    }
+
+    function resetQuiz() {
+        document.getElementById('quiz-form').reset();
+        document.querySelectorAll('.quiz-feedback').forEach(f => f.style.display = 'none');
+        document.getElementById('score-box').style.display = 'none';
+        document.getElementById('btn-reset').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
