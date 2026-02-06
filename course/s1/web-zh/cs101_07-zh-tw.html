@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>應用程式安全大師班</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        section { display: none; animation: fadeIn 0.5s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz UI */
+        .quiz-item { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 10px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .option.correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .option.wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .explanation { display: none; margin-top: 10px; font-style: italic; color: #be95ff; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 40%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">基礎知識</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">DevSecOps</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">測試</button>
+        <button onclick="showTab('dict')" id="btn-dict">詞典</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">測驗</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- TAB 1: THE BASICS -->
+    <section id="tab1" class="active">
+        <h1>為何應用程式安全很重要</h1>
+        <div class="card">
+            <p><strong>Jeff 的關鍵點：</strong>所有軟體都有錯誤 (bug)。有些錯誤只是令人討厭，但其他則是讓駭客得以進入的<strong>漏洞 (Vulnerabilities)</strong>。</p>
+            <h3>向左移 (Shift Left)</h3>
+            <p>大多數錯誤是在編碼階段產生的。如果在編碼期間發現它們，修復成本很低。如果等到應用程式發布後才發現，修復成本可能會高達 <strong>640 倍</strong>。</p>
+        </div>
+    </section>
+
+    <!-- TAB 2: DEVSECOPS -->
+    <section id="tab2">
+        <h1>將安全融入其中</h1>
+        <div class="card">
+            <h3>從「外掛」到「內建」</h3>
+            <p>過去，安全是在最後階段才進行檢查。今天，我們使用 <strong>DevSecOps</strong>。這意味著安全被整合到軟體開發的每一步——從最初的計劃到最終的發布。</p>
+        </div>
+        <div class="card">
+            <h3>軟體物料清單 (SBOM) (成分列表)</h3>
+            <p>就像食品標籤一樣，<strong>軟體物料清單 (Software Bill of Materials)</strong> 列出了用於建構應用程式的每一段程式碼。如果之後發現某個特定成分（函式庫）有危險，公司就能確切知道在哪裡修復它。</p>
+        </div>
+    </section>
+
+    <!-- TAB 3: TESTING -->
+    <section id="tab3">
+        <h1>SAST vs DAST</h1>
+        <div class="card">
+            <p>我們如何自動找到軟體中的漏洞？</p>
+            <ul>
+                <li><strong>SAST (靜態應用程式安全測試)：</strong>在程式碼靜止時對其進行檢視。就像校對員在書籍印刷前檢查錯字一樣。</li>
+                <li><strong>DAST (動態應用程式安全測試)：</strong>在應用程式運行時對其進行測試。就像試駕員將汽車開上路，看高速行駛時煞車是否會失靈。</li>
+            </ul>
+            <p><em>現代架構師兩者都會使用！</em></p>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>應用程式安全詞彙表</h1>
+        <div class="card">
+            <p><span class="term">SDLC (軟體開發生命週期)：</span>創建軟體的逐步過程。</p>
+            <p><span class="term">漏洞 (Vulnerability)：</span>可被攻擊者利用以獲得未經授權存取的特定錯誤。</p>
+            <p><span class="term">緩衝區溢位 (Buffer Overflow)：</span>向記憶體中的小空間發送過多資料時發生的錯誤，導致應用程式崩潰或執行惡意命令。</p>
+            <p><span class="term">OWASP：</span>一個創建標準「十大」最危險軟體錯誤列表的全球性組織，旨在避免這些錯誤。</p>
+            <p><span class="term">智慧財產權 (IP)：</span>公司的「秘密配方」或私人創意。如果開發人員不小心，聊天機器人可能會意外洩露這些資訊。</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>知識測驗</h1>
+        <div id="quiz-container"></div>
+    </section>
+
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "「向左移 (Shift Left)」是什麼意思？",
+            options: ["搬到另一棟大樓", "在開發流程的早期執行安全任務", "刪除舊程式碼"],
+            correct: 1,
+            expl: "向左移透過在編碼階段初次產生錯誤時就捕捉它們，從而節省金錢和時間。"
+        },
+        {
+            q: "哪種測試類型在應用程式運行前就檢視「原始碼」？",
+            options: ["SAST (靜態)", "DAST (動態)", "手動 Beta 測試"],
+            correct: 0,
+            expl: "靜態測試 (SAST) 分析程式碼本身的文本，以便及早發現錯誤。"
+        },
+        {
+            q: "什麼是 SBOM？",
+            options: ["一種病毒", "一份列出用於建構軟體的所有組件和「成分」的清單", "一個密碼管理器"],
+            correct: 1,
+            expl: "軟體物料清單 (SBOM) 有助於追蹤每個函式庫和相依性的安全漏洞。"
+        },
+        {
+            q: "使用 AI 聊天機器人進行編碼的主要風險是什麼？",
+            options: ["它們太慢了", "它們可能會洩露專有秘密或注入未經審查的漏洞", "它們收費太高"],
+            correct: 1,
+            expl: "Jeff 警告說，AI 可能會洩露智慧財產權或引入開發人員可能不會注意到的錯誤。"
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="explanation" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleAnswer(element, qIdx, oIdx) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const expl = document.getElementById('expl-' + qIdx);
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            element.classList.add('correct');
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        expl.style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

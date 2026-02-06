@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料安全大師班</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+            padding-bottom: 50px;
+        }
+
+        section { display: none; animation: fadeIn 0.4s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .stat { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+
+        /* Dictionary */
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz */
+        .quiz-item { background: #333; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 8px 0;
+            background: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .expl { display: none; margin-top: 10px; font-style: italic; color: #aaa; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 30%; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">動機</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">生命週期</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">前五名</button>
+        <button onclick="showTab('dict')" id="btn-dict">詞典</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">測驗</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- TAB 1 -->
+    <section id="tab1" class="active">
+        <h1>資料外洩的高昂代價</h1>
+        <div class="card">
+            <p><span class="stat">944萬美元</span><br>在美國單次資料外洩的平均成本。</p>
+            <p><span class="stat">83%</span><br>曾遭受一次以上資料外洩的公司百分比。</p>
+            <p>資料安全不僅僅是IT問題；它是一個財務生存問題。</p>
+        </div>
+    </section>
+
+    <!-- TAB 2 -->
+    <section id="tab2">
+        <h1>資料安全生命週期</h1>
+        <div class="card">
+            <h3>1. 治理與發現</h3>
+            <p>您無法保護您不知道擁有的東西。發現過程包括尋找<strong>結構化</strong>資料（資料庫）和<strong>非結構化</strong>資料（電子郵件、檔案）。</p>
+        </div>
+        <div class="card">
+            <h3>2. 保護（加密）</h3>
+            <p>資料必須在<strong>靜態時</strong>（儲存中）和<strong>動態時</strong>（在網路上傳輸時）進行加密。<strong>金鑰管理</strong>至關重要——丟失金鑰，就等於丟失資料。</p>
+        </div>
+        <div class="card">
+            <h3>3. 偵測與應變</h3>
+            <p>使用分析來發現異常（奇怪的行為），並使用<strong>協同運作 (Orchestration)</strong> 來自動解決問題。</p>
+        </div>
+    </section>
+
+    <!-- TAB 3 -->
+    <section id="tab3">
+        <h1>節省成本的前五大方法</h1>
+        <div class="card">
+            <p>根據 Jeff Crume 的說法，這 5 件事最能降低資料外洩的成本：</p>
+            <ol>
+                <li><strong>人工智慧 (AI)：</strong>更快地發現威脅。</li>
+                <li><strong>DevSecOps：</strong>將安全融入軟體開發中。</li>
+                <li><strong>事件應變：</strong>準備好應變計劃。</li>
+                <li><strong>密碼學：</strong>強大的加密技術。</li>
+                <li><strong>員工訓練：</strong>減少人為錯誤。</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>架構師詞典</h1>
+        <div class="card">
+            <p><span class="term">PII:</span> 個人可識別資訊（姓名、身分證號碼、信用卡）。</p>
+            <p><span class="term">DLP:</span> 資料外洩防護。阻止敏感資訊被錯誤地透過電子郵件發送或上傳的軟體。</p>
+            <p><span class="term">結構化資料:</span> 組織在表格中的資訊（如 Excel 表或 SQL 資料庫）。</p>
+            <p><span class="term">非結構化資料:</span> 「雜亂」的資料，如 Word 文件、電子郵件和 PDF。</p>
+            <p><span class="term">保留政策 (Retention):</span> 在刪除資料以降低風險之前，您保留資料多長時間的政策。</p>
+            <p><span class="term">QSC:</span> 抗量子密碼學。旨在抵禦未來超級電腦算力的新型加密技術。</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>知識測驗</h1>
+        <div id="quiz-container"></div>
+    </section>
+
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "什麼是「非結構化資料」？",
+            options: ["一個乾淨的 SQL 資料庫", "電子郵件、PDF 和 Word 文件", "加密的網路流量"],
+            correct: 1,
+            expl: "非結構化資料是像檔案和電子郵件這樣的「雜亂」東西，安全工具更難掃描。"
+        },
+        {
+            q: "為什麼「保留政策」很重要？",
+            options: ["為了永久儲存資料", "透過刪除您不再需要的資料來減少責任", "為了讓資料庫更大"],
+            correct: 1,
+            expl: "永久保留敏感資料是一種風險。如果您遭到外洩，您將對所有未刪除的資料負責。"
+        },
+        {
+            q: "以下哪項最能降低資料外洩的成本？",
+            options: ["購買更多硬體", "人工智慧 (AI)", "使用 VPN"],
+            correct: 1,
+            expl: "Jeff 將 AI 列為減少資料外洩財務影響的第一大因素。"
+        },
+        {
+            q: "「指揮家類比」是指什麼？",
+            options: ["安裝光纖電纜的人", "協調安全工具以應對威脅", "伺服器中電流的流動方式"],
+            correct: 1,
+            expl: "應變協同運作就像指揮家協調一個由多種安全工具組成的管弦樂隊。"
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleQuiz(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="expl" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleQuiz(el, qIdx, oIdx) {
+        const parent = el.parentElement;
+        const options = parent.querySelectorAll('.option');
+        options.forEach(o => o.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            el.classList.add('correct');
+        } else {
+            el.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        document.getElementById('expl-' + qIdx).style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路安全大師班</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        section { display: none; animation: fadeIn 0.5s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz Styles */
+        .quiz-item { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 10px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .option.correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .option.wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .explanation { display: none; margin-top: 10px; font-style: italic; color: #bbb; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">防火牆</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">網路分割</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">VPN 與 SASE</button>
+        <button onclick="showTab('dict')" id="btn-dict">詞彙表</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">測驗</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- FIREWALLS -->
+    <section id="tab1" class="active">
+        <h1>防火牆如何運作</h1>
+        <div class="card">
+            <h3>信封類比</h3>
+            <p><strong>封包過濾 (Packet Filtering)：</strong>只看信封的外部（來源、目的地、埠號）。如果地址看起來有問題，就會被阻擋。</p>
+            <p><strong>狀態檢測 (Stateful Inspection)：</strong>打開信封查看裡面的信件（酬載）。它會檢查內容是否危險，或是否符合對話的上下文。</p>
+        </div>
+        <div class="card">
+            <h3>代理伺服器與 NAT</h3>
+            <p><strong>代理伺服器 (Proxy)：</strong>充當中間人。您與代理伺服器對話，代理伺服器再與伺服器對話。它隱藏您的身份並檢查所有內容。</p>
+            <p><strong>網路位址轉譯 (NAT)：</strong>將您內部家庭網路隱藏起來，不讓網際網路直接看到，讓所有人共享一個「公開」的面貌。</p>
+        </div>
+    </section>
+
+    <!-- SEGMENTATION -->
+    <section id="tab2">
+        <h1>網路分割</h1>
+        <div class="card">
+            <h3>紅綠燈區域</h3>
+            <p><span style="color:var(--danger)">●</span> <strong>紅色（不信任）：</strong>公共網際網路。</p>
+            <p><span style="color:#f1c40f">●</span> <strong>黃色（半信任）：</strong>非軍事區 (DMZ)。這是放置您的網頁伺服器的地方，以便人們可以安全地訪問它。</p>
+            <p><span style="color:var(--success)">●</span> <strong>綠色（信任）：</strong>您的內部商業網路和資料庫。</p>
+        </div>
+        <div class="card">
+            <h3>多層非軍事區 (Multi-Tiered DMZ)</h3>
+            <p>我們不是創建一個大房間，而是創建許多由防火牆隔開的小房間。這樣，即使駭客闖入「大廳」（網頁伺服器），他們仍然無法進入「金庫」（資料庫）。</p>
+        </div>
+    </section>
+
+    <!-- VPN & SASE -->
+    <section id="tab3">
+        <h1>VPN 與 SASE</h1>
+        <div class="card">
+            <h3>什麼是 VPN？</h3>
+            <p><strong>虛擬私人網路 (Virtual Private Network)</strong> 在公共網際網路上創建一個安全的「隧道」。當您在咖啡店工作時，它使用加密來保護您資料的機密性。</p>
+        </div>
+        <div class="card">
+            <h3>什麼是 SASE？</h3>
+            <p><strong>安全存取服務邊緣 (Secure Access Service Edge)。</strong>它是網路的未來。它將所有繁重的安全工作（防火牆、身份檢查）轉移到雲端，這樣無論員工身在何處，安全都能如影隨形。</p>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>網路安全詞典</h1>
+        <div class="card">
+            <p><span class="term">封包 (Packet)：</span>在網路上傳送的資料小單元。</p>
+            <p><span class="term">標頭 (Header)：</span>封包的「信封」，包含地址資訊。</p>
+            <p><span class="term">酬載 (Payload)：</span>封包內實際的資料或「信件」。</p>
+            <p><span class="term">非軍事區 (DMZ)：</span>網際網路與您私人網路之間的緩衝區。</p>
+            <p><span class="term">單點故障 (SPOF)：</span>如果一個環節損壞，整個系統就會停止運作。</p>
+            <p><span class="term">埠號 (Port)：</span>特定類型流量的虛擬「門戶」（例如，埠號 80 用於網站）。</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>測試您的知識</h1>
+        <div id="quiz-container"></div>
+    </section>
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "基本的「封包過濾」會檢查封包的哪個部分？",
+            options: ["酬載（實際資料）", "標頭（地址資訊）", "整個網路"],
+            correct: 1,
+            expl: "封包過濾只看「信封」（標頭），不看裡面的「信件」。"
+        },
+        {
+            q: "哪個網路區域被視為「半信任」（黃色區域）？",
+            options: ["公共網際網路", "內部資料庫", "非軍事區 (DMZ)"],
+            correct: 2,
+            expl: "DMZ 是您放置面向公眾伺服器的緩衝區。"
+        },
+        {
+            q: "為什麼「多層 DMZ」比「三棲主機」設定更好？",
+            options: ["它更便宜", "它遵循「深度防禦」原則，沒有單點故障", "它讓網路更快"],
+            correct: 1,
+            expl: "透過使用多個防火牆和區域，它確保如果一層失效，其他層仍然存在。"
+        },
+        {
+            q: "SASE 的全名是什麼？",
+            options: ["安全存取服務邊緣 (Secure Access Service Edge)", "簡單匿名安全入口 (Simple Anonymous Security Entry)", "軟體與系統加密 (Software And System Encryption)"],
+            correct: 0,
+            expl: "SASE 將網路和雲端安全結合為一個整體的服務。"
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="explanation" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleAnswer(element, qIdx, oIdx) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const expl = document.getElementById('expl-' + qIdx);
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            element.classList.add('correct');
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        expl.style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>
