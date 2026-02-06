@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路架構學院 | 思維模式與框架</title>
+    <style>
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-purple: #be95ff;
+            --accent-gold: #f1c40f;
+            --success: #24a148;
+            --danger: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* Section Transitions */
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero & Cards */
+        h1, h2, h3 { color: var(--primary); margin-top: 0; }
+        
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Dictionary Grid */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--accent-purple); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* NIST Tags */
+        .nist-flex { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .nist-tag { background: #444; border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+
+        /* Quiz UI - Instant Reveal */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        .correct-reveal { border-color: var(--success) !important; background: rgba(36, 161, 72, 0.2) !important; color: white; font-weight: bold; }
+        .wrong-reveal { border-color: var(--danger) !important; background: rgba(218, 30, 40, 0.2) !important; color: white; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-gold);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">角色/思維</button>
+    <button onclick="navTo('roadmap')" id="nav-roadmap">框架</button>
+    <button onclick="navTo('domains')" id="btn-domains">領域</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">詞典</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">測驗</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>架構師的思維模式</h1>
+            <p>從「它如何運作？」轉向「它如何失效？」</p>
+        </div>
+        
+        <div class="card">
+            <span class="badge">角色定義</span>
+            <h3>白板 vs. 鍵盤</h3>
+            <p><strong>架構師 (白板)：</strong>他們是高層次的規劃者。他們與利益相關者合作，理解業務需求並繪製藍圖。</p>
+            <p><strong>工程師 (鍵盤)：</strong>他們是技術的建造者。他們拿著架構師的藍圖，將其轉化為程式碼、防火牆和伺服器。</p>
+        </div>
+
+        <div class="card" style="border-left-color: var(--accent-gold);">
+            <h3>核心問題</h3>
+            <p>一般 IT 架構師會問系統如何運作，而<b>網路安全架構師</b>則花時間問：<strong>「這個系統將會如何失效？」</strong></p>
+            <div class="analogy">
+                <b>「如果...會怎樣？」的邏輯：</b>透過在駭客攻擊發生前預測它，架構師可以在基礎中建立防禦，而不是在災難發生後才試圖修復。
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: FRAMEWORKS -->
+    <div id="roadmap" class="section">
+        <h2>框架與圖表</h2>
+
+        <div class="card">
+            <span class="badge">NIST CSF</span>
+            <h3>官方路線圖</h3>
+            <p>NIST 網路安全框架是專業人士用來將其防禦組織成五個不同功能的「規則手冊」：</p>
+            <div class="nist-flex">
+                <span class="nist-tag">識別 (IDENTIFY)</span>
+                <span class="nist-tag">保護 (PROTECT)</span>
+                <span class="nist-tag">偵測 (DETECT)</span>
+                <span class="nist-tag">回應 (RESPOND)</span>
+                <span class="nist-tag">復原 (RECOVER)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">視覺化</span>
+            <h3>三大關鍵圖表</h3>
+            <ol>
+                <li><strong>業務脈絡圖 (Business Context)：</strong>專注於人（買方、建構者、行銷人員）。</li>
+                <li><strong>系統脈絡圖 (System Context)：</strong>專注於技術互動（應用程式、資料庫）。</li>
+                <li><strong>架構總覽圖 (Architecture Overview)：</strong>深入的細節（排程器、警報系統）。</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- DOMAINS SECTION -->
+    <section id="domains" class="section">
+        <h2>七大安全領域</h2>
+        <div class="card">
+            <p>一位架構師管理橫跨這七個領域的安全：</p>
+            <ol>
+                <li><strong>身分與存取管理 (IAM)：</strong>管理使用者身分。</li>
+                <li><strong>端點 (Endpoint)：</strong>保護實體設備的安全。</li>
+                <li><strong>網路 (Network)：</strong>管理防火牆和流量。</li>
+                <li><strong>應用程式 (Application)：</strong>保護軟體本身的安全。</li>
+                <li><strong>資料 (Data)：</strong>使用加密技術隱藏資訊。</li>
+                <li><strong>監控 (Monitoring)：</strong>監視攻擊（SIEM）。</li>
+                <li><strong>應變 (Response)：</strong>在攻擊後修復系統。</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>架構師詞典</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>NIST</b> 美國國家標準暨技術研究院。創建科技標準「官方規則手冊」的組織。</div>
+            <div class="dict-card"><b>IAM</b> 身分與存取管理。決定誰能進入系統、誰被拒之門外的「數位保鑣」。</div>
+            <div class="dict-card"><b>Endpoint</b> 端點。網路末端的任何實體設備，如筆記型電腦、手機或伺服器。</div>
+            <div class="dict-card"><b>SIEM</b> 安全資訊與事件管理系統。如同「安全監控室」，它會監視所有電腦日誌以自動發現可疑活動。</div>
+            <div class="dict-card"><b>Domain</b> 領域。一個特定的安全責任區域（例如網路、資料或應用程式）。</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>複習測驗</h2>
+        <p style="color: var(--text-dim);">點擊答案，立即揭曉您是否具備架構師的思維。</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JS -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>架構大師班 | 基於 IBM 傑出工程師教育系列</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "安全架構師主要在哪個地點工作？",
+            o: ["鍵盤前", "白板前", "資料中心"],
+            a: 1,
+            e: "架構師在白板前規劃和設計藍圖；工程師在鍵盤前實現它們。"
+        },
+        {
+            q: "安全架構師對一個新系統必須問的「神奇問題」是什麼？",
+            o: ["它對使用者友好嗎？", "它將如何失效？", "資料庫速度有多快？"],
+            a: 1,
+            e: "預測失效模式能讓架構師在攻擊發生前設計出穩健的防禦。"
+        },
+        {
+            q: "哪個圖表層級顯示了「買方、建構者和行銷人員」之間的關係？",
+            o: ["架構總覽圖", "業務脈絡圖", "系統脈絡圖"],
+            a: 1,
+            e: "業務脈絡圖是最高層級，專注於人的利益相關者，而非深層的技術組件。"
+        },
+        {
+            q: "NIST 網路安全框架路線圖包含五個功能。以下哪個是正確的列表？",
+            o: ["開始, 運行, 停止, 清除, 重設", "識別, 保護, 偵測, 回應, 復原", "登入, 密碼, 防火牆, 資料, 登出"],
+            a: 1,
+            e: "這五個功能代表了管理網路安全風險的完整生命週期。"
+        },
+        {
+            q: "在架構領域中，誰或什麼是「數位保鑣」？",
+            o: ["防火牆", "IAM (身分與存取管理)", "筆記型電腦"],
+            a: 1,
+            e: "IAM 確保只有經過身份驗證和授權的使用者才能進入系統。"
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        // Disable and reveal for all buttons in this block
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            if (i === correctIdx) {
+                buttons[i].classList.add('correct-reveal');
+            }
+        }
+
+        // If user was wrong, highlight their choice in red
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        // Show explanation
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "正確！" : "不完全正確..."}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    // Set default view on load
+    navTo('home');
+    initQuiz();
+</script>
+
+</body>
+</html>

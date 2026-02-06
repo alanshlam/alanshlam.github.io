@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路架構學院</title>
+    <style>
+
+a {
+  color: #4DA3FF;
+  text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+  color: #82C7FF;
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: #B388FF;
+}
+
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-green: #24a148;
+            --accent-red: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        h1, h2, h3 { color: var(--primary); }
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Dictionary */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* Quiz UI - Instant Reveal Mode */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { 
+            margin-bottom: 40px; 
+            padding-bottom: 20px; 
+            border-bottom: 1px solid #333;
+        }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        /* Response Classes */
+        .correct-reveal { border-color: var(--accent-green) !important; background: rgba(36, 161, 72, 0.2) !important; color: white; }
+        .wrong-reveal { border-color: var(--accent-red) !important; background: rgba(218, 30, 40, 0.2) !important; color: white; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">首頁</button>
+    <button onclick="navTo('principles')" id="nav-principles">五大原則</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">術語解釋</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">即時測驗</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>網路安全架構 101</h1>
+            <p>歡迎，同學們。安全不是您購買的產品；而是您建立的基礎。</p>
+             <p> 本教材基於 Jeff Crume 教授的 <a href="https://www.youtube.com/watch?v=jq_LZ1RFPfU&list=PLOspHqNVtKADkWLFt9OcziQF7EatuANSY" target=_blank>
+網路安全架構系列播放清單 </a>。</p>
+        </div>
+        <div class="card">
+            <h3>為何架構很重要？</h3>
+            <p>在網路安全領域，我們假設任何工具最終都會失效。良好的架構確保當一個環節失敗時，整個系統不會崩潰。我們稱之為<b>故障安全 (Failsafe)</b>。</p>
+        </div>
+    </div>
+
+    <!-- SECTION: PRINCIPLES -->
+    <div id="principles" class="section">
+        <h2>五大支柱</h2>
+
+        <div class="card">
+            <span class="badge">原則一</span>
+            <h3>深度防禦 (Defense in Depth)</h3>
+            <p>多層次的安全防護。如果駭客通過了防火牆，他們仍需面對多重身份驗證 (MFA)。如果他們通過了 MFA，還需面對加密。</p>
+            <div class="analogy">
+                <b>城堡類比：</b>城堡有護城河、吊橋、高牆和內部的護衛犬。一道牆永遠不夠。在IT領域，這相當於結合MFA、防火牆和加密。
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">原則二</span>
+            <h3>最小權限原則 (Least Privilege)</h3>
+            <p>使用者只應擁有其工作所需的<b>最低</b>存取權限。如果他們不需要刪除檔案，就不要給予他們「刪除」的權利。</p>
+            <ul>
+                <li><b>強化 (Hardening)：</b>關閉系統不需要的功能，以減少「攻擊面」。</li>
+                <li><b>權限蠕變 (Privilege Creep)：</b>當員工更換職位時，卻保留了舊的、不必要的權限。</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <span class="badge">原則三</span>
+            <h3>職責分離 (Separation of Duties)</h3>
+            <p>任何單一個人都不應對敏感流程擁有完全的控制權。這可以防止內部詐欺，因為作惡需要串通（兩個人合作）。</p>
+            <div class="analogy">
+                <b>雙鑰匙保險箱類比：</b>就像銀行的保險庫，需要兩個不同的人同時轉動兩把不同的鑰匙。
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">原則四</span>
+            <h3>設計安全 (Secure by Design)</h3>
+            <p>安全性從專案第一天就內建於需求之中，而不是在最後才「補上去」。這通常被稱為安全的持續整合。</p>
+            <div class="analogy">
+                <b>地震類比：</b>您在建造摩天大樓時，會將抗震設計融入地基。而不是等到大樓蓋了50層高之後才試圖加入。
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">原則五</span>
+            <h3>保持簡單 (KISS)</h3>
+            <p>簡單至關重要。如果安全措施對員工來說太複雜，他們會尋找「錯誤但簡單」的變通方法（例如將密碼寫在便利貼上）。</p>
+        </div>
+
+        <div class="card" style="border-left-color: var(--accent-red); background: #2a1515;">
+            <h3 style="color: var(--accent-red);">危險：晦澀保安 (Security by Obscurity)</h3>
+            <p>這是一個錯誤的觀念，認為系統僅因其設計是秘密的就是安全的。攻擊者最終會弄清楚「黑盒子」的內部。</p>
+            <p><b>克爾克霍夫原則 (Kerckhoff's Principle)：</b>一個密碼系統應該是安全的，即使關於它的一切（除了金鑰）都是公開的知識。</p>
+        </div>
+    </div>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>術語解釋</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>SPOF</b> 單點故障 (Single Point of Failure)。系統中的一個部分，如果它損壞，整個系統都會崩潰。</div>
+            <div class="dict-card"><b>Re-certification</b> 重新認證。定期審查使用者存取權限，以阻止「權限蠕變」。</div>
+            <div class="dict-card"><b>MFA</b> 多重要素驗證 (Multi-Factor Authentication)。使用兩個或更多「因素」（密碼 + SMS驗證碼）來證明您的身份。</div>
+            <div class="dict-card"><b>AES/RSA</b> 行業標準的加密演算法，因其公開且經過嚴格測試而安全，而非因為它們是「秘密的」。</div>
+            <div class="dict-card"><b>Collusion</b> 串通。當兩個或更多人合作以繞過「職責分離」原則時。</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>互動測驗</h2>
+        <p style="color: var(--text-dim);">點擊一個答案以顯示正確選項和解釋。</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JavaScript -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>教育入口網站 | 基於 IBM 安全架構系列</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "一座中世紀城堡使用護城河、城牆和內部守衛。這代表了哪個原則？",
+            o: ["最小權限原則", "深度防禦", "保持簡單"],
+            a: 1,
+            e: "深度防禦確保沒有單一機制為整個系統的安全負責。"
+        },
+        {
+            q: "什麼是「權限蠕變」(Privilege Creep)？",
+            o: ["一次性給予使用者過多權力", "當使用者保留不再需要的舊存取權限時", "駭客緩慢竊取權限"],
+            a: 1,
+            e: "隨著人們角色變換，他們會累積權限。需要定期進行「重新認證」來阻止這種情況。"
+        },
+        {
+            q: "克爾克霍夫原則 (Kerckhoff's Principle) 指出，一個系統即使設計是公開的也應該是安全的，只要什麼被保守秘密？",
+            o: ["金鑰", "使用者名稱", "防火牆"],
+            a: 0,
+            e: "安全應依賴於金鑰，而不是演算法的秘密性（像AES這樣的標準演算法遵循此原則）。"
+        },
+        {
+            q: "要求兩個人才能打開一個保險箱代表了：",
+            o: ["保持簡單 (KISS)", "設計安全", "職責分離"],
+            a: 2,
+            e: "這迫使惡意活動需要「串通」才能發生，這對作惡者來說要困難得多。"
+        },
+        {
+            q: "為什麼「保持簡單」(KISS) 在安全中很重要？",
+            o: ["它讓電腦運行得更快", "複雜的系統會導致人為錯誤和變通方法", "簡單的系統更便宜"],
+            a: 1,
+            e: "如果安全措施對使用者來說太難（就像一個「密碼迷宮」），他們會找到不安全的捷徑。"
+        },
+        {
+            q: "將抗震設計融入摩天大樓的地基是哪個原則的類比？",
+            o: ["設計安全", "強化", "最小權限原則"],
+            a: 0,
+            e: "安全必須是初始需求和基礎的一部分，而不是最後一刻才加入的。"
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        // Disable all buttons in this question block
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            // Highlight the correct one
+            if (i === correctIdx) {
+                buttons[i].classList.add('correct-reveal');
+            }
+        }
+
+        // If user was wrong, highlight their choice in red
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        // Show explanation
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "正確！" : "不正確。"}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    navTo('home');
+    initQuiz();
+</script>
+
+</body>
+</html>

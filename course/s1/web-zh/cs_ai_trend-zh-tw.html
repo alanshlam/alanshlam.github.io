@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路預測：2026 年及未來</title>
+    <style>
+
+a {
+  color: #4DA3FF;
+  text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+  color: #82C7FF;
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: #B388FF;
+}
+
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #8a3ffc;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        /* Page Layout */
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .active-page { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 { color: var(--ibm-blue); }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #393939;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 4px solid var(--ibm-blue);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: block;
+            color: #fff;
+        }
+
+        /* Dictionary */
+        .dict-item {
+            border-bottom: 1px solid #444;
+            padding: 15px 0;
+        }
+        .dict-item b { color: var(--accent); font-size: 1.1rem; }
+
+        /* Quiz Styling */
+        .quiz-card {
+            background: #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { background: #555; border-color: var(--ibm-blue); }
+        .correct-ans { background-color: var(--success) !important; border-color: #fff !important; }
+        .wrong-ans { background-color: var(--danger) !important; }
+        .disabled { cursor: default; opacity: 0.7; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e1e1e;
+            border-left: 4px solid var(--ibm-blue);
+        }
+
+        footer { text-align: center; padding: 40px; color: #777; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('retro')">2025 年回顧</button>
+        <button onclick="openPage('agents')">2026 年：AI 代理</button>
+        <button onclick="openPage('solutions')">解決方案</button>
+        <button onclick="openPage('dict')">詞典</button>
+        <button onclick="openPage('quiz')">測驗</button>
+    </nav>
+
+    <!-- PAGE 1: 2025 RETROSPECT -->
+    <div id="retro" class="page active-page">
+        <section>
+            <h1>2025 年：AI 成真之年</h1>
+            <p> Jeff Crume 教授強調，在 2025 年，AI 從一個「有趣的工具」轉變為一個主要的安全風險。</p>
+            
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">1,500%</span>
+                    <span>Deepfake 案例增加</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">+$67萬</span>
+                    <span>如果使用「影子 AI」，資料外洩的平均成本增加</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">60%</span>
+                    <span>的公司缺乏 AI 安全政策</span>
+                </div>
+            </div>
+
+            <h3>關鍵要點：人為因素</h3>
+            <p>由於 deepfake 增長如此之快，Jeff 認為我們應該停止試圖「識破偽造」。相反，我們必須訓練人類分析<b>請求要求我們做什麼</b>（例如，「為什麼我的老闆會透過視訊通話要求我進行電匯？」）。</p>
+        </section>
+    </div>
+
+    <!-- PAGE 2: 2026 AI AGENTS -->
+    <div id="agents" class="page">
+        <section>
+            <h2>2026 年：自主代理的興起</h2>
+            <p>2026 年最大的轉變是**自主代理 (Autonomous Agents)**——這種 AI 不僅僅是聊天，而是能真正自主<i>執行</i>任務。</p>
+            
+            <div style="border-left: 4px solid var(--accent); padding-left: 20px; margin: 20px 0;">
+                <h3>1. 針對代理的攻擊（劫持）</h3>
+                <p><b>風險放大：</b>如果駭客劫持了您的 AI 代理，該代理可以光速竊取資料。 
+                <br><b>零點擊：</b>代理可以讀取惡意電子郵件並被感染，而您無需點擊任何連結。</p>
+            </div>
+
+            <div style="border-left: 4px solid var(--ibm-blue); padding-left: 20px; margin: 20px 0;">
+                <h3>2. 代理發動的攻擊（自動化駭客）</h3>
+                <p><b>自動化攻擊鏈：</b>AI 現在可以處理整個駭客攻擊過程——從尋找目標到竊取資料——無需人類駭客具備任何技能。這就是「點擊此處進行駭客攻擊」的自動化。</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 3: THE SOLUTIONS -->
+    <div id="solutions" class="page">
+        <section>
+            <h2>戰略防禦</h2>
+            <p>為了對抗 AI 速度的攻擊，Jeff 推薦了兩種不容妥協的技術：</p>
+            
+            <h3>通行密鑰 (Passwordless)</h3>
+            <p>網路釣魚之所以有效，是因為駭客竊取密碼。如果沒有密碼，就沒有什麼可偷的。Jeff 指出，**三分之一的使用者**已經轉向使用通行密鑰。</p>
+
+            <h3>抗量子密碼學 (PQC)</h3>
+            <p>量子電腦即將來臨。最終，它們將破解所有現有的加密技術。Jeff 敦促公司在「Q-Day」到來之前，現在就開始**部署**抗量子演算法。</p>
+        </section>
+    </div>
+
+    <!-- PAGE 4: DICTIONARY -->
+    <div id="dict" class="page">
+        <section>
+            <h2>術語解釋</h2>
+            <div class="dict-item">
+                <b>影子 AI (Shadow AI)</b>: 在工作中使用未經 IT 部門知曉或批准的 AI 工具（如 ChatGPT）。
+            </div>
+            <div class="dict-item">
+                <b>提示注入 (Prompt Injection)</b>: 透過給予 AI 特定、巧妙的指令，誘使其忽略其安全規則。
+            </div>
+            <div class="dict-item">
+                <b>自主代理 (Autonomous Agent)</b>: 一種能夠自行決策並跨不同應用程式執行任務以達成目標的 AI。
+            </div>
+            <div class="dict-item">
+                <b>非人類身份 (NHI)</b>: 機器人或 AI 代理的「身份證」。機器人像人類一樣需要存取權限。
+            </div>
+            <div class="dict-item">
+                <b>多態惡意軟體 (Polymorphic Malware)</b>: 一種每次傳播時都會改變自身程式碼的病毒，使防毒軟體無法識別。
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 5: QUIZ -->
+    <div id="quiz" class="page">
+        <section>
+            <h2>互動式測驗</h2>
+            <p>測試您對 2026 年展望的了解！</p>
+
+            <div class="quiz-card" id="q1">
+                <b>1. 「自主代理」的主要危險是什麼？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">如果網路中斷，它可能會停止工作。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">它可能被劫持以光速執行惡意任務。</button>
+                <div class="explanation">正確！代理能放大生產力，但如果被劫持，它們同樣會迅速放大風險和損害。</div>
+            </div>
+
+            <div class="quiz-card" id="q2">
+                <b>2. 根據 Jeff 的說法，處理 Deepfake 的最佳方法是什麼？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">購買能識別 deepfake 中像素的軟體。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">訓練人類分析內容要求他們做什麼。</button>
+                <div class="explanation">正確。Deepfake 正變得過於完美，偵測軟體難以應對；我們必須依賴分析請求的上下文。</div>
+            </div>
+
+            <div class="quiz-card" id="q3">
+                <b>3. 為什麼通行密鑰比密碼更好？</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">它們能抵抗網路釣魚，因為沒有密碼可偷。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">它們更短且更容易記住。</button>
+                <div class="explanation">正確！網路釣魚依賴於竊取一串秘密文本。通行密鑰使用基於設備的生物辨識，讓駭客無從下手。</div>
+            </div>
+
+            <div class="quiz-card" id="q4">
+                <b>4. 「影子 AI」對資料外洩的成本有何影響？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">它透過讓研究人員更快來降低成本。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">它使資料外洩的成本平均增加 67 萬美元。</button>
+                <div class="explanation">正確。不受監管的 AI 工具會造成資料外洩，從而顯著增加駭客攻擊造成的財務損失。</div>
+            </div>
+
+            <div class="quiz-card" id="q5">
+                <b>5. 什麼是「Q-Day」？</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q5')">量子電腦強大到足以破解現代加密技術的那一天。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">AI 接管所有編碼工作的那一天。</button>
+                <div class="explanation">正確！我們不確切知道它何時會發生，但我們現在必須準備好抗量子 (PQC) 防禦。</div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        網路學院 &copy; 2026 | 基於 <a href="https://www.youtube.com/watch?v=2jU-mLMV8Vw" target=_blank> Jeff Crume 教授的 2026 年網路安全趨勢影片 </a>
+    </footer>
+
+    <script>
+        function openPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Set active button
+            const activeBtn = Array.from(document.querySelectorAll('#topNav button'))
+                .find(btn => btn.getAttribute('onclick').includes(pageId));
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            window.scrollTo(0,0);
+        }
+
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                if(opt.getAttribute('data-correct') === 'true') {
+                    opt.classList.add('correct-ans');
+                }
+            });
+
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

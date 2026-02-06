@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路架構 102 | CIA 三元素</title>
+    <style>
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-green: #24a148;
+            --accent-red: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero & Cards */
+        h1, h2, h3 { color: var(--primary); }
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        /* Dictionary */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* Quiz UI */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        .correct-reveal { border-color: var(--accent-green) !important; background: rgba(36, 161, 72, 0.2) !important; }
+        .wrong-reveal { border-color: var(--accent-red) !important; background: rgba(218, 30, 40, 0.2) !important; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">首頁</button>
+    <button onclick="navTo('pillar1')" id="nav-pillar1">機密性</button>
+    <button onclick="navTo('pillar2')" id="nav-pillar2">完整性</button>
+    <button onclick="navTo('pillar3')" id="nav-pillar3">可用性</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">詞彙表</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">複習測驗</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>CIA 三元素</h1>
+            <p>掌握任何網路安全計劃的三個核心目標。</p>
+        </div>
+        <div class="card">
+            <h3>為何是 CIA 三元素？</h3>
+            <p>每一樣安全工具、政策或架構的存在都是為了支援這三件事之一。您可以將它視為您未來制定每一個安全決策的<strong>標準作業環境</strong>。</p>
+        </div>
+    </div>
+
+    <!-- SECTION: CONFIDENTIALITY -->
+    <div id="pillar1" class="section">
+        <span class="badge">目標 01</span>
+        <h2>機密性 (Confidentiality)</h2>
+        <div class="card">
+            <p>確保敏感資訊只對有權查看的人開放。也就是保守<strong>秘密</strong>。</p>
+            
+            <h3>關鍵概念</h3>
+            <ul>
+                <li><strong>身份驗證 (Authentication)：</strong>證明您是您所聲稱的身份 (MFA)。</li>
+                <li><strong>授權 (Authorization)：</strong>授予正確的權限 (RBAC)。</li>
+                <li><strong>對稱加密 (Symmetric Encryption)：</strong>使用單一密鑰來鎖定（加密）和解鎖（解密）資料。</li>
+            </ul>
+            <div class="analogy">
+                <b>「明文」類比：</b>沒有加密，您的資料就像一張任何人都可以閱讀的明信片。加密將其變成一個只有持有鑰匙的人才能打開的鎖定信封。
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: INTEGRITY -->
+    <div id="pillar2" class="section">
+        <span class="badge">目標 02</span>
+        <h2>完整性 (Integrity)</h2>
+        <div class="card">
+            <p>確保資料準確、一致且未被篡改。也就是保持資料的<strong>準確性</strong>。</p>
+            
+            <h3>關鍵概念</h3>
+            <ul>
+                <li><strong>系統日誌 (Syslogs)：</strong>活動記錄。惡意行為者通常會試圖刪除這些日誌以隱藏他們的修改痕跡。</li>
+                <li><strong>密碼學函數：</strong>使用數位簽章或訊息鑑別碼 (MACs) 來偵測記錄中哪怕是微小的變更。</li>
+                <li><strong>區塊鏈 (Blockchain)：</strong>一種分散式帳本，具有「不可變性」——一旦某些內容被記錄，就永遠無法更改或刪除。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION: AVAILABILITY -->
+    <div id="pillar3" class="section">
+        <span class="badge">目標 03</span>
+        <h2>可用性 (Availability)</h2>
+        <div class="card">
+            <p>確保系統和資料在授權使用者需要時隨時可用。也就是讓系統保持<strong>在線</strong>。</p>
+            
+            <h3>對可用性的威脅</h3>
+            <ul>
+                <li><strong>阻斷服務攻擊 (DoS)：</strong>單一電腦用大量流量淹沒伺服器。</li>
+                <li><strong>分散式阻斷服務攻擊 (DDoS)：</strong>由被劫持的電腦組成的「殭屍網路」，作為<b>力量倍增器</b>來癱瘓伺服器。</li>
+                <li><strong>SYN 洪水攻擊：</strong>利用 TCP「交握」過程。攻擊者請求對話但從不完成問候，從而耗盡伺服器的所有資源。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>詞彙表</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>RBAC</b> 基於角色的存取控制 (Role-Based Access Control)。根據職位而非特定個人授予權限。</div>
+            <div class="dict-card"><b>Ciphertext</b> 密文。資料加密後被打亂、不可讀的版本。</div>
+            <div class="dict-card"><b>Botnet</b> 殭屍網路。由駭客控制的「殭屍」電腦網路，用於發動大規模攻擊。</div>
+            <div class="dict-card"><b>TCP Handshake</b> TCP 三向交握。電腦用來開始對話的三步驟過程 (SYN, SYN-ACK, ACK)。</div>
+            <div class="dict-card"><b>MAC</b> 訊息鑑別碼 (Message Authentication Code)。用於確認訊息未被竄改的小標籤。</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>架構複習測驗</h2>
+        <p style="color: var(--text-dim);">點擊一個答案以顯示正確選項及其背後的邏輯。</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JS -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>教育入口網站 | 基於 IBM 網路安全架構系列</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "身份驗證問的是「你是誰？」，那麼授權問的是什麼？",
+            o: ["你怎麼來的？", "你被允許做什麼？", "你的密鑰是什麼？"],
+            a: 1,
+            e: "授權（透過 RBAC 管理）在您的身份被確認後，決定您的權限。"
+        },
+        {
+            q: "為什麼惡意行為者會試圖刪除系統日誌？",
+            o: ["為了釋放硬碟空間", "為了破解加密", "為了隱藏蹤跡並破壞完整性"],
+            a: 2,
+            e: "日誌是系統活動的真相來源。刪除它們是為了破壞審計追蹤的完整性。"
+        },
+        {
+            q: "在可用性攻擊的背景下，「殭屍網路」(Botnet) 是什麼？",
+            o: ["一台快速的單一伺服器", "由被劫持的電腦組成的力量倍增器，用於DDoS攻擊", "一種防火牆"],
+            a: 1,
+            e: "DDoS 攻擊使用殭屍網路以遠超單一攻擊者能力的速度淹沒伺服器。"
+        },
+        {
+            q: "SYN 洪水攻擊是如何運作的？",
+            o: ["透過竊取對稱金鑰", "透過刪除區塊鏈", "透過利用 TCP 交握過程但不完成它"],
+            a: 2,
+            e: "攻擊者發送請求 (SYN) 但從不確認 (ACK)，導致伺服器資源耗盡。"
+        },
+        {
+            q: "哪種技術提供了一個資料無法被更改的不可變帳本？",
+            o: ["對稱加密", "區塊鏈", "多重要素驗證"],
+            a: 1,
+            e: "區塊鏈的分散式特性使其非常適合確保資料的完整性。"
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            if (i === correctIdx) buttons[i].classList.add('correct-reveal');
+        }
+
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "正確！" : "不正確。"}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    initQuiz();
+    // Default to home on load
+    navTo('home');
+</script>
+
+</body>
+</html>
