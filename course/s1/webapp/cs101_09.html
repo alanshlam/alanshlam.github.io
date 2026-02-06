@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Detection Academy</title>
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #161616;
+            --light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #8a3ffc;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Navigation Menu */
+        nav {
+            background: var(--dark);
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--primary); }
+        nav button.active { background: var(--primary); font-weight: bold; }
+
+        /* Page Management */
+        .page {
+            display: none; /* Hidden by default */
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-page { display: block; }
+
+        section {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1, h2 { color: var(--primary); margin-top: 0; }
+
+        /* Content Styles */
+        .formula-box {
+            background: var(--dark);
+            color: #00ff00;
+            padding: 25px;
+            text-align: center;
+            font-size: 1.8rem;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .analogy-card {
+            background: #eef4ff;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        /* Dictionary */
+        .dict-item {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .dict-item b { color: var(--accent); font-size: 1.1rem; }
+
+        /* Quiz Styles */
+        .quiz-card {
+            background: #fafafa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { border-color: var(--primary); background: #f0f5ff; }
+
+        .correct-ans { background-color: #d1fadf !important; border-color: var(--success) !important; color: #155724; font-weight: bold; }
+        .wrong-ans { background-color: #ffd7d9 !important; border-color: var(--danger) !important; color: #721c24; }
+        .disabled { cursor: default; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        footer { text-align: center; padding: 30px; color: #888; font-size: 0.8rem; }
+
+        /* Mobile View */
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 40%; padding: 10px 5px; font-size: 0.8rem; }
+            .formula-box { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('home')">The Formula</button>
+        <button onclick="openPage('tools')">Tools (SIEM/XDR)</button>
+        <button onclick="openPage('hunting')">Threat Hunting</button>
+        <button onclick="openPage('dict')">Dictionary</button>
+        <button onclick="openPage('quiz')">Quiz</button>
+    </nav>
+
+    <!-- PAGE 1: HOME/FORMULA -->
+    <div id="home" class="page active-page">
+        <section>
+            <h1>The "How" of Security</h1>
+            <p>To understand cybersecurity, we use a simple formula to explain how a company stays safe:</p>
+            <div class="formula-box">S = P + D + R</div>
+            <div class="analogy-card">
+                <b>P is Prevention:</b> Like locking your front door. It stops hackers from getting in easily.
+            </div>
+            <div class="analogy-card">
+                <b>D is Detection:</b> Like a motion-sensor camera. It tells you that someone is inside your house right now.
+            </div>
+            <div class="analogy-card">
+                <b>R is Response:</b> Like calling the police or putting out a fire. It is what you do after you catch the hacker.
+            </div>
+            <p><i>In this lesson, we focus on <b>D (Detection)</b>—the art of seeing the intruder.</i></p>
+        </section>
+    </div>
+
+    <!-- PAGE 2: TOOLS -->
+    <div id="tools" class="page">
+        <section>
+            <h2>Detection Tools</h2>
+            <p>Security teams use two main types of software to "see" hackers:</p>
+            
+            <h3>1. SIEM (Security Information & Event Management)</h3>
+            <p>Think of SIEM as a <b>Big Library</b>. It collects the "diaries" (logs) of every computer in the company and stores them in one place to find suspicious patterns.</p>
+            
+            <h3>2. XDR (Extended Detection & Response)</h3>
+            <p>Think of XDR as a <b>"Go Fish" Search</b>. Instead of collecting everything first, it stays on the devices. When a threat is suspected, it asks all computers at once: <i>"Do you see this specific hacker?"</i></p>
+            <p><b>Key Difference:</b> SIEM pulls data <i>up</i> to a database; XDR pushes searches <i>down</i> to the devices.</p>
+        </section>
+    </div>
+
+    <!-- PAGE 3: HUNTING -->
+    <div id="hunting" class="page">
+        <section>
+            <h2>Proactive Threat Hunting</h2>
+            <p>Hackers are often like ninjas—they can stay hidden in a network for an average of <b>200 days</b> before an automated alarm goes off!</p>
+            <p><b>Threat Hunting</b> is when security experts don't wait for the computer to beep. They use:</p>
+            <ul>
+                <li><b>Instinct:</b> "This feels like a place a hacker would hide."</li>
+                <li><b>Hypothesis:</b> They form a theory and go looking for evidence.</li>
+                <li><b>Experience:</b> They know the tricks hackers used in other companies.</li>
+            </ul>
+            <p>By "Hunting," we catch bad guys <i>early</i>, rather than waiting months for a tool to find them.</p>
+        </section>
+    </div>
+
+    <!-- PAGE 4: DICTIONARY -->
+    <div id="dict" class="page">
+        <section>
+            <h2>Cyber Terminology for Laymen</h2>
+            
+            <div class="dict-item">
+                <b>SOC (Security Operations Center)</b>
+                <p>The "Control Room" or "War Room" where security analysts sit and watch monitors for signs of an attack.</p>
+            </div>
+
+            <div class="dict-item">
+                <b>Endpoint</b>
+                <p>Any device at the "end" of the line, such as your laptop, a smartphone, or a company server.</p>
+            </div>
+
+            <div class="dict-item">
+                <b>Anomaly</b>
+                <p>Anything that is "not normal." For example, if an employee who usually works in New York suddenly logs in from a different country at 3:00 AM.</p>
+            </div>
+
+            <div class="dict-item">
+                <b>Log</b>
+                <p>A digital record or "diary" of everything a computer does. Security tools read these to find clues.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 5: QUIZ -->
+    <div id="quiz" class="page">
+        <section>
+            <h2>Cyber Detection Quiz</h2>
+            <p>Click any answer to reveal the truth!</p>
+
+            <!-- Q1 -->
+            <div class="quiz-card" id="q1">
+                <div class="question-text"><b>1. What is the main goal of "Detection"?</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">Stopping hackers from entering the network.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">Identifying that an intruder is present or an attack is happening.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">Changing all company passwords every week.</button>
+                <div class="explanation">Detection is about "seeing" the threat. Stopping them from entering is "Prevention."</div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card" id="q2">
+                <div class="question-text"><b>2. Which tool is famous for using "Federated Search" (The Go-Fish method)?</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">SIEM</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">XDR</button>
+                <div class="explanation">XDR searches devices in real-time, asking them for specific "indicators of compromise."</div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card" id="q3">
+                <div class="question-text"><b>3. What does a "Threat Hunter" use to find hackers?</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">Only automated alarms and beeps.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">Instinct, experience, and a hypothesis (theory).</button>
+                <div class="explanation">Threat hunters are proactive; they use their human brain to find things computers might miss.</div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-card" id="q4">
+                <div class="question-text"><b>4. What is a "Log" in cybersecurity?</b></div>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">A digital diary recording a computer's actions.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">A physical piece of wood used to protect servers.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">A secret password used by administrators.</button>
+                <div class="explanation">Logs are vital records that tell security analysts what happened during an incident.</div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-card" id="q5">
+                <div class="question-text"><b>5. On average, how long does it take for a company to become aware of a hack?</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">10 Minutes</button>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">24 Hours</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q5')">Around 200 Days</button>
+                <div class="explanation">Scary but true! Hackers often stay hidden for over 6 months before being caught.</div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        <p>Interactive Cybersecurity Lesson | Created for Students</p>
+    </footer>
+
+    <script>
+        // Page Navigation Logic
+        function openPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active-page'));
+
+            // Deactivate all nav buttons
+            const buttons = document.querySelectorAll('#topNav button');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active-page');
+
+            // Find clicked button and set active
+            const clickedBtn = Array.from(buttons).find(b => b.innerText.toLowerCase().includes(pageId.substring(0,3)));
+            if(clickedBtn) clickedBtn.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Quiz Logic
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            // Find the correct button in this specific quiz card
+            let correctBtn;
+            options.forEach(opt => {
+                if(opt.getAttribute('data-correct') === 'true') {
+                    correctBtn = opt;
+                }
+                opt.classList.add('disabled'); // Disable all buttons
+            });
+
+            // Reveal the correct one in green
+            correctBtn.classList.add('correct-ans');
+
+            // If user clicked the wrong one, highlight it in red
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            // Show the explanation
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

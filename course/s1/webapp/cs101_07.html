@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Security Masterclass</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        section { display: none; animation: fadeIn 0.5s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz UI */
+        .quiz-item { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 10px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .option.correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .option.wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .explanation { display: none; margin-top: 10px; font-style: italic; color: #be95ff; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 40%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">The Basics</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">DevSecOps</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">Testing</button>
+        <button onclick="showTab('dict')" id="btn-dict">Dictionary</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">Quiz</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- TAB 1: THE BASICS -->
+    <section id="tab1" class="active">
+        <h1>Why App Sec Matters</h1>
+        <div class="card">
+            <p><strong>Jeff's Key Point:</strong> All software has bugs. Some bugs are just annoying, but others are <strong>Vulnerabilities</strong> that let hackers in.</p>
+            <h3>Shift Left</h3>
+            <p>Most bugs are created during the coding phase. If we find them during coding, they are cheap to fix. If we wait until the app is released, it can be <strong>640 times more expensive</strong> to repair.</p>
+        </div>
+    </section>
+
+    <!-- TAB 2: DEVSECOPS -->
+    <section id="tab2">
+        <h1>Baking in Security</h1>
+        <div class="card">
+            <h3>From "Bolt-on" to "Built-in"</h3>
+            <p>In the past, security was checked at the very end. Today, we use <strong>DevSecOps</strong>. This means security is integrated into every single step of building the software—from the first plan to the final release.</p>
+        </div>
+        <div class="card">
+            <h3>SBOM (The Ingredients List)</h3>
+            <p>Just like a food label, a <strong>Software Bill of Materials</strong> lists every piece of code used to build an app. If a specific ingredient (library) is found to be dangerous later, the company knows exactly where to fix it.</p>
+        </div>
+    </section>
+
+    <!-- TAB 3: TESTING -->
+    <section id="tab3">
+        <h1>SAST vs DAST</h1>
+        <div class="card">
+            <p>How do we find holes in the software automatically?</p>
+            <ul>
+                <li><strong>SAST (Static Testing):</strong> Looks at the code while it's sitting still. It's like a proofreader checking a book for typos before it's printed.</li>
+                <li><strong>DAST (Dynamic Testing):</strong> Tests the app while it's running. It's like a test-driver taking a car on the road to see if the brakes fail at high speed.</li>
+            </ul>
+            <p><em>Modern architects use both!</em></p>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>The App Sec Glossary</h1>
+        <div class="card">
+            <p><span class="term">SDLC:</span> Software Development Life Cycle. The step-by-step process of creating software.</p>
+            <p><span class="term">Vulnerability:</span> A specific bug that can be exploited by an attacker to gain unauthorized access.</p>
+            <p><span class="term">Buffer Overflow:</span> An error where too much data is sent to a small space in memory, causing the app to crash or execute malicious commands.</p>
+            <p><span class="term">OWASP:</span> A global group that creates the standard list of the "Top 10" most dangerous software mistakes to avoid.</p>
+            <p><span class="term">Intellectual Property (IP):</span> The "Secret Sauce" or private ideas of a company. Chatbots can accidentally leak this if developers aren't careful.</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>Knowledge Check</h1>
+        <div id="quiz-container"></div>
+    </section>
+
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "What does 'Shift Left' mean?",
+            options: ["Moving to a different building", "Doing security tasks earlier in the development process", "Deleting old code"],
+            correct: 1,
+            expl: "Shifting left saves money and time by catching bugs when they are first created in the coding phase."
+        },
+        {
+            q: "Which testing type looks at the 'Source Code' before the app is even running?",
+            options: ["SAST (Static)", "DAST (Dynamic)", "Manual Beta Testing"],
+            correct: 0,
+            expl: "Static testing (SAST) analyzes the text of the code itself to find mistakes early."
+        },
+        {
+            q: "What is an SBOM?",
+            options: ["A type of virus", "A list of every component and 'ingredient' used to build the software", "A password manager"],
+            correct: 1,
+            expl: "A Software Bill of Materials (SBOM) helps track every library and dependency for security vulnerabilities."
+        },
+        {
+            q: "What is the primary risk of using AI Chatbots for coding?",
+            options: ["They are too slow", "They might leak proprietary secrets or inject unvetted vulnerabilities", "They charge too much money"],
+            correct: 1,
+            expl: "Jeff warns that AI can expose Intellectual Property or introduce bugs that developers might not notice."
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="explanation" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleAnswer(element, qIdx, oIdx) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const expl = document.getElementById('expl-' + qIdx);
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            element.classList.add('correct');
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        expl.style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

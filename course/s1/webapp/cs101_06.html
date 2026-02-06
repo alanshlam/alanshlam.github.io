@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security Masterclass</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        section { display: none; animation: fadeIn 0.5s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz Styles */
+        .quiz-item { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 10px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .option.correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .option.wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .explanation { display: none; margin-top: 10px; font-style: italic; color: #bbb; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">Firewalls</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">Segmentation</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">VPN & SASE</button>
+        <button onclick="showTab('dict')" id="btn-dict">Glossary</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">Quiz</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- FIREWALLS -->
+    <section id="tab1" class="active">
+        <h1>How Firewalls Work</h1>
+        <div class="card">
+            <h3>The Envelope Analogy</h3>
+            <p><strong>Packet Filtering:</strong> Only looks at the outside of the envelope (Source, Destination, Port). If the address looks bad, it's blocked.</p>
+            <p><strong>Stateful Inspection:</strong> Opens the envelope to see the letter inside (the Payload). It checks if the contents are dangerous or if they match the context of the conversation.</p>
+        </div>
+        <div class="card">
+            <h3>The Proxy & NAT</h3>
+            <p><strong>Proxy:</strong> Acts as a middleman. You talk to the Proxy, the Proxy talks to the Server. It hides you and inspects everything.</p>
+            <p><strong>NAT:</strong> Hides your internal home network from the internet, giving everyone one shared "public" face.</p>
+        </div>
+    </section>
+
+    <!-- SEGMENTATION -->
+    <section id="tab2">
+        <h1>Network Segmentation</h1>
+        <div class="card">
+            <h3>The Traffic Light Zones</h3>
+            <p><span style="color:var(--danger)">●</span> <strong>Red (Untrusted):</strong> The public Internet.</p>
+            <p><span style="color:#f1c40f">●</span> <strong>Yellow (Semi-Trusted):</strong> The DMZ. This is where your web server sits so people can visit it safely.</p>
+            <p><span style="color:var(--success)">●</span> <strong>Green (Trusted):</strong> Your internal business network and database.</p>
+        </div>
+        <div class="card">
+            <h3>Multi-Tiered DMZ</h3>
+            <p>Instead of one big room, we create many small rooms separated by firewalls. This way, if a hacker breaks into the "lobby" (web server), they still can't get into the "vault" (database).</p>
+        </div>
+    </section>
+
+    <!-- VPN & SASE -->
+    <section id="tab3">
+        <h1>VPNs and SASE</h1>
+        <div class="card">
+            <h3>What is a VPN?</h3>
+            <p>A <strong>Virtual Private Network</strong> creates a secure "tunnel" over the public internet. It uses encryption to keep your data confidential while you work from a coffee shop.</p>
+        </div>
+        <div class="card">
+            <h3>What is SASE?</h3>
+            <p><strong>Secure Access Service Edge.</strong> It is the future of networking. It moves all the heavy security (firewalls, identity checks) into the Cloud so that no matter where an employee goes, the security follows them.</p>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>Network Security Dictionary</h1>
+        <div class="card">
+            <p><span class="term">Packet:</span> A small unit of data sent over a network.</p>
+            <p><span class="term">Header:</span> The "envelope" of a packet containing the address info.</p>
+            <p><span class="term">Payload:</span> The actual data or "letter" inside the packet.</p>
+            <p><span class="term">DMZ:</span> Demilitarized Zone. A buffer zone between the internet and your private network.</p>
+            <p><span class="term">SPOF:</span> Single Point of Failure. If one thing breaks, the whole system stops.</p>
+            <p><span class="term">Port:</span> A virtual "doorway" for specific types of traffic (e.g., Port 80 is for websites).</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>Test Your Knowledge</h1>
+        <div id="quiz-container"></div>
+    </section>
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "What part of a packet does basic 'Packet Filtering' look at?",
+            options: ["The Payload (The actual data)", "The Header (The address information)", "The Entire Network"],
+            correct: 1,
+            expl: "Packet filtering only looks at the 'envelope' (Header), not the 'letter' inside."
+        },
+        {
+            q: "Which network zone is considered 'Semi-Trusted' (The Yellow Zone)?",
+            options: ["The Public Internet", "The Internal Database", "The DMZ"],
+            correct: 2,
+            expl: "The DMZ is the buffer zone where you host public-facing servers."
+        },
+        {
+            q: "Why is a 'Multi-Tiered DMZ' better than a 'Tri-Homed' setup?",
+            options: ["It is cheaper", "It follows 'Defense in Depth' with no single point of failure", "It makes the internet faster"],
+            correct: 1,
+            expl: "By using multiple firewalls and zones, it ensures that if one layer fails, others are still standing."
+        },
+        {
+            q: "What does SASE stand for?",
+            options: ["Secure Access Service Edge", "Simple Anonymous Security Entry", "Software And System Encryption"],
+            correct: 0,
+            expl: "SASE combines networking and cloud security into one holistic service."
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="explanation" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleAnswer(element, qIdx, oIdx) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const expl = document.getElementById('expl-' + qIdx);
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            element.classList.add('correct');
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        expl.style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

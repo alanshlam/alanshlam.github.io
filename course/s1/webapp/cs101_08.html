@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Security Masterclass</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+            padding-bottom: 50px;
+        }
+
+        section { display: none; animation: fadeIn 0.4s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .stat { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+
+        /* Dictionary */
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz */
+        .quiz-item { background: #333; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 8px 0;
+            background: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .expl { display: none; margin-top: 10px; font-style: italic; color: #aaa; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 30%; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">Motivation</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">Lifecycle</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">Top 5</button>
+        <button onclick="showTab('dict')" id="btn-dict">Dictionary</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">Quiz</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- TAB 1 -->
+    <section id="tab1" class="active">
+        <h1>The High Cost of Data Breaches</h1>
+        <div class="card">
+            <p><span class="stat">$9.44 Million</span><br>Average cost of a single breach in the USA.</p>
+            <p><span class="stat">83%</span><br>Percentage of companies that have been breached more than once.</p>
+            <p>Data security is not just an IT problem; it is a financial survival problem.</p>
+        </div>
+    </section>
+
+    <!-- TAB 2 -->
+    <section id="tab2">
+        <h1>The Data Security Lifecycle</h1>
+        <div class="card">
+            <h3>1. Governance & Discovery</h3>
+            <p>You can't protect what you don't know you have. Discovery involves finding <strong>Structured</strong> data (databases) and <strong>Unstructured</strong> data (emails, files).</p>
+        </div>
+        <div class="card">
+            <h3>2. Protection (Encryption)</h3>
+            <p>Data must be encrypted <strong>At Rest</strong> (in storage) and <strong>In Motion</strong> (traveling over the web). <strong>Key Management</strong> is vital—lose the keys, lose the data.</p>
+        </div>
+        <div class="card">
+            <h3>3. Detection & Response</h3>
+            <p>Spotting anomalies (weird behavior) using Analytics and using <strong>Orchestration</strong> to fix the problem automatically.</p>
+        </div>
+    </section>
+
+    <!-- TAB 3 -->
+    <section id="tab3">
+        <h1>Top 5 Ways to Save Money</h1>
+        <div class="card">
+            <p>According to Jeff Crume, these 5 things reduce breach costs the most:</p>
+            <ol>
+                <li><strong>AI:</strong> To find threats faster.</li>
+                <li><strong>DevSecOps:</strong> Baking security into software.</li>
+                <li><strong>Incident Response:</strong> Having a plan ready.</li>
+                <li><strong>Cryptography:</strong> Strong encryption.</li>
+                <li><strong>Employee Training:</strong> Reducing human error.</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict">
+        <h1>Architect's Dictionary</h1>
+        <div class="card">
+            <p><span class="term">PII:</span> Personally Identifiable Information (Names, SSNs, Credit Cards).</p>
+            <p><span class="term">DLP:</span> Data Loss Prevention. Software that stops sensitive info from being emailed or uploaded by mistake.</p>
+            <p><span class="term">Structured Data:</span> Information organized in tables (like an Excel sheet or SQL database).</p>
+            <p><span class="term">Unstructured Data:</span> "Messy" data like Word docs, emails, and PDFs.</p>
+            <p><span class="term">Retention:</span> The policy of how long you keep data before deleting it to reduce risk.</p>
+            <p><span class="term">QSC:</span> Quantum Safe Crypto. New encryption meant to survive the power of future super-computers.</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz">
+        <h1>Knowledge Check</h1>
+        <div id="quiz-container"></div>
+    </section>
+
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "What is 'Unstructured Data'?",
+            options: ["A clean SQL database", "Emails, PDFs, and Word documents", "Encrypted network traffic"],
+            correct: 1,
+            expl: "Unstructured data is the 'messy' stuff like files and emails that are harder for security tools to scan."
+        },
+        {
+            q: "Why is 'Retention Policy' important?",
+            options: ["To store data forever", "To reduce liability by deleting data you no longer need", "To make the database bigger"],
+            correct: 1,
+            expl: "Holding onto sensitive data forever is a risk. If you are breached, you are liable for everything you haven't deleted."
+        },
+        {
+            q: "Which of these reduces the cost of a data breach the most?",
+            options: ["Buying more hardware", "Artificial Intelligence (AI)", "Using a VPN"],
+            correct: 1,
+            expl: "Jeff listed AI as the #1 factor in reducing the financial impact of a breach."
+        },
+        {
+            q: "What does the 'Conductor Analogy' refer to?",
+            options: ["A person who installs fiber cables", "Orchestrating security tools to respond to a threat", "The way electricity flows in a server"],
+            correct: 1,
+            expl: "Response Orchestration is like a conductor coordinating an orchestra of security tools."
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleQuiz(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="expl" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleQuiz(el, qIdx, oIdx) {
+        const parent = el.parentElement;
+        const options = parent.querySelectorAll('.option');
+        options.forEach(o => o.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            el.classList.add('correct');
+        } else {
+            el.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        document.getElementById('expl-' + qIdx).style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>
