@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Predictions: 2026 & Beyond</title>
+    <style>
+
+a {
+  color: #4DA3FF;
+  text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+  color: #82C7FF;
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: #B388FF;
+}
+
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #8a3ffc;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--ibm-blue); }
+        nav button.active { background: var(--ibm-blue); font-weight: bold; }
+
+        /* Page Layout */
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .active-page { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 { color: var(--ibm-blue); }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #393939;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 4px solid var(--ibm-blue);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: block;
+            color: #fff;
+        }
+
+        /* Dictionary */
+        .dict-item {
+            border-bottom: 1px solid #444;
+            padding: 15px 0;
+        }
+        .dict-item b { color: var(--accent); font-size: 1.1rem; }
+
+        /* Quiz Styling */
+        .quiz-card {
+            background: #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { background: #555; border-color: var(--ibm-blue); }
+        .correct-ans { background-color: var(--success) !important; border-color: #fff !important; }
+        .wrong-ans { background-color: var(--danger) !important; }
+        .disabled { cursor: default; opacity: 0.7; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e1e1e;
+            border-left: 4px solid var(--ibm-blue);
+        }
+
+        footer { text-align: center; padding: 40px; color: #777; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('retro')">2025 Retrospect</button>
+        <button onclick="openPage('agents')">2026: AI Agents</button>
+        <button onclick="openPage('solutions')">The Solutions</button>
+        <button onclick="openPage('dict')">Dictionary</button>
+        <button onclick="openPage('quiz')">Quiz</button>
+    </nav>
+
+    <!-- PAGE 1: 2025 RETROSPECT -->
+    <div id="retro" class="page active-page">
+        <section>
+            <h1>2025: The Year AI Got Real</h1>
+            <p> Prof. Jeff Crume highlights that in 2025, AI moved from a "fun tool" to a major security risk.</p>
+            
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">1,500%</span>
+                    <span>Increase in Deepfake instances</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">+$670k</span>
+                    <span>Avg. cost of breach if "Shadow AI" is used</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">60%</span>
+                    <span>Companies lack an AI security policy</span>
+                </div>
+            </div>
+
+            <h3>Key Takeaway: The Human Factor</h3>
+            <p>Because deepfakes are increasing so fast, Jeff argues we should stop trying to "spot the fake." Instead, we must train humans to analyze <b>what the request is asking us to do</b> (e.g., "Why is my boss asking for a wire transfer via a video call?").</p>
+        </section>
+    </div>
+
+    <!-- PAGE 2: 2026 AI AGENTS -->
+    <div id="agents" class="page">
+        <section>
+            <h2>2026: The Rise of Autonomous Agents</h2>
+            <p>The biggest shift for 2026 is **Autonomous Agents**—AI that doesn't just chat, but actually <i>does</i> things on its own.</p>
+            
+            <div style="border-left: 4px solid var(--accent); padding-left: 20px; margin: 20px 0;">
+                <h3>1. Attacks ON Agents (Hijacking)</h3>
+                <p><b>Risk Amplification:</b> If a hacker hijacks your AI agent, the agent can steal data at light speed. 
+                <br><b>Zero-Click:</b> Agents can read a malicious email and get infected without you ever clicking a link.</p>
+            </div>
+
+            <div style="border-left: 4px solid var(--ibm-blue); padding-left: 20px; margin: 20px 0;">
+                <h3>2. Attacks BY Agents (Automated Hacking)</h3>
+                <p><b>Automated Kill Chains:</b> AI can now handle the whole hack—from finding a target to stealing the data—without a human hacker needing any skills. It's "Click here to hack" automation.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 3: THE SOLUTIONS -->
+    <div id="solutions" class="page">
+        <section>
+            <h2>Strategic Defenses</h2>
+            <p>To fight AI-speed attacks, Jeff recommends two non-negotiable technologies:</p>
+            
+            <h3>Passkeys (Passwordless)</h3>
+            <p>Phishing works because hackers steal passwords. If there is no password, there is nothing to steal. Jeff notes that **1/3 of users** have already moved to Passkeys.</p>
+
+            <h3>Quantum-Safe Cryptography (PQC)</h3>
+            <p>Quantum computers are coming. Eventually, they will break all current encryption. Jeff urges companies to start **deploying** Quantum-Safe algorithms now, before "Q-Day" arrives.</p>
+        </section>
+    </div>
+
+    <!-- PAGE 4: DICTIONARY -->
+    <div id="dict" class="page">
+        <section>
+            <h2>Jargon Buster</h2>
+            <div class="dict-item">
+                <b>Shadow AI</b>: Using AI tools at work (like ChatGPT) without the IT department knowing or approving.
+            </div>
+            <div class="dict-item">
+                <b>Prompt Injection</b>: Tricking an AI into ignoring its safety rules by giving it specific, clever instructions.
+            </div>
+            <div class="dict-item">
+                <b>Autonomous Agent</b>: An AI that can make its own decisions and execute tasks across different apps to reach a goal.
+            </div>
+            <div class="dict-item">
+                <b>NHI (Non-Human Identity)</b>: An "ID card" for a bot or AI agent. Bots need access permissions just like people do.
+            </div>
+            <div class="dict-item">
+                <b>Polymorphic Malware</b>: A virus that changes its own code every time it spreads so that antivirus software can't recognize it.
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 5: QUIZ -->
+    <div id="quiz" class="page">
+        <section>
+            <h2>Interactive Quiz</h2>
+            <p>Test your knowledge on the 2026 outlook!</p>
+
+            <div class="quiz-card" id="q1">
+                <b>1. What is the main danger of an "Autonomous Agent"?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">It might stop working if the internet goes out.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">It can be hijacked to perform malicious tasks at light speed.</button>
+                <div class="explanation">Correct! Agents amplify productivity, but if hijacked, they amplify risk and damage just as quickly.</div>
+            </div>
+
+            <div class="quiz-card" id="q2">
+                <b>2. According to Jeff, what is the best way to handle Deepfakes?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">Buy a software that spots pixels in deepfakes.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">Train humans to analyze what the content is asking them to do.</button>
+                <div class="explanation">Correct. Deepfakes are becoming too perfect for detection software; we must rely on analyzing the context of the request.</div>
+            </div>
+
+            <div class="quiz-card" id="q3">
+                <b>3. Why are Passkeys better than Passwords?</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">They are resistant to phishing because there is no password to steal.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">They are shorter and easier to remember.</button>
+                <div class="explanation">Correct! Phishing relies on stealing a secret string of text. Passkeys use device-based biometrics, leaving the hacker with nothing to grab.</div>
+            </div>
+
+            <div class="quiz-card" id="q4">
+                <b>4. What does "Shadow AI" do to the cost of a data breach?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">It lowers the cost by making researchers faster.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">It increases the cost of a breach by an average of $670,000.</button>
+                <div class="explanation">Correct. Unregulated AI tools create data leaks that significantly drive up the financial damage of a hack.</div>
+            </div>
+
+            <div class="quiz-card" id="q5">
+                <b>5. What is "Q-Day"?</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q5')">The day quantum computers become powerful enough to break modern encryption.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">The day AI takes over all coding jobs.</button>
+                <div class="explanation">Correct! We don't know exactly when it will happen, but we must prepare Quantum-Safe (PQC) defenses now.</div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        Cyber Academy &copy; 2026 | Based on <a href="https://www.youtube.com/watch?v=2jU-mLMV8Vw" target=_blank> Cybersecurity Trends in 2026 video </a> by Prof. Jeff Crume
+    </footer>
+
+    <script>
+        function openPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Set active button
+            const activeBtn = Array.from(document.querySelectorAll('#topNav button'))
+                .find(btn => btn.getAttribute('onclick').includes(pageId));
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            window.scrollTo(0,0);
+        }
+
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                if(opt.getAttribute('data-correct') === 'true') {
+                    opt.classList.add('correct-ans');
+                }
+            });
+
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
