@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAM Masterclass: Identity is the New Perimeter</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Responsive Top Menu */
+        header {
+            background: #000;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+            box-shadow: 0 0 10px rgba(15, 98, 254, 0.5);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            padding-bottom: 100px;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2 { color: var(--ibm-blue); margin-bottom: 20px; }
+        h3 { color: var(--accent); margin-top: 25px; }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--ibm-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Dictionary grid */
+        .dict-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .dict-item {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .dict-term {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Quiz UI */
+        .quiz-box {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 10px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .option:hover { background: #555; }
+        .correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .feedback { display: none; margin-top: 10px; font-weight: bold; font-style: italic; }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.75rem; }
+            .container { margin-top: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('tab1')" id="btn-tab1" class="active">The 4 A's</button>
+        <button onclick="showTab('tab2')" id="btn-tab2">Roles</button>
+        <button onclick="showTab('tab3')" id="btn-tab3">Sync</button>
+        <button onclick="showTab('tab4')" id="btn-tab4">Lifecycle</button>
+        <button onclick="showTab('tab5')" id="btn-tab5">High-Level</button>
+        <button onclick="showTab('dict')" id="btn-dict">Dictionary</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">Test</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- MODULE 1 -->
+    <section id="tab1" class="section active">
+        <h1>Module 1: The Core Pillars (The 4 A's)</h1>
+        <div class="card">
+            <p>Jeff Crume explains that every IAM system is built on four functional pillars:</p>
+            <h3>1. Administration</h3>
+            <p>The "Manager" role. This involves creating user accounts, updating phone numbers, and deleting accounts when people leave.</p>
+            <h3>2. Authentication (AuthN)</h3>
+            <p>The "Is it really you?" check. This is your login screen, password prompt, or FaceID scan.</p>
+            <h3>3. Authorization (AuthZ)</h3>
+            <p>The "Permissions" check. Just because you are allowed in the building doesn't mean you are allowed in the CEO's office. AuthZ decides which files you can open.</p>
+            <h3>4. Audit</h3>
+            <p>The "Security Camera." This keeps a record of who logged in and what they touched, so we can check it later if something goes wrong.</p>
+        </div>
+    </section>
+
+    <!-- MODULE 2 -->
+    <section id="tab2" class="section">
+        <h1>Module 2: User Groups & Roles</h1>
+        <div class="card">
+            <p>In large companies, you can't manage permissions for 10,000 people individually. You use <strong>Roles</strong>.</p>
+            <h3>User Categories</h3>
+            <ul>
+                <li><strong>Employees:</strong> Need internal access to HR and Payroll.</li>
+                <li><strong>Suppliers:</strong> Need access to inventory systems.</li>
+                <li><strong>Customers:</strong> Need to see their own orders only.</li>
+            </ul>
+            <h3>RBAC (Role-Based Access Control)</h3>
+            <p>Instead of saying "Bob gets email access," the architect says "Everyone in the 'Teller' role gets access to the Bank App, Email, and HR." This makes security much easier to manage and scale.</p>
+        </div>
+    </section>
+
+    <!-- MODULE 3 -->
+    <section id="tab3" class="section">
+        <h1>Module 3: Where IDs are Stored</h1>
+        <div class="card">
+            <p>User IDs are stored in a <strong>Directory</strong>. Jeff notes that most companies have many different directories (one for Email, one for Finance, etc.).</p>
+            <h3>Lightweight Directory Access Protocol (LDAP)</h3>
+            <p>This is the standard language computers use to look up user information. If a system "speaks LDAP," it can work with most user directories.</p>
+            <h3>Synchronization</h3>
+            <ul>
+                <li><strong>Meta Directory:</strong> A central hub that physically copies data from all other folders into one giant "Master List."</li>
+                <li><strong>Virtual Directory:</strong> Like an "Index" in a book. It doesn't copy the data, it just knows where to find it when you ask.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- MODULE 4 -->
+    <section id="tab4" class="section">
+        <h1>Module 4: The Identity Lifecycle</h1>
+        <div class="card">
+            <p>Security happens through the entire "life" of an employee at a company.</p>
+            <h3>Provisioning (The Joiner)</h3>
+            <p>Automatically creating all the accounts a person needs the second they are hired in the HR system.</p>
+            <h3>De-provisioning (The Leaver)</h3>
+            <p><strong>The most important security step.</strong> When someone is fired or leaves, the system must instantly kill all their access rights. If this is forgotten, a "ghost account" remains that hackers can use.</p>
+        </div>
+    </section>
+
+    <!-- MODULE 5 -->
+    <section id="tab5" class="section">
+        <h1>Module 5: Advanced Defenses</h1>
+        <div class="card">
+            <h3>Single Sign-On (SSO)</h3>
+            <p>This allows you to log in once (e.g., your company portal) and gain access to 50 different apps without typing your password again. It keeps users happy and secure.</p>
+            <h3>PAM (Privileged Access Management)</h3>
+            <p>Some users (IT Admins) have "Keys to the Kingdom." They can delete the whole database. PAM tools record their screen and require them to "check out" passwords like a library book for extra safety.</p>
+            <h3>Passwordless</h3>
+            <p>The future! Using biometrics (fingerprints) or hardware keys (USB sticks) so users never have to remember a password that can be stolen or guessed.</p>
+        </div>
+    </section>
+
+    <!-- DICTIONARY -->
+    <section id="dict" class="section">
+        <h1>Architect's Dictionary</h1>
+        <div class="dict-grid">
+            <div class="dict-item"><span class="dict-term">AuthN</span>Authentication. Proving who you are.</div>
+            <div class="dict-item"><span class="dict-term">AuthZ</span>Authorization. Proving what you're allowed to do.</div>
+            <div class="dict-item"><span class="dict-term">Directory</span>A database designed specifically for storing user names, passwords, and roles.</div>
+            <div class="dict-item"><span class="dict-term">Federation</span>Connecting your company's login system to an outside app (like Salesforce or Microsoft 365).</div>
+            <div class="dict-item"><span class="dict-term">MFA</span>Multi-Factor Authentication. Using two or more items (Password + Phone code) to log in.</div>
+            <div class="dict-item"><span class="dict-term">Privilege Creep</span>When an employee changes jobs but keeps all their old permissions, eventually having too much power.</div>
+            <div class="dict-item"><span class="dict-term">UBA</span>User Behavior Analytics. Using AI to spot if a user is doing something weird or dangerous.</div>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="section">
+        <h1>Knowledge Verification</h1>
+        <div id="quiz-container">
+            <!-- Questions injected by JS -->
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <p>Based on IBM Security Architecture Series by Jeff Crume, PhD</p>
+</footer>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById('btn-' + tabId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "Which functional pillar involves recording a history of who did what?",
+            options: ["Administration", "Authorization", "Audit"],
+            answer: 2,
+            feedback: "Audit is the 'security camera' of the 4 A's."
+        },
+        {
+            q: "What is the primary danger of failing to 'De-provision' a user?",
+            options: ["The network gets slower", "Ghost accounts remain active for hackers to use", "The HR database gets full"],
+            answer: 1,
+            feedback: "De-provisioning ensures access is removed the moment it is no longer needed."
+        },
+        {
+            q: "What is 'Something you ARE' in authentication?",
+            options: ["A password", "A physical keycard", "A fingerprint or Face ID"],
+            answer: 2,
+            feedback: "This is known as Biometrics."
+        },
+        {
+            q: "Why is PAM (Privileged Access Management) used?",
+            options: ["To make logging in faster", "To monitor 'Power Users' like IT Admins", "To store customer credit cards"],
+            answer: 1,
+            feedback: "PAM protects the 'Keys to the Kingdom' by monitoring highly powerful accounts."
+        },
+        {
+            q: "Which system acts as an 'Index' rather than copying data?",
+            options: ["Meta Directory", "Virtual Directory", "HR System"],
+            answer: 1,
+            feedback: "A Virtual Directory points to the source without making a copy."
+        }
+    ];
+
+    function renderQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-box">
+                <p><strong>Question ${i+1}:</strong> ${item.q}</p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="checkAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <div class="feedback" id="feed-${i}">${item.feedback}</div>
+            </div>
+        `).join('');
+    }
+
+    function checkAnswer(element, qIndex, oIndex) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const feedback = document.getElementById(`feed-${qIndex}`);
+        
+        // Disable further clicks in this box
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIndex === quizData[qIndex].answer) {
+            element.classList.add('correct');
+            feedback.style.color = "var(--success)";
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIndex].answer].classList.add('correct');
+            feedback.style.color = "var(--danger)";
+        }
+        feedback.style.display = "block";
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>

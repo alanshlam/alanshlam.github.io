@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Architect Academy | Mindset & Frameworks</title>
+    <style>
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-purple: #be95ff;
+            --accent-gold: #f1c40f;
+            --success: #24a148;
+            --danger: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* Section Transitions */
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero & Cards */
+        h1, h2, h3 { color: var(--primary); margin-top: 0; }
+        
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Dictionary Grid */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--accent-purple); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* NIST Tags */
+        .nist-flex { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .nist-tag { background: #444; border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+
+        /* Quiz UI - Instant Reveal */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        .correct-reveal { border-color: var(--success) !important; background: rgba(36, 161, 72, 0.2) !important; color: white; font-weight: bold; }
+        .wrong-reveal { border-color: var(--danger) !important; background: rgba(218, 30, 40, 0.2) !important; color: white; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-gold);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">Role/Mindset</button>
+    <button onclick="navTo('roadmap')" id="nav-roadmap">Frameworks</button>
+    <!--button onclick="navTo('tools')" id="btn-tools">Tools & NIST</button-->
+    <button onclick="navTo('domains')" id="btn-domains">Domains</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">Dictionary</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">Quiz</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>The Architect's Mindset</h1>
+            <p>Moving from the "How does it work?" to "How does it fail?"</p>
+        </div>
+        
+        <div class="card">
+            <span class="badge">Role Definition</span>
+            <h3>Whiteboard vs. Keyboard</h3>
+            <p><strong>Architects (Whiteboard):</strong> These are the high-level planners. They work with stakeholders to understand business needs and draw the blueprints.</p>
+            <p><strong>Engineers (Keyboard):</strong> These are the technical builders. They take the architect's blueprints and turn them into code, firewalls, and servers.</p>
+        </div>
+
+        <div class="card" style="border-left-color: var(--accent-gold);">
+            <h3>The Core Question</h3>
+            <p>While a general IT architect asks how a system functions, a <b>Cybersecurity Architect</b> spends their time asking: <strong>"How will this system FAIL?"</strong></p>
+            <div class="analogy">
+                <b>The "What If?" Logic:</b> By anticipating the hack before it happens, an architect can build defenses into the foundation rather than trying to fix it after a disaster.
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: FRAMEWORKS -->
+    <div id="roadmap" class="section">
+        <h2>Frameworks & Diagrams</h2>
+
+        <div class="card">
+            <span class="badge">NIST CSF</span>
+            <h3>The Official Roadmap</h3>
+            <p>The NIST Cybersecurity Framework is the "rulebook" used by professionals to organize their defenses into five distinct functions:</p>
+            <div class="nist-flex">
+                <span class="nist-tag">IDENTIFY</span>
+                <span class="nist-tag">PROTECT</span>
+                <span class="nist-tag">DETECT</span>
+                <span class="nist-tag">RESPOND</span>
+                <span class="nist-tag">RECOVER</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">Visualization</span>
+            <h3>The 3 Critical Diagrams</h3>
+            <ol>
+                <li><strong>Business Context:</strong> Focuses on people (Buyers, Builders, Marketing).</li>
+                <li><strong>System Context:</strong> Focuses on the technical interaction (Apps, Databases).</li>
+                <li><strong>Architecture Overview:</strong> The deep details (Schedulers, Alert systems).</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- TOOLS & NIST SECTION -->
+    <section id="tools" class="section">
+        <h2>Diagrams & Frameworks</h2>
+        <div class="card">
+            <h3>Architectural Diagrams (The Tools)</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <strong>1. Business Context</strong><br>
+                    <small>High-level view of people: Buyers, Builders, and Marketing.</small>
+                </div>
+                <div class="grid-item">
+                    <strong>2. System Context</strong><br>
+                    <small>Technical view: Finance apps, databases, and login screens.</small>
+                </div>
+                <div class="grid-item">
+                    <strong>3. Architecture Overview</strong><br>
+                    <small>The deep details: Schedulers, Alert systems, and data flow.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left-color: var(--success);">
+            <h3>NIST CSF Functions (The Roadmap)</h3>
+            <p>Jeff describes these as the steps to a complete security lifecycle:</p>
+            <div class="nist-functions">
+                <div class="func-tag">IDENTIFY</div>
+                <div class="func-tag">PROTECT</div>
+                <div class="func-tag">DETECT</div>
+                <div class="func-tag">RESPOND</div>
+                <div class="func-tag">RECOVER</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOMAINS SECTION -->
+    <section id="domains" class="section">
+        <h2>The 7 Security Domains</h2>
+        <div class="card">
+            <p>An architect manages security across these seven areas:</p>
+            <ol>
+                <li><strong>IAM:</strong> Managing user identities.</li>
+                <li><strong>Endpoint:</strong> Securing the physical devices.</li>
+                <li><strong>Network:</strong> Managing firewalls and traffic.</li>
+                <li><strong>Application:</strong> Securing the software itself.</li>
+                <li><strong>Data:</strong> Using encryption to hide information.</li>
+                <li><strong>Monitoring:</strong> Watching for attacks (SIEM).</li>
+                <li><strong>Response:</strong> Fixing the system after an attack.</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>The Architect's Dictionary</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>NIST</b> National Institute of Standards and Technology. The organization that creates the standard "Official Rulebook" for tech.</div>
+            <div class="dict-card"><b>IAM</b> Identity & Access Management. The "Digital Bouncer" that decides who gets into a system and who is kept out.</div>
+            <div class="dict-card"><b>Endpoint</b> Any physical device at the end of a network, such as a Laptop, Phone, or Server.</div>
+            <div class="dict-card"><b>SIEM</b> The "Security Control Room." It watches all computer logs to spot suspicious activity automatically.</div>
+            <div class="dict-card"><b>Domain</b> A specific area of security responsibility (e.g., Network, Data, or Application).</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>Review Quiz</h2>
+        <p style="color: var(--text-dim);">Click an answer to instantly reveal if you have the Architect's mindset.</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JS -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>Architecture Masterclass | Based on IBM Distinguished Engineer education series</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "A Security Architect is primarily working at which location?",
+            o: ["The Keyboard", "The Whiteboard", "The Data Center"],
+            a: 1,
+            e: "Architects plan and design blueprints at the whiteboard; Engineers implement them at the keyboard."
+        },
+        {
+            q: "What is the 'Magic Question' a Security Architect must ask about a new system?",
+            o: ["Is it user-friendly?", "How will it fail?", "How fast is the database?"],
+            a: 1,
+            e: "Anticipating failure modes allows the architect to design robust defenses before an attack occurs."
+        },
+        {
+            q: "Which diagram level shows the relationships between 'Buyers, Builders, and Marketing'?",
+            o: ["Architecture Overview", "Business Context", "System Context"],
+            a: 1,
+            e: "Business Context is the highest level, focusing on human stakeholders rather than deep technical components."
+        },
+        {
+            q: "The NIST Cybersecurity Framework roadmap consists of five functions. Which of these is the correct list?",
+            o: ["Start, Run, Stop, Clear, Reset", "Identify, Protect, Detect, Respond, Recover", "Login, Password, Firewall, Data, Logout"],
+            a: 1,
+            e: "These five functions represent the complete lifecycle of managing cybersecurity risk."
+        },
+        {
+            q: "Who or what is the 'Digital Bouncer' in an architectural domain?",
+            o: ["The Firewall", "IAM (Identity & Access Management)", "The Laptop"],
+            a: 1,
+            e: "IAM ensures that only authenticated and authorized users can enter the system."
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        // Disable and reveal for all buttons in this block
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            if (i === correctIdx) {
+                buttons[i].classList.add('correct-reveal');
+            }
+        }
+
+        // If user was wrong, highlight their choice in red
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        // Show explanation
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "Correct!" : "Actually..."}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    initQuiz();
+</script>
+
+</body>
+</html>

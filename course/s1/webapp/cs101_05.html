@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Endpoint Security</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-color: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #be95ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #000;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid var(--ibm-blue);
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--ibm-blue);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        section { display: none; animation: fadeIn 0.5s; }
+        section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ibm-blue);
+        }
+
+        h1, h2 { color: var(--ibm-blue); }
+        .term { font-weight: bold; color: var(--accent); }
+
+        /* Quiz Styles */
+        .quiz-item { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .option {
+            display: block;
+            padding: 12px;
+            margin: 8px 0;
+            background: #444;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #555; }
+        .option.correct { border-color: var(--success); background: rgba(36, 161, 72, 0.2); }
+        .option.wrong { border-color: var(--danger); background: rgba(218, 30, 40, 0.2); }
+        .explanation { display: none; margin-top: 10px; font-style: italic; color: #bbb; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <button onclick="showTab('intro')" id="btn-intro" class="active">Endpoints</button>
+        <button onclick="showTab('controls')" id="btn-controls">Controls</button>
+        <button onclick="showTab('byod')" id="btn-byod">BYOD</button>
+        <button onclick="showTab('dict')" id="btn-dict">Dictionary</button>
+        <button onclick="showTab('quiz')" id="btn-quiz">Quiz</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- TAB 1: WHAT IS AN ENDPOINT -->
+    <section id="intro" class="active">
+        <h1>What is an Endpoint?</h1>
+        <div class="card">
+            <p>In cybersecurity, an <strong>Endpoint</strong> is any device that connects to a network from the "outside." It is the front line of defense.</p>
+            <ul>
+                <li><strong>Hardware:</strong> Servers, Laptops, Mobile Phones, and IoT (Cameras, Smart fridges).</li>
+                <li><strong>The Perimeter:</strong> Because employees work from everywhere, the endpoint is now the most vulnerable part of the network.</li>
+                <li><strong>Software Complexity:</strong> A single company may have devices running Windows, macOS, Android, and iOS all at once.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- TAB 2: CONTROLS -->
+    <section id="controls">
+        <h1>Essential Controls</h1>
+        <div class="card">
+            <p>Architects use these "Best Practices" to manage thousands of devices efficiently:</p>
+            <h3>The Unified Console</h3>
+            <p>Instead of managing phones and laptops separately, use one system to see everything. This ensures no device is "hidden" from security.</p>
+            <h3>The N, N-1 Rule</h3>
+            <p>Security policies usually only allow the <strong>Current Version (N)</strong> of software and the <strong>Previous Version (N-1)</strong>. Anything older is blocked because it likely has unpatched holes.</p>
+        </div>
+    </section>
+
+    <!-- TAB 3: BYOD -->
+    <section id="byod">
+        <h1>Bring Your Own Device (BYOD)</h1>
+        <div class="card">
+            <p>Jeff mentions three types of organization responses to personal devices:</p>
+            <ol>
+                <li><strong>Well-Defined:</strong> Clear rules on what is allowed and how it is monitored.</li>
+                <li><strong>Poorly-Defined:</strong> Vague rules that lead to security gaps.</li>
+                <li><strong>Unsanctioned:</strong> Management says "No," but users do it anyway. This is the <em>most dangerous</em> because security has no visibility.</li>
+            </ol>
+            <p><strong>Selective Wipe:</strong> A vital tool that lets a company delete work data from an employee's personal phone without touching their private photos.</p>
+        </div>
+    </section>
+
+    <!-- TAB 4: DICTIONARY -->
+    <section id="dict">
+        <h1>Dictionary for Laymen</h1>
+        <div class="card">
+            <p><span class="term">Attack Surface:</span> Every possible way a hacker could try to enter a system. More devices = bigger surface.</p>
+            <p><span class="term">IoT (Internet of Things):</span> Non-computer devices with internet access (e.g., smart lightbulbs, security cameras).</p>
+            <p><span class="term">EDR (Endpoint Detection & Response):</span> Advanced security software that records device activity to find "strange behavior" instead of just looking for known viruses.</p>
+            <p><span class="term">Jailbroken / Rooted:</span> A device where the manufacturer's security limits have been removed. These are highly dangerous to a business network.</p>
+            <p><span class="term">Patching:</span> Installing software updates that specifically fix security holes.</p>
+        </div>
+    </section>
+
+    <!-- TAB 5: QUIZ -->
+    <section id="quiz">
+        <h1>Final Proficiency Test</h1>
+        <div id="quiz-container"></div>
+    </section>
+</div>
+
+<script>
+    function showTab(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    const quizData = [
+        {
+            q: "Why is a 'jailbroken' phone a security risk?",
+            options: ["It makes the phone slower", "It removes the security limits built by the manufacturer", "It prevents you from making calls"],
+            correct: 1,
+            expl: "Manufacturer security (like on iPhones) is the foundation of trust. Removing it makes biometrics and encryption untrustworthy."
+        },
+        {
+            q: "What is the 'Attack Surface'?",
+            options: ["The physical screen of a laptop", "The total number of points an attacker can try to enter", "A type of firewall"],
+            correct: 1,
+            expl: "Every device, app, and user ID adds to the attack surface."
+        },
+        {
+            q: "According to the 'N, N-1' rule, what should happen to an old version of Windows?",
+            options: ["It should be kept for compatibility", "It should be blocked from accessing sensitive data", "It should be given a new password"],
+            correct: 1,
+            expl: "Software older than one version back (N-1) usually lacks critical security updates."
+        },
+        {
+            q: "Which BYOD scenario is the most dangerous?",
+            options: ["Well-Defined", "Unsanctioned (Users doing it without permission)", "Poorly-Defined"],
+            correct: 1,
+            expl: "If users are using personal devices 'under the radar,' security cannot see or protect the data they are handling."
+        }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = quizData.map((item, i) => `
+            <div class="quiz-item">
+                <p><strong>${i+1}. ${item.q}</strong></p>
+                ${item.options.map((opt, oi) => `
+                    <div class="option" onclick="handleAnswer(this, ${i}, ${oi})">${opt}</div>
+                `).join('')}
+                <p class="explanation" id="expl-${i}">${item.expl}</p>
+            </div>
+        `).join('');
+    }
+
+    function handleAnswer(element, qIdx, oIdx) {
+        const parent = element.parentElement;
+        const options = parent.querySelectorAll('.option');
+        const expl = document.getElementById('expl-' + qIdx);
+        
+        // Prevent double clicking
+        options.forEach(opt => opt.style.pointerEvents = 'none');
+
+        if (oIdx === quizData[qIdx].correct) {
+            element.classList.add('correct');
+        } else {
+            element.classList.add('wrong');
+            options[quizData[qIdx].correct].classList.add('correct');
+        }
+        expl.style.display = 'block';
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

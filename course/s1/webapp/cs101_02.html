@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Architecture 102 | The CIA Triad</title>
+    <style>
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-green: #24a148;
+            --accent-red: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero & Cards */
+        h1, h2, h3 { color: var(--primary); }
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        /* Dictionary */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* Quiz UI */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        .correct-reveal { border-color: var(--accent-green) !important; background: rgba(36, 161, 72, 0.2) !important; }
+        .wrong-reveal { border-color: var(--accent-red) !important; background: rgba(218, 30, 40, 0.2) !important; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">Home</button>
+    <button onclick="navTo('pillar1')" id="nav-pillar1">Confidentiality</button>
+    <button onclick="navTo('pillar2')" id="nav-pillar2">Integrity</button>
+    <button onclick="navTo('pillar3')" id="nav-pillar3">Availability</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">Glossary</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">Review Quiz</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>The CIA Triad</h1>
+            <p>Master the three core objectives of any cybersecurity program.</p>
+        </div>
+        <div class="card">
+            <h3>Why the Triad?</h3>
+            <p>Every security tool, policy, or architecture exists to support one of these three things. Think of it as the <strong>Standard Operating Environment</strong> for every security decision you will ever make.</p>
+        </div>
+    </div>
+
+    <!-- SECTION: CONFIDENTIALITY -->
+    <div id="pillar1" class="section">
+        <span class="badge">Objective 01</span>
+        <h2>Confidentiality</h2>
+        <div class="card">
+            <p>Ensuring that sensitive information is only accessible to those authorized to see it. It's about keeping secrets <strong>secret</strong>.</p>
+            
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>Authentication:</strong> Proving you are who you say you are (MFA).</li>
+                <li><strong>Authorization:</strong> Granting the right permissions (RBAC).</li>
+                <li><strong>Symmetric Encryption:</strong> Using a single secret key to both lock (scramble) and unlock (descramble) data.</li>
+            </ul>
+            <div class="analogy">
+                <b>The "Clear Text" Analogy:</b> Without encryption, your data is like a postcard that anyone can read. Encryption turns it into a locked envelope that only the key-holder can open.
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: INTEGRITY -->
+    <div id="pillar2" class="section">
+        <span class="badge">Objective 02</span>
+        <h2>Integrity</h2>
+        <div class="card">
+            <p>Ensuring data is accurate, consistent, and hasn't been tampered with. It's about keeping data <strong>accurate</strong>.</p>
+            
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>Syslogs:</strong> Records of activity. Bad actors often try to delete these to hide their modifications.</li>
+                <li><strong>Cryptographic Functions:</strong> Using Digital Signatures or MACs to detect even a tiny change in a record.</li>
+                <li><strong>Blockchain:</strong> A distributed ledger that is "immutable"—once something is recorded, it can never be changed or deleted.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION: AVAILABILITY -->
+    <div id="pillar3" class="section">
+        <span class="badge">Objective 03</span>
+        <h2>Availability</h2>
+        <div class="card">
+            <p>Ensuring systems and data are ready for use when authorized users need them. It's about keeping systems <strong>online</strong>.</p>
+            
+            <h3>Threats to Availability</h3>
+            <ul>
+                <li><strong>DoS:</strong> A single computer flooding a server with traffic.</li>
+                <li><strong>DDoS:</strong> A "Botnet" of hijacked computers acting as a <b>force multiplier</b> to crash a server.</li>
+                <li><strong>SYN Flood:</strong> Exploiting the TCP "Handshake." The attacker asks to talk but never finishes the greeting, tying up all the server's resources.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>Dictionary</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>RBAC</b> Role-Based Access Control. Giving permissions based on a job title rather than a specific person.</div>
+            <div class="dict-card"><b>Ciphertext</b> The scrambled, unreadable version of data after encryption.</div>
+            <div class="dict-card"><b>Botnet</b> A network of "zombie" computers controlled by a hacker to launch massive attacks.</div>
+            <div class="dict-card"><b>TCP Handshake</b> The 3-step process (SYN, SYN-ACK, ACK) computers use to start a conversation.</div>
+            <div class="dict-card"><b>MAC</b> Message Authentication Code. A small tag used to confirm that a message hasn't been altered.</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>Architecture Review Quiz</h2>
+        <p style="color: var(--text-dim);">Click an answer to reveal the correct choice and the logic behind it.</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JS -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>Educational Portal | Based on the IBM Cybersecurity Architecture Series</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "Authentication asks 'Who are you?', but what does Authorization ask?",
+            o: ["How did you get here?", "What are you allowed to do?", "What is your secret key?"],
+            a: 1,
+            e: "Authorization (managed via RBAC) determines your permissions once your identity is confirmed."
+        },
+        {
+            q: "Why would a bad actor try to delete system logs?",
+            o: ["To free up hard drive space", "To break the encryption", "To hide tracks and compromise Integrity"],
+            a: 2,
+            e: "Logs are the source of truth for system activity. Deleting them is an attempt to compromise the integrity of the audit trail."
+        },
+        {
+            q: "What is a 'Botnet' in the context of availability attacks?",
+            o: ["A single fast server", "A force multiplier of hijacked computers used for DDoS", "A type of firewall"],
+            a: 1,
+            e: "DDoS attacks use botnets to flood servers much faster than a single attacker ever could."
+        },
+        {
+            q: "How does a SYN Flood attack work?",
+            o: ["By stealing the symmetric key", "By deleting the blockchain", "By exploiting the TCP handshake and not completing it"],
+            a: 2,
+            e: "Attacker sends requests (SYN) but never acknowledges (ACK), leaving the server's resources exhausted."
+        },
+        {
+            q: "Which technology provides an immutable ledger where data cannot be changed?",
+            o: ["Symmetric Encryption", "Blockchain", "Multi-Factor Authentication"],
+            a: 1,
+            e: "Blockchain's distributed nature makes it perfect for ensuring data integrity."
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            if (i === correctIdx) buttons[i].classList.add('correct-reveal');
+        }
+
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "Correct!" : "Incorrect."}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    initQuiz();
+</script>
+
+</body>
+</html>

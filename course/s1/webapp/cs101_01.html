@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Architecture Academy</title>
+    <style>
+
+a {
+  color: #4DA3FF;
+  text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+  color: #82C7FF;
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: #B388FF;
+}
+
+        :root {
+            --primary: #0f62fe; /* IBM Blue */
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --accent-green: #24a148;
+            --accent-red: #da1e28;
+            --text-main: #ffffff;
+            --text-dim: #c6c6c6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        nav button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            margin: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav button:hover { color: white; background: #333; }
+        nav button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        h1, h2, h3 { color: var(--primary); }
+        .hero-card {
+            background: linear-gradient(135deg, #333, #111);
+            padding: 40px;
+            border-radius: 12px;
+            border-bottom: 4px solid var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analogy {
+            background: #1a2a44;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            border: 1px dashed var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Dictionary */
+        .dict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .dict-card { background: #333; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        .dict-card b { color: var(--primary); display: block; margin-bottom: 5px; font-size: 1.1rem; }
+
+        /* Quiz UI - Instant Reveal Mode */
+        .quiz-container { background: #1e1e1e; padding: 30px; border-radius: 12px; }
+        .question-block { 
+            margin-bottom: 40px; 
+            padding-bottom: 20px; 
+            border-bottom: 1px solid #333;
+        }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-align: left;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover:not(.disabled) { background: #444; border-color: var(--primary); }
+
+        /* Response Classes */
+        .correct-reveal { border-color: var(--accent-green) !important; background: rgba(36, 161, 72, 0.2) !important; color: white; }
+        .wrong-reveal { border-color: var(--accent-red) !important; background: rgba(218, 30, 40, 0.2) !important; color: white; }
+        .disabled { cursor: default; opacity: 0.8; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #222;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="navTo('home')" id="nav-home" class="active">Home</button>
+    <button onclick="navTo('principles')" id="nav-principles">The 5 Principles</button>
+    <button onclick="navTo('dictionary')" id="nav-dictionary">Jargon Buster</button>
+    <button onclick="navTo('quiz')" id="nav-quiz">Instant Quiz</button>
+</nav>
+
+<div class="container">
+
+    <!-- SECTION: HOME -->
+    <div id="home" class="section active">
+        <div class="hero-card">
+            <h1>Cybersecurity Architecture 101</h1>
+            <p>Welcome, Students. Security is not a product you buy; it's a foundation you build.</p>
+             <p> The teaching materials are based on the <a href="https://www.youtube.com/watch?v=jq_LZ1RFPfU&list=PLOspHqNVtKADkWLFt9OcziQF7EatuANSY" target=_blank>
+Cybersecurity Architecture Series playlist </a> by Prof. Jeff Crume. </p>
+        </div>
+        <div class="card">
+            <h3>Why Architecture Matters?</h3>
+            <p>In cybersecurity, we assume that eventually, a tool will fail. Good architecture ensures that when one thing fails, the whole system doesn't collapse. We call this being <b>Failsafe</b>.</p>
+        </div>
+    </div>
+
+    <!-- SECTION: PRINCIPLES -->
+    <div id="principles" class="section">
+        <h2>The 5 Pillars</h2>
+
+        <div class="card">
+            <span class="badge">Principle 1</span>
+            <h3>Defense in Depth</h3>
+            <p>Multiple layers of security. If a hacker passes the firewall, they still face MFA. If they pass MFA, they face encryption.</p>
+            <div class="analogy">
+                <b>The Castle Analogy:</b> A castle has a moat, a drawbridge, high walls, and internal guard dogs. One wall is never enough. In IT, this is combining MFA, firewalls, and encryption.
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">Principle 2</span>
+            <h3>Least Privilege</h3>
+            <p>Users should only have the <b>minimum</b> access required for their job. If they don't need to delete files, don't give them "Delete" rights.</p>
+            <ul>
+                <li><b>Hardening:</b> Turning off features the system doesn't need to reduce the "Attack Surface."</li>
+                <li><b>Privilege Creep:</b> When an employee changes jobs but keeps old, unnecessary permissions.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <span class="badge">Principle 3</span>
+            <h3>Separation of Duties</h3>
+            <p>No single person should have total control over a sensitive process. Ensure no single person has complete control over a sensitive process. This prevents internal fraud by requiring collusion (two people working together) to do something bad.</p>
+            <div class="analogy">
+                <b>The Two-Key Safe:</b> Like a bank vault that requires two different people to turn two different keys at the same time.
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">Principle 4</span>
+            <h3>Secure by Design</h3>
+            <p>Security is built into the project requirements from day one, not "bolted on" at the end. This is often called Continuous Integration of security.</p>
+            <div class="analogy">
+                <b>The Earthquake Analogy:</b> You build earthquake-proofing into the foundation of a skyscraper while building it. You don't try to add it after the building is 50 stories high.
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="badge">Principle 5</span>
+            <h3>KISS (Keep It Simple Stupid)</h3>
+            <p>Simplicity is vital. If security is too complex for employees, they will find "wrong but easy" workarounds (like writing passwords on sticky notes).</p>
+        </div>
+
+        <div class="card" style="border-left-color: var(--accent-red); background: #2a1515;">
+            <h3 style="color: var(--accent-red);">The Danger: Security by Obscurity</h3>
+            <p>This is the flawed idea that a system is safe just because its design is a secret. Attackers will eventually figure out the "Black Box."</p>
+            <p><b>Kerckhoff's Principle:</b> A cryptographic system should be secure even if everything about it (except the key) is public knowledge.</p>
+        </div>
+    </div>
+
+    <!-- SECTION: DICTIONARY -->
+    <div id="dictionary" class="section">
+        <h2>Dictionary</h2>
+        <div class="dict-grid">
+            <div class="dict-card"><b>SPOF</b> Single Point of Failure. One part of a system that, if it breaks, brings down everything.</div>
+            <div class="dict-card"><b>Re-certification</b> Regularly reviewing user access to stop "Privilege Creep."</div>
+            <div class="dict-card"><b>MFA</b> Multi-Factor Authentication. Proving your identity with two or more "factors" (Password + SMS code).</div>
+            <div class="dict-card"><b>AES/RSA</b> Industry-standard encryption algorithms that are public and rigorously tested., not because they are "secret."</div>
+            <div class="dict-card"><b>Collusion</b> When two or more people work together to bypass "Separation of Duties."</div>
+        </div>
+    </div>
+
+    <!-- SECTION: QUIZ -->
+    <div id="quiz" class="section">
+        <h2>Interactive Quiz</h2>
+        <p style="color: var(--text-dim);">Click an answer to reveal the correct choice and explanation.</p>
+        <div class="quiz-container" id="quiz-box">
+            <!-- Questions injected via JavaScript -->
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>Educational Portal | Based on IBM Security Architecture Series</p>
+</footer>
+
+<script>
+    const quizData = [
+        {
+            q: "A medieval castle uses a moat, walls, and internal guards. This represents which principle?",
+            o: ["Least Privilege", "Defense in Depth", "KISS"],
+            a: 1,
+            e: "Defense in Depth ensures that no single mechanism is responsible for the entire system's safety."
+        },
+        {
+            q: "What is 'Privilege Creep'?",
+            o: ["Granting a user too much power at once", "When users keep old access rights they no longer need", "A hacker slowly stealing permissions"],
+            a: 1,
+            e: "As people change roles, they accumulate permissions. Regular 'Re-certification' is needed to stop this."
+        },
+        {
+            q: "Kerckhoff's Principle states that a system should be secure even if the design is public, as long as what is kept secret?",
+            o: ["The Key", "The Username", "The Firewall"],
+            a: 0,
+            e: "Security should depend on the key, not the secrecy of the algorithm (Standard algorithms like AES follow this)."
+        },
+        {
+            q: "Requiring two different people to open a safe represents:",
+            o: ["KISS", "Secure by Design", "Separation of Duties"],
+            a: 2,
+            e: "This forces 'collusion' for malicious activity to occur, which is much harder for a bad actor to achieve."
+        },
+        {
+            q: "Why is KISS (Simplicity) important in security?",
+            o: ["It makes the computer run faster", "Complex systems lead to human errors and workarounds", "Simple systems are cheaper"],
+            a: 1,
+            e: "If security is too hard for users (like a 'Password Maze'), they will find insecure shortcuts."
+        },
+        {
+            q: "Building earthquake-proofing into the foundation of a skyscraper is an analogy for:",
+            o: ["Secure by Design", "Hardening", "Least Privilege"],
+            a: 0,
+            e: "Security must be part of the initial requirements and foundation, not a last-minute addition."
+        }
+    ];
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function initQuiz() {
+        const box = document.getElementById('quiz-box');
+        box.innerHTML = quizData.map((item, qIdx) => `
+            <div class="question-block">
+                <p><strong>${qIdx + 1}. ${item.q}</strong></p>
+                <div id="options-q${qIdx}">
+                    ${item.o.map((opt, oIdx) => `
+                        <button class="option-btn" onclick="reveal(${qIdx}, ${oIdx})">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="expl-q${qIdx}" class="explanation"></div>
+            </div>
+        `).join('');
+    }
+
+    function reveal(qIdx, oIdx) {
+        const correctIdx = quizData[qIdx].a;
+        const buttons = document.getElementById(`options-q${qIdx}`).getElementsByTagName('button');
+        const explDiv = document.getElementById(`expl-q${qIdx}`);
+
+        // Disable all buttons in this question block
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.add('disabled');
+            // Highlight the correct one
+            if (i === correctIdx) {
+                buttons[i].classList.add('correct-reveal');
+            }
+        }
+
+        // If user was wrong, highlight their choice in red
+        if (oIdx !== correctIdx) {
+            buttons[oIdx].classList.add('wrong-reveal');
+        }
+
+        // Show explanation
+        explDiv.innerHTML = `<strong>${oIdx === correctIdx ? "Correct!" : "Incorrect."}</strong> ${quizData[qIdx].e}`;
+        explDiv.style.display = 'block';
+    }
+
+    navTo('home');
+    initQuiz();
+</script>
+
+</body>
+</html>
