@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網路學院：事件應變</title>
+    <style>
+        :root {
+            --primary: #0062ff;
+            --dark: #161616;
+            --light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #fa4d56; /* Redder accent for Response/Emergency */
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Navigation Menu */
+        nav {
+            background: var(--dark);
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--primary); }
+        nav button.active { background: var(--primary); font-weight: bold; }
+
+        /* Page Management */
+        .page {
+            display: none; 
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-page { display: block; }
+
+        section {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1, h2 { color: var(--primary); margin-top: 0; }
+
+        /* Content Styles */
+        .formula-box {
+            background: var(--dark);
+            color: #00ff00;
+            padding: 25px;
+            text-align: center;
+            font-size: 1.8rem;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .highlight-box {
+            background: #fff0f1;
+            border-left: 5px solid var(--accent);
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .timeline-viz {
+            background: #eee;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Dictionary */
+        .dict-item {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .dict-item b { color: var(--primary); font-size: 1.1rem; }
+
+        /* Quiz Styles */
+        .quiz-card {
+            background: #fafafa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { border-color: var(--primary); background: #f0f5ff; }
+
+        .correct-ans { background-color: #d1fadf !important; border-color: var(--success) !important; color: #155724; font-weight: bold; }
+        .wrong-ans { background-color: #ffd7d9 !important; border-color: var(--danger) !important; color: #721c24; }
+        .disabled { cursor: default; pointer-events: none; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        footer { text-align: center; padding: 30px; color: #888; font-size: 0.8rem; }
+
+        /* Mobile View */
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; padding: 10px 5px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('home')">應變 (R)</button>
+        <button onclick="openPage('timeline')">時間軸</button>
+        <button onclick="openPage('modern')">SOAR 與自動化</button>
+        <button onclick="openPage('dict')">詞典</button>
+        <button onclick="openPage('quiz')">測驗</button>
+    </nav>
+
+    <!-- PAGE 1: RESPONSE OVERVIEW -->
+    <div id="home" class="page active-page">
+        <section>
+            <h1>公式中的「R」</h1>
+            <p>在我們的核心公式中，**應變 (Response, R)** 是最後一步。它是我們在偵測到威脅後所採取的行動。</p>
+            <div class="formula-box">S = P + D + R</div>
+            <p>偵測就像看到火災；<b>應變</b>則是實際使用滅火器滅火並修復房屋。</p>
+            <div class="highlight-box">
+                <b>目標：</b>盡快阻止損害（圍堵），並修復系統（補救）。
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 2: THE TIMELINE -->
+    <div id="timeline" class="page">
+        <section>
+            <h2>270 天問題</h2>
+            <p>行業數據顯示，從攻擊發生到完全恢復之間存在巨大差距：</p>
+            <div class="timeline-viz">
+                <p><b>平均識別時間 (MTTI)：200 天</b><br>駭客在您注意到之前隱藏的時間。</p>
+                <div style="height:10px; background:var(--danger); border-radius:5px; width:75%; margin: 5px auto;"></div>
+                <p><b>平均圍堵時間 (MTTC)：70 天</b><br>在您注意到後，將他們驅逐出去所需的時間。</p>
+                <div style="height:10px; background:var(--primary); border-radius:5px; width:25%; margin: 5px auto;"></div>
+            </div>
+            <p>事件應變專門設計用來縮短那個 <b>70 天的窗口</b>。我們回應得越快，公司損失的錢就越少。</p>
+        </section>
+    </div>
+
+    <!-- PAGE 3: MODERN VS TRADITIONAL -->
+    <div id="modern" class="page">
+        <section>
+            <h2>SOAR：現代應變</h2>
+            <p>過去，應變是手動且緩慢的。今天，我們使用 <b>SOAR</b>（安全協同、自動化與應變）。</p>
+            
+            <h3>自動化 vs. 協同運作</h3>
+            <div class="highlight-box">
+                <b>自動化（機器人）：</b>電腦看到一個事件，並立即用腳本修復它。無需人為介入。
+            </div>
+            <div class="highlight-box" style="border-left-color: var(--primary);">
+                <b>協同運作（指揮家）：</b>一位人類指揮家使用「劇本 (Playbook)」來引導多個自動化工具完成複雜的修復過程。
+            </div>
+            <p><b>動態劇本 (Dynamic Playbooks)：</b>這些是數位指南，它們會根據駭客的行為變化，一步步告訴分析師該怎麼做。</p>
+        </section>
+    </div>
+
+    <!-- PAGE 4: DICTIONARY -->
+    <div id="dict" class="page">
+        <section>
+            <h2>術語解釋</h2>
+            
+            <div class="dict-item">
+                <b>Triage (分類檢傷)</b>
+                <p>源自醫院。意思是從眾多警報中進行篩選，找出哪個是「危及生命」的緊急情況，哪個只是「膝蓋擦傷」。</p>
+            </div>
+
+            <div class="dict-item">
+                <b>Remediation (補救)</b>
+                <p>解決問題的行動——例如修補軟體或重設被盜的密碼。</p>
+            </div>
+
+            <div class="dict-item">
+                <b>GDPR</b>
+                <p>歐盟通用資料保護規則。一項嚴格的歐洲法律。如果您丟失了客戶資料，您必須通知政府和受害者，否則將面臨高達<b>全球營收 4%</b> 的罰款。</p>
+            </div>
+
+            <div class="dict-item">
+                <b>Artifacts (蹤跡)</b>
+                <p>駭客留下的線索（如惡意 IP 地址或病毒檔案名）。SOAR 工具會自動收集這些線索以「豐富」案件內容。</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 5: QUIZ -->
+    <div id="quiz" class="page">
+        <section>
+            <h2>應變策略測驗</h2>
+            <p>選擇任何選項以揭示答案。</p>
+
+            <!-- Q1 -->
+            <div class="quiz-card" id="q1">
+                <div class="question-text"><b>1. 「補救 (Remediation)」的主要目的是什麼？</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">觀察駭客，看他們下一步做什麼。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">修復系統並阻止資料外洩。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">防止駭客看到網站。</button>
+                <div class="explanation">補救是應變的「修復」階段。阻止進入是「預防」階段。</div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card" id="q2">
+                <div class="question-text"><b>2. 一旦發現漏洞，平均「圍堵時間」(MTTC) 是多久？</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">10 分鐘</button>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">200 天</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">大約 70 天</button>
+                <div class="explanation">一旦注意到，完全圍堵攻擊大約需要 70 天。（200 天是 *發現* 攻擊所需的時間）。</div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card" id="q3">
+                <div class="question-text"><b>3. 「協同運作」與「自動化」有何不同？</b></div>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">協同運作涉及人類指導多個自動化工具。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">協同運作是完全機器人化的，沒有人類輸入。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">協同運作只用於在伺服器機房播放音樂。</button>
+                <div class="explanation">就像管弦樂團的指揮家一樣，人類使用協同運作來協調許多不同的工具一起工作。</div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-card" id="q4">
+                <div class="question-text"><b>4. 什麼是「動態劇本」？</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">公司團隊的運動戰術列表。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">一個根據情況調整其步驟的互動式指南。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">一個從不改變的死板的 1 到 10 清單。</button>
+                <div class="explanation">動態劇本之所以強大，是因為它們會根據發現的具體威脅類型，給予分析師不同的指示。</div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-card" id="q5">
+                <div class="question-text"><b>5. 為什麼「漏洞通報」如此重要？</b></div>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">因為駭客喜歡出名。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">它讓網路運行得更快。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q5')">有法律要求（如 GDPR），不通報會被處以重罰。</button>
+                <div class="explanation">未能通知受害者可能導致巨額法律處罰，有時高達公司總收入的 4%。</div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        <p>互動式網路安全課程 | 為學生創建</p>
+    </footer>
+
+    <script>
+        function openPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active-page'));
+
+            const buttons = document.querySelectorAll('#topNav button');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active-page');
+
+            const clickedBtn = Array.from(buttons).find(b => b.textContent.toLowerCase().includes(pageId.substring(0,3)));
+            if(clickedBtn) clickedBtn.classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            let correctBtn;
+            options.forEach(opt => {
+                if(opt.getAttribute('data-correct') === 'true') {
+                    correctBtn = opt;
+                }
+                opt.classList.add('disabled');
+            });
+
+            correctBtn.classList.add('correct-ans');
+
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

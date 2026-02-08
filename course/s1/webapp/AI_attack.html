@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Attacks: How Hackers Weaponize AI. The 6 Emerging Threats</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #8a3ffc; /* Purple for key terms */
+            --warning: #f1c21b; /* Yellow for specific stats */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* Navigation */
+        nav {
+            background: #000;
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--ibm-blue);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--ibm-blue); }
+        nav button.active { background: var(--ibm-blue); font-weight: bold; }
+
+        /* Page Layout */
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .active-page { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 { color: var(--ibm-blue); }
+        
+        a { color: #4DA3FF; text-decoration: underline; }
+        a:hover { color: #82C7FF; }
+
+        /* Custom Grid for the 6 Attacks */
+        .attack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .attack-card {
+            background: #393939;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            transition: transform 0.2s;
+        }
+
+        .attack-card:hover {
+            transform: translateY(-5px);
+            background: #444;
+        }
+
+        .attack-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: block;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+
+        .stat-highlight {
+            color: var(--warning);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Dictionary Styles */
+        .dict-item {
+            border-bottom: 1px solid #444;
+            padding: 15px 0;
+        }
+        .dict-item b { color: var(--accent); font-size: 1.1rem; }
+
+        /* Quiz Styles */
+        .quiz-card {
+            background: #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { background: #555; border-color: var(--ibm-blue); }
+        .correct-ans { background-color: var(--success) !important; border-color: #fff !important; }
+        .wrong-ans { background-color: var(--danger) !important; }
+        .disabled { cursor: default; opacity: 0.7; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e1e1e;
+            border-left: 4px solid var(--ibm-blue);
+        }
+
+        footer { text-align: center; padding: 40px; color: #777; font-size: 0.8rem; }
+
+        @media (max-width: 600px) {
+            nav button { flex: 1 1 45%; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('intro')">Introduction</button>
+        <button onclick="openPage('attacks')">The 6 Attacks</button>
+        <button onclick="openPage('defense')">Future Defense</button>
+        <button onclick="openPage('dict')">Dictionary</button>
+        <button onclick="openPage('quiz')">Student Quiz</button>
+    </nav>
+
+    <!-- PAGE 1: INTRODUCTION -->
+    <div id="intro" class="page active-page">
+        <section>
+            <h1>AI Attacks: Sci-Fi or Reality?</h1>
+            <p>We often hear about AI improving business productivity or helping customers research products. However, the same technology is available to hackers.</p>
+            <p>IBM Distinguished Engineer <b>Jeff Crume</b> explains that AI is a "double-edged sword." While it reshapes lives positively, it is ramping up cyber threats by putting elite-level capabilities into the hands of average criminals.</p>
+            
+            <div style="background: #333; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                <h3>Core Concept: The AI Agent</h3>
+                <p>Most of the attacks we will learn about rely on an <b>AI Agent</b>. This is an autonomous software robot that uses a Large Language Model (LLM) to "think," plan, and execute tasks without a human needing to type every command.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 2: THE 6 ATTACKS -->
+    <div id="attacks" class="page">
+        <section>
+            <h2>The 6 Categories of AI Attacks</h2>
+            <p>Jeff Crume outlines six specific ways hackers are using AI right now.</p>
+            
+            <div class="attack-grid">
+                <!-- Attack 1 -->
+                <div class="attack-card">
+                    <span class="attack-title">1. AI Logins 🔑</span>
+                    <p><b>Goal:</b> Break into user accounts.</p>
+                    <p><b>How:</b> An AI Agent scans websites to find login pages (95% accuracy). It then uses "Password Spraying" to try common passwords against many users automatically.</p>
+                    <p><b>Impact:</b> Hackers don't need to type passwords manually; AI does it at scale.</p>
+                </div>
+
+                <!-- Attack 2 -->
+                <div class="attack-card">
+                    <span class="attack-title">2. AI Ransomware 🔒</span>
+                    <p><b>Goal:</b> Lock your files and demand money.</p>
+                    <p><b>How:</b> Projects like "PromptLock" show AI can decide who to attack, encrypt files, and even write the ransom note.</p>
+                    <p><b>Key Term:</b> <span class="stat-highlight">Polymorphism</span>. The AI writes unique code for every attack, making it invisible to standard antivirus.</p>
+                </div>
+
+                <!-- Attack 3 -->
+                <div class="attack-card">
+                    <span class="attack-title">3. AI Phishing 🎣</span>
+                    <p><b>Goal:</b> Trick you into clicking links.</p>
+                    <p><b>The Shift:</b> No more bad grammar or spelling errors. AI writes perfect emails in any language.</p>
+                    <p><b>Stat:</b> A human took 16 hours to craft a perfect phishing email. AI did it in <span class="stat-highlight">5 minutes</span>.</p>
+                </div>
+
+                <!-- Attack 4 -->
+                <div class="attack-card">
+                    <span class="attack-title">4. AI Fraud (Deepfakes) 🎭</span>
+                    <p><b>Goal:</b> Impersonate people (CEOs, bosses).</p>
+                    <p><b>How:</b> AI needs only <span class="stat-highlight">3 seconds</span> of audio to clone a voice.</p>
+                    <p><b>Real Case:</b> A Hong Kong finance worker lost $25M in a video call where everyone else was a deepfake.</p>
+                </div>
+
+                <!-- Attack 5 -->
+                <div class="attack-card">
+                    <span class="attack-title">5. AI Exploits 🐛</span>
+                    <p><b>Goal:</b> Create weaponized code from bug reports.</p>
+                    <p><b>How:</b> Tools like "CVE Genie" read public vulnerability reports and write the code to hack them automatically.</p>
+                    <p><b>Stat:</b> Success rate of 51% at a cost of less than <span class="stat-highlight">$3 per exploit</span>.</p>
+                </div>
+
+                <!-- Attack 6 -->
+                <div class="attack-card">
+                    <span class="attack-title">6. AI Kill Chain ⛓️</span>
+                    <p><b>Goal:</b> End-to-end automated hacking.</p>
+                    <p><b>How:</b> An AI Agent manages the whole strategy—finding victims, analyzing data, and demanding ransom.</p>
+                    <p><b>Impact:</b> Lowers the "Skill Barrier." You don't need to be a coder to be a hacker anymore; you just need an AI agent.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 3: DEFENSE -->
+    <div id="defense" class="page">
+        <section>
+            <h2>How Do We Defend Ourselves?</h2>
+            <p>The conclusion is simple: Manual defense is dead. Humans cannot type fast enough to stop AI.</p>
+            
+            <div style="display: flex; gap: 20px; align-items: center; margin-top: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="color: var(--success);">Good AI vs. Bad AI</h3>
+                    <p>Defenders must use AI to fight back. We need AI for:</p>
+                    <ul>
+                        <li><b>Prevention:</b> Anticipating attacks.</li>
+                        <li><b>Detection:</b> Spotting the "Polymorphic" code.</li>
+                        <li><b>Response:</b> Shutting down agents instantly.</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: #222; padding: 20px; border-left: 4px solid var(--ibm-blue);">
+                    <p><i>"If you aren't in the room, you can't believe it."</i></p>
+                    <p>— Jeff Crume, on why we can no longer trust video or audio calls blindly.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 4: DICTIONARY -->
+    <div id="dict" class="page">
+        <section>
+            <h2>Jargon Buster</h2>
+            <p>Here are the key technical terms used in the lesson:</p>
+            
+            <div class="dict-item">
+                <b>LLM (Large Language Model)</b>: The "brain" behind AI (like ChatGPT) that understands text and code. Hackers use it to parse websites and write malware.
+            </div>
+            <div class="dict-item">
+                <b>Polymorphic Malware</b>: A computer virus that changes its own code/shape every time it runs. This makes it very hard for traditional antivirus software to recognize it.
+            </div>
+            <div class="dict-item">
+                <b>Deepfake</b>: Synthetic media (audio or video) generated by AI to make a person say or do things they never did.
+            </div>
+            <div class="dict-item">
+                <b>CVE (Common Vulnerabilities and Exposures)</b>: A public list/report of known computer bugs. Hackers use AI to read these and write exploit code instantly.
+            </div>
+            <div class="dict-item">
+                <b>RaaS (Ransomware as a Service)</b>: A business model where criminals rent ransomware tools from developers on the cloud, rather than building it themselves.
+            </div>
+        </section>
+    </div>
+
+    <!-- PAGE 5: QUIZ -->
+    <div id="quiz" class="page">
+        <section>
+            <h2>Knowledge Check</h2>
+            <p>Test your understanding of the 6 AI attack types.</p>
+
+            <!-- Q1 -->
+            <div class="quiz-card" id="q1">
+                <b>1. Traditionally, we spotted phishing emails by looking for bad spelling. Why doesn't this work anymore?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">Because hackers hire English teachers now.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">Because LLMs can generate perfect grammar in any language instantly.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">Because spellcheck is free.</button>
+                <div class="explanation">Correct! AI models (LLMs) generate flawless text, making "bad grammar" a useless indicator for fraud.</div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card" id="q2">
+                <b>2. How much audio recording is required for an AI to clone a person's voice effectively?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">30 minutes</button>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">10 minutes</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">3 seconds</button>
+                <div class="explanation">Correct! It takes as little as 3 seconds of audio for a Generative AI model to create a convincing deepfake of your voice.</div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card" id="q3">
+                <b>3. What is "Polymorphic" malware?</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">Malware that changes its code every time to avoid detection.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">Malware that targets multiple countries at once.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">Malware that steals passwords only.</button>
+                <div class="explanation">Correct! AI allows malware to rewrite itself (change shape/morph) for every single attack, making it invisible to old security tools.</div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-card" id="q4">
+                <b>4. What did the "CVE Genie" experiment prove about AI Exploits?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">It is too expensive for hackers to use.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">It can generate working exploit code for less than $3 per vulnerability.</button>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">AI cannot write code yet.</button>
+                <div class="explanation">Correct! The cost to weaponize a vulnerability using AI has dropped to under $3, making it accessible to almost anyone.</div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-card" id="q5">
+                <b>5. What is the main danger of the "AI Kill Chain"?</b>
+                <button class="option" onclick="runQuiz(this, false, 'q5')">It makes computers slower.</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q5')">It lowers the skill barrier, allowing non-coders to launch complex attacks.</button>
+                <div class="explanation">Correct! Because the AI Agent handles the strategy and the coding, a "Vibe Hacker" with no technical skills can launch sophisticated attacks.</div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        Cyber Academy Lesson | Based on <a href="https://www.youtube.com/watch?v=0tHb6U2604g" target=_blank>How Hackers Weaponize Artificial Intelligence</a> by IBM Technology
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function openPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Set active button state
+            const activeBtn = Array.from(document.querySelectorAll('#topNav button'))
+                .find(btn => btn.getAttribute('onclick').includes(pageId));
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            window.scrollTo(0,0);
+        }
+
+        // Quiz Logic
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            // Disable all buttons in this card to prevent multiple guesses
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                // Highlight the correct answer regardless of what was clicked
+                if(opt.getAttribute('data-correct') === 'true') {
+                    opt.classList.add('correct-ans');
+                }
+            });
+
+            // If they clicked wrong, highlight their choice in red
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            // Show explanation
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
