@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案例研究：香港「殺豬盤」詐騙</title>
+    <style>
+        :root {
+            --ibm-blue: #0f62fe;
+            --dark-bg: #161616;
+            --card-bg: #262626;
+            --text-light: #f4f4f4;
+            --success: #24a148;
+            --danger: #da1e28;
+            --accent: #a020f0; /* 案例研究主題的紫色 */
+            --warning: #f1c21b; 
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* 導覽列 */
+        nav {
+            background: #000;
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--ibm-blue); }
+        nav button.active { background: var(--ibm-blue); font-weight: bold; }
+
+        /* 頁面佈局 */
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .active-page { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3 { color: #4DA3FF; }
+        
+        a { color: #4DA3FF; text-decoration: underline; }
+
+        /* 時間軸/網格樣式 */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline-card {
+            background: #393939;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--warning);
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        /* 影響統計 */
+        .stat-box {
+            background: #222;
+            border: 1px solid #444;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            color: var(--success);
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label { font-size: 0.9rem; color: #bbb; }
+
+        /* 測驗樣式 */
+        .quiz-card {
+            background: #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option:hover:not(.disabled) { background: #555; border-color: var(--accent); }
+        .correct-ans { background-color: var(--success) !important; border-color: #fff !important; }
+        .wrong-ans { background-color: var(--danger) !important; }
+        .disabled { cursor: default; opacity: 0.7; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #1e1e1e;
+            border-left: 4px solid var(--accent);
+        }
+
+        footer { text-align: center; padding: 40px; color: #777; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <nav id="topNav">
+        <button class="active" onclick="openPage('overview')">案例概述</button>
+        <button onclick="openPage('method')">犯罪手法</button>
+        <button onclick="openPage('impact')">影響衝擊</button>
+        <button onclick="openPage('lessons')">經驗教訓</button>
+        <button onclick="openPage('quiz')">案例測驗</button>
+    </nav>
+
+    <div id="overview" class="page active-page">
+        <section>
+            <h1>案例研究：香港「殺豬盤」詐騙</h1>
+            <p><b>時間軸：</b> 2020 年至今（在 2026 年持續攀升）<br>
+            <b>地點：</b> 香港、東南亞及全球目標。<br>
+            <b>攻擊類型：</b> 進階甜蜜陷阱 + 投資詐騙。</p>
+
+            <div style="background: #333; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid var(--ibm-blue);">
+                <h3>🐷 什麼是「殺豬盤」？</h3>
+                <p>「殺豬盤」一詞源自長線詐騙策略。受害者被稱為「豬」。詐騙者先以奉承、浪漫關係和虛假的投資獲利來「養肥」他們，最後再將其「宰殺」——一次性捲走所有金錢。</p>
+            </div>
+
+            <h3>新時代：AI 加速犯罪</h3>
+            <p>與舊式詐騙不同，近期（2024-2026）的案例大量使用<b>深偽技術 (Deepfakes)</b> 和 AI 語音複製。在 2024 年的一個案例中，一名香港財務從業人員在視訊通話中損失了 2,500 萬美元，當時會議中的其他參與者全都是深偽影像。</p>
+        </section>
+    </div>
+
+    <div id="method" class="page">
+        <section>
+            <h2>攻擊生命週期</h2>
+            <p>這些詐騙遵循一個高度劇本化的四階段流程。</p>
+            
+            <div class="timeline-grid">
+                <div class="timeline-card">
+                    <span class="card-header">階段 1：接觸與誘導</span>
+                    <p><b>工具：</b> Tinder, Bumble, WhatsApp, Instagram。</p>
+                    <p><b>策略：</b> 「傳錯訊息」的簡訊或交友配對。個人檔案偽裝成成功人士（加密貨幣交易員/高階主管），並使用 AI 生成的照片來增加吸引力與可信度。</p>
+                </div>
+
+                <div class="timeline-card">
+                    <span class="card-header">階段 2：建立信任</span>
+                    <p><b>策略：</b> 「情感轟炸」。他們會使用親暱稱呼（如「親愛的」、「寶貝」）並許下未來承諾。常以出差或家庭緊急情況為由拒絕實體見面，並將對話移至加密 App 以保護「隱私」。</p>
+                </div>
+
+                <div class="timeline-card">
+                    <span class="card-header">階段 3：投資誘騙</span>
+                    <p><b>誘餌：</b> 「我知道一個秘密的加密貨幣機會。」</p>
+                    <p><b>陷阱：</b> 引導受害者前往模仿香港真實交易所（如 OSL）的虛假網站。網站會顯示<b>虛假獲利</b>，以鼓勵受害者投入更多資金。</p>
+                </div>
+
+                <div class="timeline-card">
+                    <span class="card-header">階段 4：榨取收割</span>
+                    <p><b>宰殺：</b> 當受害者試圖提現時，詐騙者會要求支付「稅金」或「手續費」。在受害者支付後，詐騙者隨即失蹤並封鎖所有聯繫。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="impact" class="page">
+        <section>
+            <h2>欺騙的代價</h2>
+            <p>這些犯罪行為造成的財務與情感打擊令人震驚。</p>
+
+            <div class="timeline-grid">
+                <div class="stat-box">
+                    <span class="stat-number">50.2 億港幣</span>
+                    <span class="stat-label">香港损失金額 (2025年1-8月)</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">1400%</span>
+                    <span class="stat-label">冒充詐騙案上升率</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">33.2%</span>
+                    <span class="stat-label">佔全球加密貨幣詐騙收入比例</span>
+                </div>
+            </div>
+
+            <h3>真實受害者故事</h3>
+            <ul>
+                <li><b>深偽集團 (2024)：</b> 一個犯罪集團利用深偽視訊技術冒充親友與伴侶，騙取全亞洲受害者共計 <b>4,600 萬美元</b>。</li>
+                <li><b>個人悲劇：</b> 一名 55 歲香港女性在相信與網戀對象共同投資未來的謊言後，損失了 <b>700 萬港幣</b>（其畢生積蓄）。</li>
+                <li><b>Tho Vu (2022)：</b> 透過 Hinge 認識一名詐騙者，被誘騙至虛假加密平台後損失近 <b>18 萬美元</b>。</li>
+            </ul>
+        </section>
+    </div>
+
+    <div id="lessons" class="page">
+        <section>
+            <h2>經驗教訓</h2>
+            <p>根據警方報告與受害者證詞，以下是保護自己的方法。</p>
+
+            <div class="timeline-card" style="margin-bottom: 20px;">
+                <span class="card-header" style="color: #4DA3FF;">1. 「深偽」防禦術</span>
+                <p><b>現實狀況：</b> 眼見不再為憑。詐騙者利用 AI 在視訊通話中即時換臉。</p>
+                <p><b>對策：</b> 觀察是否有不自然的眨眼或面部邊緣的閃爍。要求對方左右轉頭或在臉前揮手（這通常會破壞 AI 濾鏡的合成）。</p>
+            </div>
+
+            <div class="timeline-card" style="margin-bottom: 20px;">
+                <span class="card-header" style="color: #4DA3FF;">2. 對「快速獲利」保持懷疑</span>
+                <p><b>現實狀況：</b> 詐騙者會加速建立親密關係，在推銷加密貨幣前降低你的防禦心。</p>
+                <p><b>對策：</b> 如果一名網戀對象在認識的前幾週內就開始提供財務建議或提到「獨家」投資平台，這 100% 是詐騙。</p>
+            </div>
+
+            <div class="timeline-card" style="margin-bottom: 20px;">
+                <span class="card-header" style="color: #4DA3FF;">3. 平台使用衛生</span>
+                <p><b>現實狀況：</b> 詐騙者急於讓你離開 Tinder/LinkedIn，轉而使用 WhatsApp/Telegram。</p>
+                <p><b>對策：</b> 警惕「跳轉平台」。儘可能留在原始 App 中，那裡的審核工具可以提供一定程度的保護。</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="quiz" class="page">
+        <section>
+            <h2>案例研究測驗</h2>
+            <p>測試你對香港案例的理解程度。</p>
+
+            <div class="quiz-card" id="q1">
+                <b>1. 「殺豬盤」詐騙的定義特徵是什麼？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">直接駭入銀行的伺服器。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q1')">先以感情和虛假獲利「養肥」受害者，最後捲走所有金錢。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q1')">只針對在肉店工作的人。</button>
+                <div class="explanation">答對了！這個術語源於屠宰前先養肥豬隻的概念。而「養肥」的過程就是情感誘導與虛假的投資回報。</div>
+            </div>
+
+            <div class="quiz-card" id="q2">
+                <b>2. 在 2024-2026 年間，AI 如何改變了這些詐騙？</b>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q2')">詐騙者使用深偽與語音複製來通過身份驗證。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">AI 被用來挖掘加密貨幣。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q2')">AI 讓他們能破解 WhatsApp 的加密。</button>
+                <div class="explanation">答對了！深偽技術讓詐騙者能偽造視訊通話，克服了過去「要求視訊通話」的防範建議。</div>
+            </div>
+
+            <div class="quiz-card" id="q3">
+                <b>3. 為什麼詐騙者要將受害者轉移到私密 App（如 WhatsApp/Telegram）？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">為了節省流量數據。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q3')">為了避開交友軟體的監測機器人並孤立受害者。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q3')">因為加密貨幣 App 只能在 Telegram 上運作。</button>
+                <div class="explanation">答對了！像 Tinder 這樣的公開 App 有安全演算法，而私密加密 App 則沒有，這給了詐騙者完全的主導權。</div>
+            </div>
+
+            <div class="quiz-card" id="q4">
+                <b>4. 當受害者試圖提取「獲利」時，通常會發生什麼事？</b>
+                <button class="option" onclick="runQuiz(this, false, 'q4')"> 資金會立即轉帳。</button>
+                <button class="option" onclick="runQuiz(this, false, 'q4')">網站因流量過大而當機。</button>
+                <button class="option" data-correct="true" onclick="runQuiz(this, true, 'q4')">詐騙者要求支付「稅金」或「費用」，藉此壓榨出最後一筆錢。</button>
+                <div class="explanation">答對了！這是「宰殺」的最後階段。他們會扣留資金作為威脅，在消失前榨取受害者的最後一筆款項。</div>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        案例研究：香港網路罪案調查科報告 (2020-2026) | 僅供教育用途
+    </footer>
+
+    <script>
+        // 分頁切換邏輯
+        function openPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // 設定活動按鈕狀態
+            const activeBtn = Array.from(document.querySelectorAll('#topNav button'))
+                .find(btn => btn.getAttribute('onclick').includes(pageId));
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            window.scrollTo(0,0);
+        }
+
+        // 測驗邏輯
+        function runQuiz(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            const options = card.querySelectorAll('.option');
+            const explanation = card.querySelector('.explanation');
+
+            // 禁用該題所有按鈕，防止多次點擊
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                // 無論點擊哪一個，都顯示正確答案
+                if(opt.getAttribute('data-correct') === 'true') {
+                    opt.classList.add('correct-ans');
+                }
+            });
+
+            // 如果選錯，將該選項標示為紅色
+            if(!isCorrect) {
+                btn.classList.add('wrong-ans');
+            }
+
+            // 顯示解釋
+            explanation.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
