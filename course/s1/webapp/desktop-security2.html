@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop Security: 2026 Complete Edition</title>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Cyber Blue */
+            --primary-dark: #0284c7;
+            --secondary: #0f172a; /* Deep Slate Background */
+            --card-bg: #1e293b; /* Lighter Slate */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --accent: #8b5cf6; /* Violet for new concepts */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background: var(--secondary); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 2px solid var(--primary);
+            padding: 0 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 70px;
+            position: sticky; 
+            top: 0; 
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0;}
+        .logo span { color: var(--text-main); margin-left: 10px; font-size: 0.8rem; border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px; }
+
+        .nav-links { display: flex; gap: 5px; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-btn:hover { color: var(--primary); border-color: var(--primary); background: rgba(14, 165, 233, 0.1); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: bold; border-color: var(--primary-dark); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active-tab { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary); text-align: center; }
+        h2 { color: var(--text-main); margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 15px; font-size: 1.8rem; }
+        .section-subtitle { color: var(--primary); margin: 2.5rem 0 1rem 0; font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 5px;}
+        p { margin-bottom: 1.2rem; font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); }
+
+        /* Hero */
+        .hero { 
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000');
+            background-size: cover; background-position: center;
+            padding: 4rem; border-radius: 15px; box-shadow: var(--shadow); text-align: center; color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap; }
+        .stat { text-align: center; background: rgba(14, 165, 233, 0.1); padding: 20px; border-radius: 10px; border: 1px solid var(--primary); min-width: 150px; }
+        .stat-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .stat-label { font-size: 1rem; color: white; font-weight: bold; }
+
+        .action-btn { 
+            background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1.1rem; 
+            border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 30px; font-weight: bold;
+            display: inline-block; box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        }
+        .action-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+        /* Cards */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 2rem;}
+        .info-card { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid #334155; transition: transform 0.2s; display: flex; flex-direction: column;}
+        .info-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .info-card h3 { color: var(--text-main); margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        
+        /* Lists inside cards */
+        ul.checklist { list-style: none; margin-top: 10px; flex-grow: 1;}
+        ul.checklist li { margin-bottom: 12px; padding-left: 25px; position: relative; color: var(--text-muted); line-height: 1.5;}
+        ul.checklist li::before { content: "✓"; color: var(--success); position: absolute; left: 0; font-weight: bold; font-size: 1.1rem;}
+
+        /* Disclaimer Box */
+        .disclaimer-box {
+            background: rgba(245, 158, 11, 0.1); 
+            border-left: 4px solid var(--warning); 
+            padding: 20px; 
+            margin: 30px 0; 
+            border-radius: 6px;
+        }
+        .disclaimer-box h4 { color: var(--warning); margin-bottom: 10px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;}
+        .disclaimer-box p { color: var(--text-main); margin-bottom: 0; font-size: 1rem;}
+
+        /* Comparison Table */
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid #334155; }
+        .comparison-table { width: 100%; border-collapse: collapse; background: var(--card-bg); min-width: 600px; }
+        .comparison-table th, .comparison-table td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
+        .comparison-table th { background: var(--primary-dark); color: white; font-size: 1.1rem;}
+        .comparison-table tr:hover { background: rgba(51, 65, 85, 0.5); }
+
+        /* Quiz */
+        .quiz-container { background: var(--card-bg); padding: 3rem; border-radius: 15px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid #334155; }
+        .progress-bar { width: 100%; background: #0f172a; height: 10px; border-radius: 5px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 20px; color: white; line-height: 1.4;}
+
+        .option-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #334155; 
+            background: #0f172a; color: var(--text-muted); border-radius: 6px; cursor: pointer; text-align: left; font-size: 1rem; transition: 0.2s; 
+            position: relative; z-index: 2; line-height: 1.5;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #1e293b; color: white; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        .feedback { padding: 20px; border-radius: 10px; margin-top: 20px; display: none; font-size: 1.1rem; line-height: 1.5;}
+        .feedback.correct { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .feedback.wrong { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid var(--danger); }
+
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; border-top: 1px solid #334155; background: var(--secondary); }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            nav { 
+                flex-direction: column; 
+                height: auto; 
+                padding: 1rem 0; 
+                gap: 15px;
+            }
+            .logo { padding: 0 1rem; }
+            
+            /* Swipeable horizontal menu for mobile */
+            .nav-links { 
+                width: 100%; 
+                overflow-x: auto; 
+                padding: 0 1rem 10px 1rem; 
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            }
+            
+            /* Hide scrollbar for a cleaner look */
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links { -ms-overflow-style: none; scrollbar-width: none; }
+
+            .nav-btn { flex: 0 0 auto; }
+
+            main { padding: 1.5rem 1rem; }
+            .hero { padding: 2.5rem 1rem; }
+            h1 { font-size: 2rem; }
+            
+            .stat-row { gap: 15px; }
+            .stat { width: 100%; min-width: auto; }
+
+            .grid-container { grid-template-columns: 1fr; gap: 20px; }
+            
+            .quiz-container { padding: 1.5rem; }
+            .question-text { font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">DESKTOP <span>SECURITY</span></div>
+        <div class="nav-links">
+            <button class="nav-btn active" id="btn-home">Overview</button>
+            <button class="nav-btn" id="btn-setup">Setup Phase</button>
+            <button class="nav-btn" id="btn-maint">Maintenance</button>
+            <button class="nav-btn" id="btn-tools">AV & Defense Tools</button>
+            <button class="nav-btn" id="btn-sme">SME vs Individual</button>
+            <button class="nav-btn" id="btn-quiz">Quiz Check</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. HOME -->
+        <section id="home" class="tab-content active-tab">
+            <div class="hero">
+                <h1>Desktop Security Fundamentals</h1>
+                <p>Securing a computer is a lifecycle process. Learn to protect your data without making your computer unusable.</p>
+                
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-icon">🛡️</span>
+                        <span class="stat-label">Prevention</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-icon">🔄</span>
+                        <span class="stat-label">Recovery</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-label">Detection</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="jump-setup">Start with Setup</button>
+            </div>
+            <br>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🏗️ Setup</h3>
+                    <p>The foundation. Installing the OS, enabling encryption, and adopting <strong>Passkeys</strong> (the successor to passwords).</p>
+                </div>
+                <div class="info-card">
+                    <h3>🔧 Maintenance</h3>
+                    <p>The routine. Updates, DNS filtering, and audits ensure that new vulnerabilities don't compromise your system.</p>
+                </div>
+                <div class="info-card">
+                    <h3>⚔️ Defense Tools</h3>
+                    <p>From simple built-in Smart Antivirus for home users, to advanced 24/7 MDR threat hunting for corporations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SETUP PHASE -->
+        <section id="setup" class="tab-content">
+            <h2>Initial Configuration: The Foundation</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>💿 OS & Encryption</h3>
+                    <ul class="checklist">
+                        <li>Start with a clean OS install.</li>
+                        <li>Enable <strong>Full-Disk Encryption</strong> (BitLocker for Windows / FileVault for Mac).</li>
+                        <li>Create a separate <strong>Standard User</strong> account for daily web browsing.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🔑 Passkeys & Auth</h3>
+                    <ul class="checklist">
+                        <li><strong>Adopt Passkeys:</strong> Use biometrics (FaceID/Fingerprint) instead of typing passwords.</li>
+                        <li><strong>Password Manager:</strong> For older sites, use a manager (like Bitwarden).</li>
+                        <li><strong>MFA:</strong> Use an Authenticator App, never SMS text messages.</li>
+                    </ul>
+                </div>
+                <div class="info-card" style="border-color: var(--accent);">
+                    <h3>☁️ Backup: The "Immutable" Rule</h3>
+                    <p><strong>3</strong> Copies of data.</p>
+                    <p><strong>2</strong> Different media types.</p>
+                    <p><strong>1</strong> Copy <strong>Immutable/Offline</strong>.</p>
+                    <p style="font-size:0.95rem; color:var(--text-muted); margin-top:10px; border-top: 1px solid #334155; padding-top: 10px;">
+                        <em>*Critical: Ransomware destroys connected USB/Cloud backups. You need one copy hackers absolutely cannot delete.</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MAINTENANCE PHASE -->
+        <section id="maint" class="tab-content">
+            <h2>Ongoing Maintenance: Staying Secure</h2>
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🔄 Updates & Patches</h3>
+                    <p>Software vulnerabilities are discovered daily. Set OS, Browsers, and Apps to <strong>Auto-Update</strong>. <br><br><em>Gap:</em> Don't forget to occasionally check for firmware (BIOS) and hardware driver updates.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎓 Human Firewall</h3>
+                    <p>Technology fails if the human gets tricked. Beware of <strong>AI Phishing</strong>: emails that use artificial intelligence to sound highly professional, removing the typos we used to rely on to spot scams.</p>
+                </div>
+                <div class="info-card">
+                    <h3>📋 Audit & Restore</h3>
+                    <p>Periodically check your online logins. More importantly, <strong>Test your backups!</strong> A backup you haven't successfully tested restoring is just a hope, not a strategy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. AV & DEFENSE TOOLS -->
+        <section id="tools" class="tab-content">
+            <h2>Defense Tools: From Home to Enterprise</h2>
+            <p>Security software requirements change drastically depending on whether you are securing a personal laptop or a whole company network.</p>
+
+            <!-- PART 1: Layman / Home User -->
+            <h3 class="section-subtitle">Part 1: The "Layman" Solutions (Home Users)</h3>
+            <p>For individuals, the goal is <strong>"Set it and Forget it."</strong> You want protection that works silently in the background without asking you to analyze complex security alerts.</p>
+            
+            <div class="grid-container">
+                <div class="info-card">
+                    <h3>🛡️ Built-In "Smart" Antivirus</h3>
+                    <p><strong>What to use:</strong> Windows Security (Defender) or Mac XProtect.</p>
+                    <p>Modern built-in security is excellent. It includes basic behavioral monitoring and blocks threats automatically in the background for free. <em>(Manual full-scans are rarely needed anymore; ensure Real-Time Protection is ON).</em></p>
+                </div>
+                <div class="info-card">
+                    <h3>🦠 Consumer "Next-Gen" AV</h3>
+                    <p><strong>What to use:</strong> Malwarebytes Premium or Bitdefender.</p>
+                    <p>If you want extra protection, these act like enterprise tools but with a simple interface. Instead of showing complex charts of how a virus worked, they simply pop up and say: <em>"We blocked a malicious action. You are safe."</em></p>
+                </div>
+                <div class="info-card">
+                    <h3>🌐 Automated DNS Filtering</h3>
+                    <p><strong>What to use:</strong> Quad9 (9.9.9.9) or NextDNS.</p>
+                    <p>Think of this as a safe phonebook for the internet. It automatically blocks malicious links before your computer even connects to the bad website. It operates silently and requires zero maintenance.</p>
+                </div>
+            </div>
+
+            <!-- DISCLAIMER FOR HOME USERS -->
+            <div class="disclaimer-box">
+                <h4>⚠️ Are you a Home User?</h4>
+                <p>
+                    If you are securing your personal computer, <strong>you do not need the EDR or MDR tools mentioned below.</strong> Stick to the solutions in Part 1. The section below is strictly for understanding how Small Businesses and Corporations protect their networks!
+                </p>
+            </div>
+
+            <!-- PART 2: Enterprise / Advanced -->
+            <h3 class="section-subtitle">Part 2: Advanced Security (EDR & MDR for Business)</h3>
+            <p>Why do businesses spend thousands on complex tools like EDR and MDR? Let's use a <strong>Home Security Analogy</strong> to explain how they differ from normal Antivirus.</p>
+            
+            <div class="grid-container">
+                <!-- 1. Traditional AV -->
+                <div class="info-card">
+                    <h3 style="color: var(--text-muted);">1. Traditional AV = The "Wanted" Poster</h3>
+                    <p>A bouncer stands at your front door looking at a list of known criminals (known virus signatures). If someone on the list tries to enter, they are blocked.</p>
+                    <p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155;"><strong>The Flaw:</strong> If a criminal puts on a disguise (a brand new, unknown virus), the bouncer lets them right in.</p>
+                </div>
+
+                <!-- 2. EDR -->
+                <div class="info-card" style="border-color: var(--primary);">
+                    <h3 style="color: var(--primary);">2. EDR = Smart Cameras & Sensors</h3>
+                    <p><em>Endpoint Detection & Response</em></p>
+                    <p>EDR assumes the bad guy got past the front door. It watches <strong>behavior</strong>. If a guest comes in and immediately tries to pick the lock on your safe, the system drops metal bars over the doors to trap them (Network Isolation).</p>
+                    <p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155;"><strong>The Flaw:</strong> It is overly sensitive. It will alert you every time your cat walks by the sensor, causing "alert fatigue" for IT staff.</p>
+                </div>
+
+                <!-- 3. MDR -->
+                <div class="info-card" style="border-color: var(--warning);">
+                    <h3 style="color: var(--warning);">3. MDR = 24/7 Security Guard</h3>
+                    <p><em>Managed Detection & Response</em></p>
+                    <p>Because EDR generates too many alerts, a business hires an outside security company (like ADT) to watch the cameras for them.</p>
+                    <p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155;"><strong>The Benefit:</strong> When the sensor goes off, the security expert looks. If it's the cat, they clear the alert. If it's a burglar, they stop it. <em>They only call the business owner for real fires.</em></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SME vs INDIVIDUAL -->
+        <section id="sme" class="tab-content">
+            <h2>Context Matters: Individual vs. SME</h2>
+            <p>While the technical basics are the same, the scale and responsibility differ significantly between a home user and a business.</p>
+            
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Security Feature</th>
+                            <th>Individual / Home User</th>
+                            <th>SME (Business)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Access Control</strong></td>
+                            <td>Personal Account</td>
+                            <td><strong>Least Privilege</strong> (No Admin rights for staff)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Defense Tool</strong></td>
+                            <td>Built-In Smart AV (Free)</td>
+                            <td><strong>MDR</strong> (Managed Service Team)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network</strong></td>
+                            <td>Home ISP Router</td>
+                            <td><strong>DNS Filtering</strong> & Network Segmentation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Updates</strong></td>
+                            <td>Automatic</td>
+                            <td>Managed & Tested (Patch Management)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Philosophy</strong></td>
+                            <td>"Be Careful Online"</td>
+                            <td><strong>Zero-Trust</strong> (Verify every request, trust no one)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 6. QUIZ -->
+        <section id="quiz" class="tab-content">
+            <h2>Knowledge Check</h2>
+            <p>Test your understanding of desktop security, from home setups to business EDR tools.</p>
+            <div class="quiz-container">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                
+                <div id="quiz-block">
+                    <div class="question-text" id="question-text">Loading...</div>
+                    <div id="options-container"></div>
+                    <div id="feedback-display" class="feedback"></div>
+                    <button class="action-btn" id="next-btn" style="display:none; width:100%; margin-top:20px;">Next Question</button>
+                </div>
+
+                <div id="score-block" style="display:none; text-align: center;">
+                    <h3>Quiz Complete!</h3>
+                    <p style="font-size: 3.5rem; font-weight: bold; color: var(--primary); margin: 20px 0;" id="final-score">0/0</p>
+                    <p id="score-message" style="font-size: 1.2rem; margin-bottom: 30px;"></p>
+                    <button class="action-btn" id="restart-btn">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Desktop Security Educational Module (Updated 2026) | Mobile Responsive Edition</p>
+    </footer>
+
+    <!-- SCRIPT -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active-tab');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const btnMap = {
+                'home': 'btn-home',
+                'setup': 'btn-setup',
+                'maint': 'btn-maint',
+                'tools': 'btn-tools',
+                'sme': 'btn-sme',
+                'quiz': 'btn-quiz'
+            };
+            
+            // FIXED: Use the tabId to get the correct string from the map
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if(activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        document.getElementById('btn-home').onclick = () => switchTab('home');
+        document.getElementById('btn-setup').onclick = () => switchTab('setup');
+        document.getElementById('btn-maint').onclick = () => switchTab('maint');
+        document.getElementById('btn-tools').onclick = () => switchTab('tools');
+        document.getElementById('btn-sme').onclick = () => switchTab('sme');
+        document.getElementById('btn-quiz').onclick = () => switchTab('quiz');
+        
+        document.getElementById('jump-setup').onclick = () => switchTab('setup');
+
+        // --- 2. QUIZ DATA ---
+        // FIXED: Added placeholder arrays to prevent syntax errors. 
+        // YOU NEED TO UPDATE THESE WITH YOUR ACTUAL ANSWERS.
+        const questions = [
+            {
+                q: "1. What is the updated 'Immutable' Backup Rule?",
+                options: ["Keep it connected", "An offline/undeletable copy", "Upload to Google Drive"],
+                a: 1,
+                exp: "Correct. Ransomware often attacks connected backups. An 'Immutable' or offline copy is your last line of defense."
+            },
+            {
+                q: "2. Why are Passkeys better than Passwords?",
+                options: ["They are shorter", "They can't be stolen via phishing", "They are easier to type"],
+                a: 1,
+                exp: "Correct. Passkeys cannot be stolen via fake websites (phishing) because the private key never leaves your device."
+            },
+            {
+                q: "3. What does Full-Disk Encryption (like BitLocker) do?",
+                options: ["Stops viruses", "Makes the internet faster", "Scrambles data on the physical drive"],
+                a: 2,
+                exp: "Correct. Encryption scrambles the data on the drive so it cannot be read without your password/key, even if the physical drive is removed."
+            },
+            {
+                q: "4. What does 'DNS Filtering' (e.g., Quad9) do for a home user?",
+                options: ["Blocks bad connections before they load", "Scans files for viruses", "Encrypts your hard drive"],
+                a: 0,
+                exp: "Correct. It blocks the connection to a bad site before your computer even loads it, acting silently in the background."
+            },
+            {
+                q: "5. Why is a 'Standard User' account safer for daily web browsing than an 'Admin' account?",
+                options: ["Malware lacks permissions to destroy the system", "It blocks ads", "It prevents tracking"],
+                a: 0,
+                exp: "Correct. If you click a bad link as a Standard User, the malware usually lacks the permissions to destroy the whole system."
+            },
+            {
+                q: "6. How should you handle antivirus scanning in 2026 for a home PC?",
+                options: ["Run a scan daily", "Turn it off", "Rely on automatic Real-Time scanning"],
+                a: 2,
+                exp: "Correct. Modern engines scan files the moment they are touched (Real-Time). Manual full scans are rarely needed."
+            },
+            {
+                q: "7. SME: What is the 'Principle of Least Privilege'?",
+                options: ["Everyone gets admin rights", "Restricting access to only what is needed", "Using free software"],
+                a: 1,
+                exp: "Correct. Restricting access minimizes the potential damage if an employee's account gets hacked."
+            },
+            {
+                q: "8. Why should Businesses (SMEs) test software updates before deploying them?",
+                options: ["To save bandwidth", "To ensure stability and prevent operational downtime", "Because updates are usually fake"],
+                a: 1,
+                exp: "Correct. Businesses prioritize stability; a bad update can stop operations, so IT tests them first."
+            },
+            {
+                q: "9. In our Home Security analogy, how is EDR different from Traditional Antivirus?",
+                options: ["It is cheaper", "It only works on Macs", "It watches for suspicious behavior, not just known files"],
+                a: 2,
+                exp: "Correct. Traditional AV looks for known bad files. EDR assumes the bad guy got in and watches for suspicious actions."
+            },
+            {
+                q: "10. Why do businesses need MDR (Managed Detection Response) instead of just buying EDR?",
+                options: ["EDR doesn't work", "MDR provides human experts to filter EDR alert noise", "MDR is a type of router"],
+                a: 1,
+                exp: "Correct. EDR generates too much data for normal staff to read. MDR provides human experts to filter the noise."
+            },
+            {
+                q: "11. What is an automated 'Response' action an EDR system might take if it sees someone 'picking the safe'?",
+                options: ["Email the CEO", "Cut the network connection to trap the virus", "Delete the hard drive"],
+                a: 1,
+                exp: "Correct. EDR can automatically cut the network connection to trap the virus and stop it from spreading to other computers."
+            },
+            {
+                q: "12. What is a potential drawback of EDR for a layman/home user?",
+                options: ["It uses too much electricity", "It creates too many complex alerts (alert fatigue)", "It requires a special monitor"],
+                a: 1,
+                exp: "Correct. This is why home users should stick to simple Built-in Smart AV or Consumer Next-Gen AV instead of complex EDR."
+            },
+            {
+                q: "13. What is a 'Zero-Trust' security philosophy used by businesses?",
+                options: ["Verify every request, trust no one automatically", "Trust employees but not outsiders", "Never use the internet"],
+                a: 0,
+                exp: "Correct. Zero-trust assumes a breach might have already happened, so it never blindly trusts a device just because it's on the company Wi-Fi."
+            },
+            {
+                q: "14. When disposing of an old computer, what must you do?",
+                options: ["Empty the recycle bin", "Log out of Windows", "Securely wipe or physically destroy the drive"],
+                a: 2,
+                exp: "Correct. Emptying the recycle bin doesn't remove data permanently. Secure wiping or physical destruction is required."
+            },
+            {
+                q: "15. What is the modern danger of AI in Phishing?",
+                options: ["AI creates new viruses", "AI removes the typos making scams harder to spot", "AI steals your keyboard"],
+                a: 1,
+                exp: "Correct. AI removes the typos and bad English that used to make phishing scams easy to spot."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+
+        const qText = document.getElementById('question-text');
+        const optsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback-display');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+        const finalScore = document.getElementById('final-score');
+        const scoreMsg = document.getElementById('score-message');
+        const quizBlock = document.getElementById('quiz-block');
+        const scoreBlock = document.getElementById('score-block');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function loadQuestion() {
+            const q = questions[currentQIndex]; // FIXED: Grabs the specific question by index
+            qText.innerText = q.q;
+            optsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+
+            const pct = ((currentQIndex) / questions.length) * 100;
+            progressBar.style.width = pct + "%";
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = function() { handleAnswer(idx, btn); };
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = questions[currentQIndex]; // FIXED: Grabs the specific question by index
+            const allBtns = optsContainer.querySelectorAll('button');
+            
+            // Disable all buttons
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.a) {
+                score++;
+                btnElement.style.background = "#22c55e"; 
+                btnElement.style.color = "#0f172a";
+                btnElement.style.borderColor = "#16a34a";
+                btnElement.style.fontWeight = "bold";
+                feedback.className = "feedback correct";
+                feedback.innerHTML = "<strong>✅ Correct!</strong> " + q.exp;
+            } else {
+                btnElement.style.background = "#ef4444"; 
+                btnElement.style.color = "white";
+                btnElement.style.borderColor = "#dc2626";
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "<strong>❌ Incorrect.</strong> " + q.exp;
+                
+                // FIXED: Highlight the correct answer by targeting the specific button index
+                allBtns[q.a].style.borderColor = "#22c55e";
+                allBtns[q.a].style.borderWidth = "2px";
+                allBtns[q.a].style.color = "#22c55e";
+            }
+            
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = function() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        restartBtn.onclick = function() {
+            currentQIndex = 0;
+            score = 0;
+            scoreBlock.style.display = 'none';
+            quizBlock.style.display = 'block';
+            loadQuestion();
+        };
+
+        function showResults() {
+            quizBlock.style.display = 'none';
+            scoreBlock.style.display = 'block';
+            progressBar.style.width = "100%";
+            finalScore.innerText = `${score} / ${questions.length}`;
+            
+            if(score === questions.length) scoreMsg.innerText = "🏆 Perfect Score! You are a Security Pro.";
+            else if(score >= 12) scoreMsg.innerText = "👍 Great Job! Your systems are safe.";
+            else if(score >= 8) scoreMsg.innerText = "📊 Not bad, but you might want to review the defense tools.";
+            else scoreMsg.innerText = "📚 Review the lessons and try again.";
+            
+            window.scrollTo({top: document.getElementById('quiz').offsetTop - 80, behavior: 'smooth'});
+        }
+
+        // Init the quiz on load
+        loadQuestion();
+    });
+</script>
+</body>
+</html>
+
+
