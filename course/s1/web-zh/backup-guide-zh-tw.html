@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>資料生存指南</title>
+    <title>數據備份生存指南</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -16,12 +16,12 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'PingFang HK', 'Microsoft JhengHei', sans-serif;
             background-color: var(--bg);
             color: #334155;
             margin: 0;
             padding: 0;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         /* Header */
@@ -222,19 +222,31 @@
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
         th { background-color: #f1f5f9; }
         tr:hover { background-color: #f8fafc; }
+
+        .mantra-box {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            margin: 1.5rem 0;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>💽 資料生存指南</h1>
-    <p>了解備份：簡單、有效且防勒索軟體</p>
+    <h1>💽 數據備份生存指南</h1>
+    <p>認識備份：簡單、有效、防範勒索軟件</p>
 </header>
 
 <nav>
-    <button class="nav-btn active" onclick="showTab('learn')">1. 規則</button>
-    <button class="nav-btn" onclick="showTab('choose')">2. 尋找我的方案</button>
-    <button class="nav-btn" onclick="showTab('simulate')">3. 災難模擬</button>
+    <button class="nav-btn active" onclick="showTab('learn')">1. 備份法則</button>
+    <button class="nav-btn" onclick="showTab('choose')">2. 尋找適合方案</button>
+    <button class="nav-btn" onclick="showTab('simulate')">3. 災難模擬器</button>
 </nav>
 
 <main>
@@ -242,18 +254,18 @@
     <div id="learn" class="section active">
         <div class="card">
             <h2>黃金法則：3-2-1</h2>
-            <p>不要把所有雞蛋放在同一個籃子裡。為了確保您的資料能在現代威脅中倖存，請遵循以下公式：</p>
+            <p>不要把所有雞蛋放在同一個籃子裡。為了確保您的數據能在現代網絡威脅中生存，請遵循以下公式：</p>
             
             <div class="rule-container">
                 <div class="rule-box">
                     <span class="icon">📂</span>
-                    <h3>3 份備份</h3>
-                    <p>您的資料總份數。（1 份原始檔 + 2 份備份）</p>
+                    <h3>3 份副本</h3>
+                    <p>數據的總份數。（1 份原始數據 + 2 份備份）</p>
                 </div>
                 <div class="rule-box">
                     <span class="icon">💿☁️</span>
-                    <h3>2 種媒體</h3>
-                    <p>不同的儲存媒體類型。（例如：硬碟 + 雲端）</p>
+                    <h3>2 種儲存媒體</h3>
+                    <p>不同類型的儲存媒體。（例如：外置硬碟 + 雲端）</p>
                 </div>
                 <div class="rule-box">
                     <span class="icon">🏠</span>
@@ -264,12 +276,35 @@
         </div>
 
         <div class="card" style="border-left: 5px solid var(--danger);">
-            <h2>⚠️ 新的威脅：勒索軟體</h2>
-            <p>如今，3-2-1 法則已不足夠，因為駭客可以鎖定您的電腦<strong>以及</strong>您連接的備份硬碟。</p>
+            <h2>⚠️ 新型威脅：勒索軟件 (Ransomware)</h2>
+            <p>今天，單靠 3-2-1 法則已經不夠，因為黑客（駭客）可以同時鎖定您的電腦<strong>「以及」</strong>一直連接在電腦上的備份硬碟。</p>
             <p><strong>我們需要兩個額外的數字 (3-2-1-1-0)：</strong></p>
             <ul>
-                <li><strong>1 份不可變/離線備份：</strong>一份無法被更改（唯讀）或實體拔除（氣隙）的備份。</li>
-                <li><strong>0 個錯誤：</strong>您必須測試您的備份（還原測試）以確保沒有資料毀損。</li>
+                <li><strong>1 份不可篡改/離線副本：</strong> 無法被更改的備份（唯讀），或是物理上拔除連接的備份（Air-Gapped / 網閘隔離）。</li>
+                <li><strong>0 錯誤：</strong> 您必須「測試」您的備份（還原測試），確保檔案沒有損壞。</li>
+            </ul>
+        </div>
+
+        <!-- NEW INTEGRATION: The Air-Gap Dilemma -->
+        <div class="card" style="border-left: 5px solid var(--warning);">
+            <h2>🔌 離線備份的兩難：什麼時候插上硬碟才安全？</h2>
+            <p>一個常見的問題是：<em>「如果病毒已經悄悄潛伏在我的電腦裡怎麼辦？我會不會把病毒也一併備份到安全的離線硬碟中？」</em></p>
+            
+            <h3>1. 解決方案：版本控制 (Versioning)</h3>
+            <p>如果您只保留「一個」版本的備份，並意外用受感染的檔案覆蓋了它，您將失去一切。您<strong>必須</strong>擁有多個版本的備份。您可以透過「硬碟輪替」法（每週輪流使用硬碟 A、硬碟 B 和硬碟 C），或使用能保存檔案歷史快照的備份軟件來實現。</p>
+            
+            <h3>2. 「起飛前」檢查清單 (Pre-Flight Checklist)</h3>
+            <p>您永遠無法 100% 確定電腦是完美乾淨的，但在插上離線硬碟前，遵循以下口訣可以大幅降低風險：</p>
+            
+            <div class="mantra-box">
+                抽查 ➡️ 掃描 ➡️ 連接 ➡️ 備份 ➡️ 斷開
+            </div>
+            
+            <ul>
+                <li><strong>抽查 (Spot-Check)：</strong> 備份前隨機打開 3-5 個重要檔案（Word 文檔、Excel 表格、PDF 等）。它們能正常打開嗎？如果可以，說明活躍的勒索軟件還沒有鎖定它們。</li>
+                <li><strong>掃描 (Scan)：</strong> 在備份前，運行一次快速的防毒軟件或反惡意軟件掃描。</li>
+                <li><strong>連接與備份 (Connect & Backup)：</strong> 插上硬碟。關閉電子郵件和網頁瀏覽器（不要多工操作），然後立即執行備份。</li>
+                <li><strong>斷開 (Disconnect)：</strong> 備份完成的<em>「那一刻」</em>立刻拔除硬碟。千萬不要在吃飯或睡覺時讓它一直插著！</li>
             </ul>
         </div>
     </div>
@@ -277,23 +312,23 @@
     <!-- SECTION 2: SOLUTION FINDER -->
     <div id="choose" class="section">
         <div class="card">
-            <h2>尋找您的完美備份策略</h2>
-            <p>回答兩個問題以獲得量身訂製的建議。</p>
+            <h2>尋找完美的備份策略</h2>
+            <p>回答兩個問題，獲取為您度身訂造的建議。</p>
 
             <div style="margin-bottom: 2rem;">
-                <h3>1. 您的身份是？</h3>
-                <button class="quiz-option" onclick="selectOption('type', 'student', this)">🎓 <strong>學生 / 個人用戶</strong> (個人照片、作業, < 2TB)</button>
-                <button class="quiz-option" onclick="selectOption('type', 'creator', this)">🎨 <strong>創作者 / 進階用戶</strong> (大型影片檔, 5TB+, 精通科技)</button>
-                <button class="quiz-option" onclick="selectOption('type', 'sme', this)">🏢 <strong>小型企業 (SME)</strong> (團隊資料、客戶檔案、關鍵的正常運行時間)</button>
+                <h3>1. 您的身分是？</h3>
+                <button class="quiz-option" onclick="selectOption('type', 'student', this)">🎓 <strong>學生 / 個人用戶</strong>（個人照片、功課，少於 2TB）</button>
+                <button class="quiz-option" onclick="selectOption('type', 'creator', this)">🎨 <strong>創作者 / 進階使用者</strong>（大型影片檔，5TB 以上，懂技術）</button>
+                <button class="quiz-option" onclick="selectOption('type', 'sme', this)">🏢 <strong>中小型企業 (SME)</strong>（團隊數據、客戶檔案，需要高可用性）</button>
             </div>
 
             <div style="margin-bottom: 2rem;">
-                <h3>2. 您的預算優先考量是？</h3>
-                <button class="quiz-option" onclick="selectOption('budget', 'cheap', this)">💰 <strong>低成本</strong> (我願意手動操作一些工作)</button>
-                <button class="quiz-option" onclick="selectOption('budget', 'easy', this)">⚡ <strong>便利性</strong> (我希望它能自動化且簡單)</button>
+                <h3>2. 您的預算考量是？</h3>
+                <button class="quiz-option" onclick="selectOption('budget', 'cheap', this)">💰 <strong>低成本</strong>（我願意親自動手做一些操作）</button>
+                <button class="quiz-option" onclick="selectOption('budget', 'easy', this)">⚡ <strong>方便至上</strong>（我想要全自動且簡單的方案）</button>
             </div>
 
-            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">顯示建議</button>
+            <button onclick="getRecommendation()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">顯示建議方案</button>
         </div>
 
         <div id="recommendation-result">
@@ -305,9 +340,9 @@
     <div id="simulate" class="section">
         <div class="card">
             <h2>🔥 災難模擬器</h2>
-            <p>建立您的防禦策略，看看它是否能在災難中倖存。</p>
+            <p>建立您的防禦機制，看看能否在災難中倖存。</p>
             
-            <h3>步驟 1：建立您的備份策略</h3>
+            <h3>第一步：建立備份策略</h3>
             <div class="sim-grid">
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-local" checked disabled> 
@@ -315,27 +350,27 @@
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-hdd"> 
-                    <span>💽 外接 USB 硬碟（隨時插著）</span>
+                    <span>💽 外置 USB 硬碟（一直插著）</span>
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-cloud-sync"> 
-                    <span>☁️ 雲端同步 (Google Drive/Dropbox)</span>
+                    <span>☁️ 雲端同步 (Google Drive/Dropbox 等)</span>
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-cloud-backup"> 
-                    <span>🛡️ 雲端備份 (Backblaze/IDrive)</span>
+                    <span>🛡️ 雲端備份軟件 (Backblaze/IDrive 等)</span>
                 </label>
                 <label class="defense-toggle">
                     <input type="checkbox" id="def-offline"> 
-                    <span>🔌 離線/未插電的硬碟（氣隙）</span>
+                    <span>🔌 離線硬碟 (Air Gap 網閘隔離)</span>
                 </label>
             </div>
 
-            <h3>步驟 2：觸發一場災難</h3>
+            <h3>第二步：觸發災難</h3>
             <div class="sim-grid">
-                <button class="threat-btn" style="background:#f59e0b" onclick="runSim('delete')">🗑️ 意外刪除</button>
-                <button class="threat-btn" style="background:#ef4444" onclick="runSim('ransom')">💀 勒索軟體攻擊</button>
-                <button class="threat-btn" style="background:#b91c1c" onclick="runSim('fire')">🔥 房屋火災 / 盜竊</button>
+                <button class="threat-btn" style="background:#f59e0b" onclick="runSim('delete')">🗑️ 意外刪除檔案</button>
+                <button class="threat-btn" style="background:#ef4444" onclick="runSim('ransom')">💀 勒索軟件攻擊</button>
+                <button class="threat-btn" style="background:#b91c1c" onclick="runSim('fire')">🔥 辦公室火災 / 盜竊</button>
             </div>
 
             <div id="sim-result"></div>
@@ -344,9 +379,9 @@
 </main>
 
 <footer>
-    <p>為提升備份意識而創建。請記住：同步不等於備份！</p>
+    <p>為推廣資訊安全及備份意識而製作。記住：同步 (Sync) 不等於備份 (Backup)！</p>
     <p class="disclaimer">
-        <strong>免責聲明：</strong>本指南中提及的建議和軟體工具僅供參考。價格、功能和可靠性可能隨時間而變化。用戶在購買任何產品或服務前應自行研究或尋求專業建議。本指南的創建者對因使用這些策略而導致的資料遺失或損壞不承擔任何責任。
+        <strong>免責聲明：</strong> 本指南提及的建議和軟件工具僅供參考。價格、功能和可靠性可能會隨時間改變。使用者在購買任何產品或服務前，應自行進行研究或尋求專業建議。本指南的創作者對因使用這些策略而導致的數據丟失或損壞概不負責。
     </p>
 </footer>
 
@@ -374,7 +409,7 @@
         const { type, budget } = userSelections;
 
         if (!type || !budget) {
-            alert("請同時選擇您的身份和預算選項。");
+            alert("請選擇「身分」和「預算考量」。");
             return;
         }
 
@@ -397,65 +432,65 @@
         // 1. STUDENT / INDIVIDUAL
         if (type === 'student') {
             if (budget === 'cheap') {
-                strategyName = "策略：「手動混合」方案";
-                strategyDesc = "您不需要昂貴的軟體。使用實體硬碟儲存大型檔案，並使用免費的雲端帳戶儲存文件。";
-                studentTip = "💡 <strong>提示：</strong>不要依賴 USB 隨身碟！它們經常故障。請購買一個正常的外接硬碟 (HDD) 或固態硬碟 (SSD)。";
+                strategyName = "💡 策略：「手動混合」備份";
+                strategyDesc = "您不需要昂貴的軟件。使用實體硬碟儲存大型檔案，並使用免費雲端帳戶儲存重要文件。";
+                studentTip = "💡 <strong>提示：</strong> 不要依賴 USB 手指（隨身碟）！它們很容易損壞。請購買真正的外置硬碟（HDD）或 SSD。最好買兩個並輪流使用，以獲得離線保護！";
                 optionsHTML = `
-                    ${createRow("外接 USB 硬碟", "一次性成本 (約 500 港元)，傳輸速度快", "可能損壞/遺失，需要手動操作")}
-                    ${createRow("Google Drive / iCloud (免費版)", "易於使用，隨處同步", "儲存空間小 (15GB)，同步 ≠ 備份")}
-                    ${createRow("免費備份軟體 (Veeam Agent Free)", "企業級的可靠性，費用為 $0", "設定稍有學習曲線")}
+                    ${createRow("外置 USB 硬碟", "一次性成本（約 HK$500），傳輸速度快", "容易損壞或遺失，需手動備份")}
+                    ${createRow("Google Drive / iCloud (免費方案)", "易於使用，跨裝置同步", "空間小（15GB），同步不等於備份")}
+                    ${createRow("免費備份軟件 (Veeam Agent Free)", "$0 即可獲得企業級可靠性", "設定時需要一點學習時間")}
                 `;
             } else {
-                strategyName = "策略：自動化雲端備份";
-                strategyDesc = "最好的保護是您不必費心思考的保護。支付訂閱費用，讓您的電腦自動備份。";
-                studentTip = "💡 <strong>提示：</strong>與 Google Drive 不同，這些工具會將已刪除的檔案保留 30 天到 1 年，讓您免於意外刪除。";
+                strategyName = "💡 策略：自動化雲端備份";
+                strategyDesc = "最好的保護是讓您不用費心。只需支付訂閱費，讓電腦在背景自動備份所有內容。";
+                studentTip = "💡 <strong>提示：</strong> 與 Google Drive 不同，真正的備份工具會保留已刪除的檔案和歷史版本 30 天到 1 年，挽救意外刪除或被勒索軟件加密的危機。";
                 optionsHTML = `
-                    ${createRow("Backblaze Personal", "無限儲存空間，非常簡單", "無法選擇資料夾（備份所有內容），1年歷史記錄需額外付費")}
-                    ${createRow("IDrive Personal", "可備份手機和電腦，歷史記錄良好", "有儲存空間限制 (例如 5TB)，介面較複雜")}
-                    ${createRow("Acronis Cyber Protect", "包含防毒和備份功能", "較昂貴，對系統資源佔用較大")}
+                    ${createRow("Backblaze 個人版", "無限儲存空間，操作非常簡單", "不能選擇特定資料夾（全部備份），1 年歷史紀錄需額外付費")}
+                    ${createRow("IDrive 個人版", "可備份手機 + 電腦，優秀的歷史紀錄", "有儲存空間限制（例如 5TB），介面較複雜")}
+                    ${createRow("Acronis Cyber Protect", "包含防毒軟件 + 備份功能", "價格較高，較佔用系統資源")}
                 `;
             }
         
         // 2. CREATOR / POWER USER
         } else if (type === 'creator') {
              if (budget === 'cheap') {
-                strategyName = "策略：「冷儲存」囤積方案";
-                strategyDesc = "您擁有 TB 等級的影片素材。雲端即時存取太昂貴。使用「冷儲存」來存檔您不常接觸的資料。";
-                studentTip = "💡 <strong>概念：</strong>「冷儲存」（如 Glacier）之所以便宜，是因為它需要數小時才能取回資料。「熱儲存」是即時的，但價格昂貴。";
+                strategyName = "💡 策略：「冷儲存」囤積者";
+                strategyDesc = "您擁有數以 TB 計的素材。提供即時存取的雲端太貴了。對於極少使用的存檔，請使用「冷儲存」。";
+                studentTip = "💡 <strong>概念：</strong> 「冷儲存」（如 Glacier）之所以便宜，是因為取回數據需要花費數小時。「熱儲存」雖然能即時存取，但價格高昂。";
                 optionsHTML = `
-                    ${createRow("裸碟 + 硬碟座", "每 TB 最便宜（拆硬碟），", "手動工作量大，有實體風險")}
-                    ${createRow("Amazon S3 Glacier Deep Archive", "極其便宜 (約 1 美元/TB/月)", "還原需付費且耗時 12 小時以上")}
-                    ${createRow("Backblaze B2", "便宜，與 S3 相容", "需要第三方軟體（如 CyberDuck）")}
+                    ${createRow("裸接硬碟 + 讀取座", "每 TB 成本最低（拆殼硬碟）", "極需手動操作，有物理損壞風險")}
+                    ${createRow("Amazon S3 Glacier Deep Archive", "極度便宜（約 $1 USD / TB / 月）", "還原檔案需要付費，且需等待 12 小時以上")}
+                    ${createRow("Backblaze B2", "便宜，兼容 S3 協議", "需要第三方軟件（如 CyberDuck）協助")}
                 `;
              } else {
-                strategyName = "策略：NAS 自動化方案";
-                strategyDesc = "時間就是金錢。使用 NAS（網路附加儲存）在本地處理 RAID 保護，然後自動同步到雲端。";
-                studentTip = "💡 <strong>警告：</strong>RAID（獨立磁碟備援陣列）不是備份！它只保護免於硬碟故障，而不是刪除或火災。";
+                strategyName = "💡 策略：NAS 自動化中心";
+                strategyDesc = "時間就是金錢。使用 NAS（網絡附加儲存）在本地處理 RAID 保護和高速剪輯，然後將 NAS 自動同步到雲端。";
+                studentTip = "💡 <strong>警告：</strong> RAID（獨立硬碟冗餘陣列）<strong>不是備份</strong>！它只能防止硬碟故障，不能防止檔案被意外刪除或火災。";
                 optionsHTML = `
-                    ${createRow("Synology NAS (硬體)", "本地編輯速度快，自動化生態系統", "前期成本高 (3,000 港元以上)")}
-                    ${createRow("Synology C2 Cloud", "與 NAS 完美整合", "比通用的 S3 儲存昂貴")}
-                    ${createRow("Dropbox Professional", "創意分享的標準", "大容量 (>3TB) 非常昂貴")}
+                    ${createRow("Synology NAS（硬件）", "本地剪輯速度快，全自動化生態系統", "前期成本高（約 HK$3,000 起跳）")}
+                    ${createRow("Synology C2 雲端", "與 NAS 系統完美整合", "比一般的 S3 儲存方案昂貴")}
+                    ${createRow("Dropbox Professional", "創作者分享檔案的業界標準", "大容量（>3TB）非常昂貴")}
                 `;
              }
 
         // 3. SME / BUSINESS
         } else { 
             if (budget === 'cheap') {
-                strategyName = "策略：「免授權」拉取方案";
-                strategyDesc = "將資料集中到安全的辦公室伺服器 (NAS) 上，該伺服器使用免費內含的軟體從員工筆記型電腦「拉取」資料。";
-                studentTip = "💡 <strong>專業提示：</strong>許多 NAS 品牌（如 Synology）都免費提供「Active Backup for Business」軟體。無需為每台筆記型電腦支付月費。";
+                strategyName = "💡 策略：「免授權費」集中拉取";
+                strategyDesc = "將數據集中到安全的辦公室伺服器 (NAS) 上，使用內建的免費軟件從員工的筆記本電腦「拉取」數據進行備份。";
+                studentTip = "💡 <strong>進階提示：</strong> 許多 NAS 品牌（如 Synology）免費提供企業備份軟件。無需為每台筆記本電腦支付月費。";
                 optionsHTML = `
-                    ${createRow("Synology Active Backup", "硬體附贈，自動化，重複資料刪除", "需要硬體維護")}
-                    ${createRow("Wasabi Cloud Storage", "比 Amazon/Google 便宜，速度快", "沒有原生備份應用（僅儲存）")}
+                    ${createRow("Synology Active Backup", "隨硬件免費附送，全自動，具備重複數據刪除技術", "需要維護硬件設備及初期投入")}
+                    ${createRow("Wasabi Cloud Storage", "比 Amazon/Google 便宜，速度快", "沒有專屬的備份應用程式（純儲存空間）")}
                 `;
             } else {
-                strategyName = "策略：受管設備群保護方案";
-                strategyDesc = "使用集中式儀表板遠端管理所有員工的筆記型電腦。對於合規性和勒索軟體保護至關重要。";
-                studentTip = "💡 <strong>概念：</strong>「不可變儲存」意味著即使是管理員也無法在設定的時間內刪除備份。這可以擊敗勒索軟體。";
+                strategyName = "💡 策略：代管式設備防護 (Managed Protection)";
+                strategyDesc = "使用集中管理儀表板，遙距管理所有員工的電腦備份。這對合規性 (Compliance) 和防範勒索軟件至關重要。";
+                studentTip = "💡 <strong>概念：</strong> 「不可篡改儲存」(Immutable Storage) 意味著即使是系統管理員也無法在設定時間內刪除備份。這能有效擊敗勒索軟件黑客。";
                 optionsHTML = `
-                    ${createRow("CrashPlan for Business", "無限儲存，保留已刪除檔案", "基於 Java 的應用程式可能較慢")}
-                    ${createRow("Veeam Data Platform", "行業標準，即時恢復", "昂貴，需要 IT 知識")}
-                    ${createRow("Microsoft 365 Backup (AFI.ai / Dropsuite)", "保護電子郵件/Teams（微軟自己不備份！）", "每位用戶需額外付費")}
+                    ${createRow("CrashPlan 商業版", "無限空間，無限期保留已刪除的檔案", "基於 Java 的應用程式，運行可能較慢")}
+                    ${createRow("Veeam Data Platform", "業界標準，支援即時復原 (Instant Recovery)", "價格昂貴，需要專業的 IT 知識設定")}
+                    ${createRow("Microsoft 365 備份 (AFI.ai / Dropsuite)", "保護電郵 / Teams 數據（微軟本身並不會為您備份！）", "需要按用戶數量支付額外月費")}
                 `;
             }
         }
@@ -465,7 +500,7 @@
             <h3 style="margin-top:0; color:var(--primary);">${strategyName}</h3>
             <p>${strategyDesc}</p>
             
-            <p><strong>比較此策略的熱門工具：</strong></p>
+            <p><strong>比較適合此策略的熱門工具：</strong></p>
             <table>
                 <thead>
                     <tr>
@@ -484,7 +519,7 @@
             </div>
 
             <div style="margin-top:1.5rem; padding:1rem; background-color:#fff3cd; border:1px solid #ffeeba; border-radius:8px; font-size:0.9rem; color:#856404;">
-                <strong>⚠️ 免責聲明：</strong>以上建議僅供參考。價格和功能隨時間而變。如有需要，請尋求專業建議。
+                <strong>⚠️ 免責聲明：</strong> 以上建議僅供參考。價格及功能可能會隨時間變動。如有需要，請尋求專業的 IT 諮詢。
             </div>
         `;
     }
@@ -503,36 +538,36 @@
         if (threat === 'delete') {
             if (cloudBackup || hdd || offline) {
                 survived = true;
-                message = "安全！您從備份歷史或本機硬碟中恢復了檔案。";
+                message = "安全！您成功從備份歷史記錄或本地硬碟中復原了檔案。";
             } else if (cloudSync) {
                 survived = false;
-                message = "遺失！您刪除了檔案，雲端同步也立即在各處刪除了它。同步 ≠ 備份。";
+                message = "數據遺失！您刪除了檔案，而雲端同步立刻在所有設備上刪除了它。同步 ≠ 備份。";
             } else {
                 survived = false;
-                message = "遺失！您沒有任何備份副本。";
+                message = "數據遺失！您沒有任何備份副本可以復原。";
             }
         }
 
         if (threat === 'ransom') {
             if (offline) {
                 survived = true;
-                message = "安全！您的離線硬碟未插電，所以病毒無法接觸到它。";
+                message = "安全！您的離線硬碟已經拔除 (Air-Gap)，所以病毒無法感染它。";
             } else if (cloudBackup) {
                 survived = true;
-                message = "安全！良好的雲端備份服務具有「時間點」恢復（歷史記錄）功能，可以還原受病毒影響前的狀態。";
+                message = "安全！優秀的雲端備份服務擁有「時間點」復原 (Point-in-Time) 功能，可以將檔案回溯到中毒前。";
             } else {
                 survived = false;
-                message = "遺失！病毒加密了您的電腦、您插著的 USB 硬碟，並將損壞的檔案同步到雲端同步服務。";
+                message = "數據遺失！病毒加密了您的電腦、一直插著的外置硬碟，甚至將損壞的檔案同步到了雲端！";
             }
         }
 
         if (threat === 'fire') {
             if (cloudSync || cloudBackup) {
                 survived = true;
-                message = "安全！您的房子沒了，但您的資料在雲端是安全的。";
+                message = "安全！雖然發生了火災，但您的數據在雲端非常安全。";
             } else {
                 survived = false;
-                message = "遺失！您的電腦和外接硬碟都在火災中熔毀了。3-2-1 法則說：要有一份異地備份。";
+                message = "數據遺失！您的電腦和外置硬碟都在火災中燒毀了。3-2-1 法則告訴我們：必須有一份異地 (Offsite) 備份！";
             }
         }
 
