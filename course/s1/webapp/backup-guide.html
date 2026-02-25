@@ -222,6 +222,18 @@
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
         th { background-color: #f1f5f9; }
         tr:hover { background-color: #f8fafc; }
+
+        .mantra-box {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            margin: 1.5rem 0;
+        }
     </style>
 </head>
 <body>
@@ -270,6 +282,29 @@
             <ul>
                 <li><strong>1 Immutable/Offline Copy:</strong> A backup that cannot be changed (Read-Only) or is physically unplugged (Air-Gapped).</li>
                 <li><strong>0 Errors:</strong> You must TEST your backups (Restore Test) to ensure there is no data rot.</li>
+            </ul>
+        </div>
+
+        <!-- NEW INTEGRATION: The Air-Gap Dilemma -->
+        <div class="card" style="border-left: 5px solid var(--warning);">
+            <h2>🔌 The Air-Gap Dilemma: When is it safe to plug in?</h2>
+            <p>A common question is: <em>"What if a virus is quietly sleeping on my PC? Won't I just back up the virus to my safe air-gapped drive?"</em></p>
+            
+            <h3>1. The Solution: Versioning</h3>
+            <p>If you only keep <em>one</em> version of a backup and overwrite it with corrupted files, you lose everything. You <strong>must</strong> have multiple versions. You can do this by using the "Drive Rotation" method (swapping Drive A, Drive B, and Drive C every week) or by using backup software that saves historical snapshots of your files.</p>
+            
+            <h3>2. The "Pre-Flight" Checklist</h3>
+            <p>You can never be 100% sure a PC is perfectly clean, but you can drastically lower the risk before plugging in your offline drive by following this mantra:</p>
+            
+            <div class="mantra-box">
+                Spot-Check ➡️ Scan ➡️ Connect ➡️ Backup ➡️ Disconnect
+            </div>
+            
+            <ul>
+                <li><strong>Spot-Check:</strong> Open 3-5 random, important files (a Word doc, an Excel sheet, a PDF). Do they open normally? If yes, active ransomware hasn't locked them yet.</li>
+                <li><strong>Scan:</strong> Run a quick Antivirus or Anti-Malware scan just before you back up.</li>
+                <li><strong>Connect & Backup:</strong> Plug the drive in. Close your email and web browser (no multitasking), and run the backup immediately.</li>
+                <li><strong>Disconnect:</strong> Unplug the drive the <em>exact second</em> it is done. Never leave it plugged in while you eat lunch or sleep!</li>
             </ul>
         </div>
     </div>
@@ -399,7 +434,7 @@
             if (budget === 'cheap') {
                 strategyName = "Strategy: The 'Manual Hybrid'";
                 strategyDesc = "You don't need expensive software. Use a physical drive for heavy files and free cloud accounts for documents.";
-                studentTip = "💡 <strong>Tip:</strong> Don't rely on USB sticks! They fail often. Buy a proper external Hard Drive (HDD) or SSD.";
+                studentTip = "💡 <strong>Tip:</strong> Don't rely on USB sticks! They fail often. Buy a proper external Hard Drive (HDD) or SSD. Better yet, buy two and rotate them for offline protection!";
                 optionsHTML = `
                     ${createRow("External USB HDD", "One-time cost (HK$500), Fast transfer", "Can break/get lost, Manual work")}
                     ${createRow("Google Drive / iCloud (Free Tier)", "Easy to use, Synced everywhere", "Small storage limit (15GB), Sync ≠ Backup")}
@@ -408,7 +443,7 @@
             } else {
                 strategyName = "Strategy: Automated Cloud Backup";
                 strategyDesc = "The best protection is one you don't have to think about. Pay a subscription to have your computer back up automatically.";
-                studentTip = "💡 <strong>Tip:</strong> Unlike Google Drive, these tools keep deleted files for 30 days to 1 year, saving you from accidental deletion.";
+                studentTip = "💡 <strong>Tip:</strong> Unlike Google Drive, these tools keep deleted files and historical versions for 30 days to 1 year, saving you from accidental deletion or sneaky ransomware.";
                 optionsHTML = `
                     ${createRow("Backblaze Personal", "Unlimited storage, Very simple", "No folder selection (backs up everything), 1-year history requires extra fee")}
                     ${createRow("IDrive Personal", "Backs up Phones + PCs, Good history", "Storage limit (e.g., 5TB), Interface is complex")}
@@ -416,7 +451,7 @@
                 `;
             }
         
-        // 2. CREATOR / POWER USER (UPDATED LOGIC)
+        // 2. CREATOR / POWER USER
         } else if (type === 'creator') {
              if (budget === 'cheap') {
                 strategyName = "Strategy: The 'Cold Storage' Hoarder";
