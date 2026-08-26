@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 31: The Judgment of Winter</title>
     <style>
+         .goog-te-banner-frame, #google_translate_element {
+      display: none !important;
+      }
         :root {
             --bg-color: #f9f7f4;
             --text-color: #2c2c2c;
@@ -16,6 +19,7 @@
         }
 
         body {
+	    top: 0px !important;
             font-family: 'Georgia', 'Times New Roman', serif;
             line-height: 1.7;
             color: var(--text-color);
@@ -143,6 +147,9 @@
             .container {
                 padding: 25px;
             }
+
+ 
+
             body {
                 padding: 15px;
             }
@@ -150,7 +157,12 @@
     </style>
 </head>
 <body>
+ 
     <div class="container">
+         <!-- Language Switch Buttons -->
+  <button onclick="translateTo('zh-TW')">繁體中文 (Traditional Chinese)</button>
+  <button onclick="translateTo('en')">English</button>
+
         <h1>Chapter 31: The Judgment of Winter</h1>
         
         <p>In the shadow-drenched halls of East Erden, truth is a fragile weapon,
@@ -827,6 +839,27 @@ Standing in the freezing mist above Cranston Plaza, Colonel Sean Walker faces th
     </div>
 
 
+
+ <!-- Google Translate Element -->
+  <div id="google_translate_element"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', includedLanguages: 'zh-TW,en' },
+        'google_translate_element'
+      );
+    }
+
+    function translateTo(langCode) {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = langCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </div>
 
 </body>
