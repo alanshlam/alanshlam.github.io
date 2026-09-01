@@ -1,0 +1,87 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Shadow in the Bay</title>
+ <style>
+    /* Hide the default Google Translate banner/dropdown */
+    .goog-te-banner-frame, #google_translate_element {
+      display: none !important;
+    }
+    body {
+      top: 0px !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Toggle Button -->
+<button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--code-bg); color: var(--text-color);">
+  🌙 Toggle Light/Dark
+</button>
+
+<!-- Language Switch Buttons -->
+<button onclick="translateTo('zh-TW')">繁體中文 (Traditional Chinese)</button>
+<button onclick="translateTo('en')">English</button>
+
+
+<h1 id="chapter-13-the-decryption">Chapter 13: The Decryption</h1>
+
+<p>Three hours later, the rain had ceased, leaving a suffocating fog hanging over the Oakland Inner Harbor. Inside the secure, air-gapped drafting studio of Stone &amp; Associates, the three monitors cast a stark, pale blue light across Zoe and Xavier’s exhausted faces.</p>
+<p>Jo Mercer stood by the door, her hand resting on her holster, while Zoe connected the stolen NVMe blades to their air-gapped forensic workstation.</p>
+<p>“The filesystem structure is highly irregular,” Zoe whispered, her fingers flying over the keyboard as she ran her forensic decryption script. “It’s bypass-routing Stark’s commercial accounts entirely. These directories are filled with raw, uncompressed media files.”</p>
+<p>She double-clicked a heavily encrypted partition, entering the digital security token Jo had cloned from Vivian’s phone. The screen flickered, and a directory labeled <em>Little Saint Jude - Cabana Feeds</em> populated the terminal.</p>
+<p>Zoe clicked the first video file. On the center monitor, a high-definition video began to play.</p>
+<p>The camera angle was high, hidden behind the wooden slats of an ornamental ceiling grate. The setting was undeniably tropical—sunlight reflecting off a turquoise sea visible through open terrace doors. In the foreground stood a large, luxury massage table.</p>
+<p>But as Zoe watched the figures moving on the screen, the breath caught in her throat. The color drained from her face, her eyes widening in absolute horror.</p>
+<p>“Xavier…” Zoe gasped, her hands shaking so violently she had to pull them back from the desk. “Oh my god. Look at them.”</p>
+<p>On the screen, a prominent international tech developer was being greeted by two young girls. They were wearing matching, minimalist silk robes. Their faces were narrow, their movements hesitant, their eyes carrying the distinct, terrified look of children.</p>
+<p>“They’re minors,” Xavier said, his voice dropping into a flat, terrifyingly cold register. His knuckles turned stark white as he gripped the handle of his cane. “Stark isn’t just compiling target packages on local politicians. He’s operating a private, highly organized sexual exploitation compound.”</p>
+<p>Zoe scrolled through the metadata of the files. The directories were organized by guest name, date, and location. There were thousands of unredacted recordings featuring former heads of state, billionaires, and royal heirs.</p>
+<p>“Look at the GPS coordinates embedded in the video headers,” Zoe said, her voice cracking with emotion as she highlighted a repeating geographic tag. “They aren’t from the Woodside estate. They’re all originating from a seventy-acre private island in the Caribbean. An isolated island called Little Saint Jude.”</p>
+<p>Xavier slowly reached down to his desk and picked up the silver-plated photograph of his younger brother, turning it over to look at his gentle, smiling eyes. The ghost of his brother’s empty cell door seemed to rattle in the quiet studio.</p>
+<p>He looked back at Zoe, his eyes dark, hard, and filled with a cold, absolute resolve.</p>
+<p>“The police won’t touch this,” Xavier said quietly, his voice a low, steady gravel. “They’ll tell us it’s above our pay grade and lock the files away forever. But I am not leaving those girls in that cell.”</p>
+<p>Zoe met his gaze, her heart beating with a quiet, fierce determination. “What do we do?”</p>
+<p>Xavier set the photograph back down, his grip tightening on his cane.</p>
+<p>“We go to St. Thomas.”</p>
+<h2 id="section">***</h2>
+
+
+<hr>
+<center> <a href=ch12.html> Previous Chapter</a>| <a href=ch14.html> Next Chapter</a>
+
+  <!-- Google Translate Element -->
+  <div id="google_translate_element"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', includedLanguages: 'zh-TW,en' },
+        'google_translate_element'
+      );
+    }
+
+    function translateTo(langCode) {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = langCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
+
+
+
+
