@@ -1,0 +1,65 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Shadow in the Bay</title>
+ <style>
+    /* Hide the default Google Translate banner/dropdown */
+    .goog-te-banner-frame, #google_translate_element {
+      display: none !important;
+    }
+    body {
+      top: 0px !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Toggle Button -->
+<button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--code-bg); color: var(--text-color);">
+  🌙 Toggle Light/Dark
+</button>
+
+<!-- Language Switch Buttons -->
+<button onclick="translateTo('zh-TW')">繁體中文 (Traditional Chinese)</button>
+<button onclick="translateTo('en')">English</button>
+
+
+
+<hr>
+<center> <a href=ch17.html> Previous Chapter</a>|<a href=index.html>Home</a> </center>
+
+  <!-- Google Translate Element -->
+  <div id="google_translate_element"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', includedLanguages: 'zh-TW,en' },
+        'google_translate_element'
+      );
+    }
+
+    function translateTo(langCode) {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = langCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
+
+
+
+
