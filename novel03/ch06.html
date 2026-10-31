@@ -1,3 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Beneath the Saltwood Sky</title>
+ <style>
+    /* Hide the default Google Translate banner/dropdown */
+    .goog-te-banner-frame, #google_translate_element {
+      display: none !important;
+    }
+    body {
+      top: 0px !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Toggle Button -->
+<button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--code-bg); color: var(--text-color);">
+  🌙 Toggle Light/Dark
+</button>
+
+<!-- Language Switch Buttons -->
+<button onclick="translateTo('zh-TW')">繁體中文 (Traditional Chinese)</button>
+<button onclick="translateTo('en')">English</button>
+
+<h1 id="chapter-6-the-heist">Chapter 6: The Heist</h1>
+
 <p><strong>📋 TECH DOSSIER: THE TROJAN FIXTURE</strong></p>
 <p><strong>Classification:</strong> Parasitic Supply-Chain Surveillance Node<br />
 <strong>Target:</strong> Airborne/Air-Gapped Forensic Environments</p>
@@ -221,3 +254,32 @@ SEARCH: LEVEL-3_STRUCTURAL_FLOORPLANS.DWG</p>
 <p>Tony looked down at his chest rig, where the original forensic hard drive sat securely in its padded pocket, its status light blinking a reassuring amber. On Sarah’s lap, the carbon-fiber thermal pouch held the two scorched backup magnetic tapes, safely insulated from the firestorm they had just left behind.</p>
 <p>"The robot played us all," Tony said, adjusting his mirrors as the distant blue lights of the police cruisers vanished into the rainy dark behind them. "But we left a ghost in that ceiling, Sarah. When the forensic investigators dig through that slag, they’re going to wonder what kind of machine knows how to commit suicide to protect its handlers."</p>
 <p>Sarah looked out the window at the blurred city lights, the rain streaking across the glass like tears. "Let them wonder. By the time they figure out the LED panel was a Trojan horse, we'll be vanished in the capital."</p>
+
+<hr>
+<center><a href=index.html>Home</a>|<a href=ch07.html> Next Chapter </a></center>
+<p>
+
+
+  <!-- Google Translate Element -->
+  <div id="google_translate_element"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', includedLanguages: 'zh-TW,en' },
+        'google_translate_element'
+      );
+    }
+
+    function translateTo(langCode) {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = langCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
